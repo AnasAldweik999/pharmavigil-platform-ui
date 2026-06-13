@@ -1,0 +1,85 @@
+<!-- ── Stop Types Table ───────────────────────────────────────────────────── -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-4">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <h5 class="fw-bold mb-0">Stop Types</h5>
+      <button class="btn btn-sm btn-primary" (click)="openModal()">Add Stop Type</button>
+    </div>
+
+    @if (tableSuccessMessage()) {
+      <div class="alert alert-success alert-dismissible py-2 small mb-3" role="alert">
+        {{ tableSuccessMessage() }}
+        <button type="button" class="btn-close" (click)="dismissSuccess()" aria-label="Close"></button>
+      </div>
+    }
+
+    <app-grid
+      [columns]="gridColumns"
+      [filterFields]="gridFilters"
+      [actions]="gridActions"
+      [actionsDisabled]="!!deletingId()"
+      [rows]="items()"
+      [totalElements]="totalElements()"
+      [totalPages]="totalPages()"
+      [loading]="loading()"
+      (stateChange)="onGridStateChange($event)"
+      (actionClick)="onGridAction($event)"
+    />
+
+  </div>
+</div>
+
+<!-- ── Add Stop Type Modal ────────────────────────────────────────────────── -->
+<div #createModal class="modal fade" tabindex="-1" aria-labelledby="createStopTypeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="createStopTypeModalLabel">Add Stop Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-muted small mb-3">This stop type will be available when logging production stops.</p>
+
+        @if (errorMessage()) {
+          <div class="alert alert-danger py-2 small" role="alert">{{ errorMessage() }}</div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate id="createStopTypeForm">
+          <div class="mb-1">
+            <label for="stopTypeName" class="form-label fw-medium">Stop type name</label>
+            <input
+              id="stopTypeName"
+              type="text"
+              class="form-control"
+              [class.is-invalid]="nameControl.invalid && nameControl.touched"
+              [class.is-valid]="nameControl.valid && nameControl.touched"
+              formControlName="name"
+              placeholder="e.g. Mechanical Failure"
+            />
+            @if (nameControl.touched && nameControl.hasError('required')) {
+              <div class="invalid-feedback">Name is required.</div>
+            } @else if (nameControl.touched && nameControl.hasError('minlength')) {
+              <div class="invalid-feedback">Name must be at least 2 characters.</div>
+            }
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="createStopTypeForm" class="btn btn-primary" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Creating…
+          } @else {
+            Add stop type
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
