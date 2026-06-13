@@ -1,1 +1,131 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  width: 240px;
+  background-color: #1a2942;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 1045;
+  /* Mobile: hidden off-screen */
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+}
+
+/* Sidebar open on mobile */
+.sidebar.sidebar-open {
+  transform: translateX(0);
+}
+
+/* Desktop: always visible */
+@media (min-width: 992px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+/* ── Overlay (mobile only, sits behind sidebar but above content) ────────── */
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    z-index: 1044;
+  }
+}
+
+/* ── Main content ─────────────────────────────────────────────────────────── */
+
+.main-content {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  /* Mobile: full width */
+  margin-left: 0;
+}
+
+/* Desktop: offset by sidebar */
+@media (min-width: 992px) {
+  .main-content {
+    margin-left: 240px;
+  }
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────────────── */
+
+.top-bar {
+  height: 56px;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+@media (min-width: 992px) {
+  .top-bar {
+    padding: 0 1.5rem;
+  }
+}
+
+/* ── Page content padding ─────────────────────────────────────────────────── */
+
+.page-content {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 1.5rem;
+  }
+}
+
+/* ── Auth pages ───────────────────────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
