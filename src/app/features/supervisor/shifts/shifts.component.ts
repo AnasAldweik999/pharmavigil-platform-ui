@@ -13,7 +13,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../../environments/environment';
-import { CatalogItem, CreateCatalogRequest } from '../../../core/models/catalog.models';
+import { CreateShiftRequest, ShiftItem } from '../../../core/models/catalog.models';
 import { Page } from '../../../core/models/user.models';
 import { GridAction, GridColumn, GridFilterField, GridState } from '../../../shared/grid/grid.models';
 import { GridComponent } from '../../../shared/grid/grid.component';
@@ -34,10 +34,12 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   private bsModal: { show(): void; hide(): void } | null = null;
 
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(1)]],
+    name:      ['', [Validators.required, Validators.minLength(1)]],
+    startTime: ['', Validators.required],
+    endTime:   ['', Validators.required],
   });
 
-  private readonly _pageData = signal<Page<CatalogItem> | null>(null);
+  private readonly _pageData = signal<Page<ShiftItem> | null>(null);
   readonly items         = computed(() => this._pageData()?.content ?? []);
   readonly totalElements = computed(() => this._pageData()?.totalElements ?? 0);
   readonly totalPages    = computed(() => this._pageData()?.totalPages ?? 0);
@@ -51,8 +53,10 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   private _currentGridState: GridState = { filters: {}, sort: null, page: 0, size: 10 };
 
   readonly gridColumns: GridColumn[] = [
-    { key: 'name',      label: 'Name',    sortable: true, type: 'text' },
-    { key: 'createdAt', label: 'Created', sortable: true, type: 'date' },
+    { key: 'name',      label: 'Name',       sortable: true,  type: 'text' },
+    { key: 'startTime', label: 'Start Time',  sortable: false, type: 'text' },
+    { key: 'endTime',   label: 'End Time',    sortable: false, type: 'text' },
+    { key: 'createdAt', label: 'Created',     sortable: true,  type: 'date' },
   ];
 
   readonly gridFilters: GridFilterField[] = [
@@ -68,7 +72,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId) || !this.modalRef?.nativeElement) return;
     this.modalRef.nativeElement.addEventListener('hidden.bs.modal', () => {
-      this.form.reset({ name: '' });
+      this.form.reset({ name: '', startTime: '', endTime: '' });
       this.errorMessage.set('');
     });
   }
@@ -80,7 +84,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
 
   onGridAction(event: { action: GridAction; row: unknown }): void {
     if (event.action.key === 'delete') {
-      const item = event.row as CatalogItem;
+      const item = event.row as ShiftItem;
       this.deletingId.set(item.id);
       this.http.delete(`${this.endpoint}/${item.id}`).subscribe({
         next: () => {
@@ -100,7 +104,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
 
   loadItems(state: GridState): void {
     this.loading.set(true);
-    this.http.get<Page<CatalogItem>>(this.endpoint, { params: this.buildParams(state) }).subscribe({
+    this.http.get<Page<ShiftItem>>(this.endpoint, { params: this.buildParams(state) }).subscribe({
       next: (page) => { this._pageData.set(page); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
@@ -113,8 +117,8 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.submitting.set(true);
     this.errorMessage.set('');
-    const body: CreateCatalogRequest = this.form.getRawValue();
-    this.http.post<CatalogItem>(this.endpoint, body).subscribe({
+    const body: CreateShiftRequest = this.form.getRawValue();
+    this.http.post<ShiftItem>(this.endpoint, body).subscribe({
       next: (item) => {
         this.submitting.set(false);
         this.closeModal();
@@ -134,7 +138,9 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   }
 
   dismissSuccess(): void { this.tableSuccessMessage.set(''); }
-  get nameControl() { return this.form.controls.name; }
+  get nameControl()      { return this.form.controls.name; }
+  get startTimeControl() { return this.form.controls.startTime; }
+  get endTimeControl()   { return this.form.controls.endTime; }
 
   private get modal(): { show(): void; hide(): void } | null {
     if (!isPlatformBrowser(this.platformId) || !this.modalRef?.nativeElement) return null;

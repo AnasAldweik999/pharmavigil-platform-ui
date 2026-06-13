@@ -48,7 +48,7 @@
         }
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate id="createShiftForm">
-          <div class="mb-1">
+          <div class="mb-3">
             <label for="shiftName" class="form-label fw-medium">Shift name</label>
             <input
               id="shiftName"
@@ -61,9 +61,38 @@
             />
             @if (nameControl.touched && nameControl.hasError('required')) {
               <div class="invalid-feedback">Name is required.</div>
-            } @else if (nameControl.touched && nameControl.hasError('minlength')) {
-              <div class="invalid-feedback">Name must be at least 1 character.</div>
             }
+          </div>
+
+          <div class="row g-3 mb-1">
+            <div class="col-6">
+              <label for="shiftStart" class="form-label fw-medium">Start time</label>
+              <input
+                id="shiftStart"
+                type="time"
+                class="form-control"
+                [class.is-invalid]="startTimeControl.invalid && startTimeControl.touched"
+                [class.is-valid]="startTimeControl.valid && startTimeControl.touched"
+                formControlName="startTime"
+              />
+              @if (startTimeControl.touched && startTimeControl.hasError('required')) {
+                <div class="invalid-feedback">Start time is required.</div>
+              }
+            </div>
+            <div class="col-6">
+              <label for="shiftEnd" class="form-label fw-medium">End time</label>
+              <input
+                id="shiftEnd"
+                type="time"
+                class="form-control"
+                [class.is-invalid]="endTimeControl.invalid && endTimeControl.touched"
+                [class.is-valid]="endTimeControl.valid && endTimeControl.touched"
+                formControlName="endTime"
+              />
+              @if (endTimeControl.touched && endTimeControl.hasError('required')) {
+                <div class="invalid-feedback">End time is required.</div>
+              }
+            </div>
           </div>
         </form>
       </div>

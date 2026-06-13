@@ -37,7 +37,7 @@ export class LoginComponent {
         if (res.role === 'SUPERVISOR') {
           this.router.navigate(['/supervisor/dashboard']);
         } else {
-          this.router.navigate(['/staff/home']);
+          this.router.navigate(['/staff/reports']);
         }
       },
       error: (err) => {

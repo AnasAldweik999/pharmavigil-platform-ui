@@ -172,6 +172,13 @@
                 [value]="draftFilters()[field.key] || ''"
                 (input)="onDraftInput(field.key, $any($event.target).value)"
               />
+            } @else if (field.type === 'date') {
+              <input
+                type="date"
+                class="form-control form-control-sm"
+                [value]="draftFilters()[field.key] || ''"
+                (input)="onDraftInput(field.key, $any($event.target).value)"
+              />
             } @else {
               <select
                 class="form-select form-select-sm"

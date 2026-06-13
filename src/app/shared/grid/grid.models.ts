@@ -9,7 +9,7 @@ export interface GridColumn {
 export interface GridFilterField {
   key: string;
   label: string;
-  type: 'text' | 'select';
+  type: 'text' | 'select' | 'date';
   placeholder?: string;
   options?: { label: string; value: string }[];
 }
