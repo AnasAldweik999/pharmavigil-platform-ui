@@ -27,12 +27,13 @@ export class AuthService {
   readonly authState = this._authState.asReadonly();
   readonly isAuthenticated = computed(() => this._authState() !== null);
   readonly currentRole = computed(() => this._authState()?.role ?? null);
+  readonly currentName = computed(() => this._authState()?.name ?? null);
   readonly currentEmail = computed(() => this._authState()?.email ?? null);
 
   login(email: string, password: string): Observable<LoginResponse> {
     const body: LoginRequest = { email, password };
     return this.http.post<LoginResponse>(`${this.apiUrl}/api/auth/login`, body).pipe(
-      tap((res) => this.persist({ accessToken: res.accessToken, refreshToken: res.refreshToken, role: res.role, email }))
+      tap((res) => this.persist({ accessToken: res.accessToken, refreshToken: res.refreshToken, role: res.role, name: res.name, email: res.email }))
     );
   }
 
@@ -66,7 +67,8 @@ export class AuthService {
           accessToken: res.accessToken,
           refreshToken: res.refreshToken,
           role: res.role,
-          email: state.email,
+          name: res.name,
+          email: res.email,
         })
       )
     );

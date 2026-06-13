@@ -34,16 +34,18 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe({
       next: (res) => {
         this.loading.set(false);
-        if (res.role === 'ADMIN') {
-          this.router.navigate(['/admin/dashboard']);
+        if (res.role === 'SUPERVISOR') {
+          this.router.navigate(['/supervisor/dashboard']);
         } else {
-          this.router.navigate(['/employee/home']);
+          this.router.navigate(['/staff/home']);
         }
       },
       error: (err) => {
         this.loading.set(false);
         this.errorMessage.set(
-          err.status === 401 ? 'Invalid email or password.' : 'Something went wrong. Please try again.'
+          err.status === 500
+            ? 'Something went wrong. Please try again.'
+            : (err.error?.message ?? 'Something went wrong. Please try again.')
         );
       },
     });

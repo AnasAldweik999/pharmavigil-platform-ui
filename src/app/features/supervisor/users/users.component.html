@@ -6,9 +6,6 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
       <h5 class="fw-bold mb-0">All Users</h5>
       <div class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-secondary" (click)="loadUsers()" [disabled]="loading()">
-          Refresh
-        </button>
         <button class="btn btn-sm btn-primary" (click)="openModal()">
           + Create User
         </button>
@@ -23,51 +20,19 @@
       </div>
     }
 
-    <!-- Table / states -->
-    @if (loading()) {
-      <div class="text-center py-4">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading…</span>
-        </div>
-      </div>
-    } @else if (users().length === 0) {
-      <p class="text-muted text-center py-3 mb-0">No users found.</p>
-    } @else {
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th class="small fw-semibold text-uppercase text-muted">Email</th>
-              <th class="small fw-semibold text-uppercase text-muted">Role</th>
-              <th class="small fw-semibold text-uppercase text-muted">Status</th>
-              <th class="small fw-semibold text-uppercase text-muted">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (user of users(); track user.id) {
-              <tr>
-                <td class="small">{{ user.email }}</td>
-                <td>
-                  <span class="badge"
-                    [class.bg-primary]="user.role === 'ADMIN'"
-                    [class.bg-secondary]="user.role === 'EMPLOYEE'">
-                    {{ user.role }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge"
-                    [class.bg-success]="user.active"
-                    [class.bg-danger]="!user.active">
-                    {{ user.active ? 'Active' : 'Inactive' }}
-                  </span>
-                </td>
-                <td class="small text-muted">{{ user.createdAt | date: 'dd MMM yyyy' }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
+    <!-- Grid -->
+    <app-grid
+      [columns]="gridColumns"
+      [filterFields]="gridFilters"
+      [actions]="gridActions"
+      [actionsDisabled]="!!togglingId()"
+      [rows]="users()"
+      [totalElements]="totalElements()"
+      [totalPages]="totalPages()"
+      [loading]="loading()"
+      (stateChange)="onGridStateChange($event)"
+      (actionClick)="onGridAction($event)"
+    />
 
   </div>
 </div>
@@ -95,14 +60,33 @@
             <label class="form-label fw-medium">Account type</label>
             <div class="d-flex gap-3">
               <div class="form-check">
-                <input class="form-check-input" type="radio" id="roleEmployee" formControlName="role" value="EMPLOYEE" />
-                <label class="form-check-label" for="roleEmployee">Employee</label>
+                <input class="form-check-input" type="radio" id="roleStaff" formControlName="role" value="STAFF" />
+                <label class="form-check-label" for="roleStaff">Staff</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" id="roleAdmin" formControlName="role" value="ADMIN" />
-                <label class="form-check-label" for="roleAdmin">Admin</label>
+                <input class="form-check-input" type="radio" id="roleSupervisor" formControlName="role" value="SUPERVISOR" />
+                <label class="form-check-label" for="roleSupervisor">Supervisor</label>
               </div>
             </div>
+          </div>
+
+          <!-- Full name -->
+          <div class="mb-3">
+            <label for="modalName" class="form-label fw-medium">Full name</label>
+            <input
+              id="modalName"
+              type="text"
+              class="form-control"
+              [class.is-invalid]="nameControl.invalid && nameControl.touched"
+              [class.is-valid]="nameControl.valid && nameControl.touched"
+              formControlName="name"
+              placeholder="e.g. Jane Smith"
+            />
+            @if (nameControl.touched && nameControl.hasError('required')) {
+              <div class="invalid-feedback">Name is required.</div>
+            } @else if (nameControl.touched && nameControl.hasError('minlength')) {
+              <div class="invalid-feedback">Name must be at least 3 characters.</div>
+            }
           </div>
 
           <!-- Email -->

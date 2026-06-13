@@ -6,8 +6,10 @@ export interface LoginRequest {
 export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
-  role: 'ADMIN' | 'EMPLOYEE';
+  role: 'SUPERVISOR' | 'STAFF';
   expiresIn: number;
+  name: string;
+  email: string;
 }
 
 export interface RefreshTokenRequest {
@@ -26,6 +28,7 @@ export interface ResetPasswordRequest {
 export interface AuthState {
   accessToken: string;
   refreshToken: string;
-  role: 'ADMIN' | 'EMPLOYEE';
+  role: 'SUPERVISOR' | 'STAFF';
+  name: string;
   email: string;
 }

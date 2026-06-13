@@ -1,25 +1,25 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { adminGuard } from './core/guards/admin.guard';
-import { employeeGuard } from './core/guards/employee.guard';
 import { LoginComponent } from './features/auth/login/login.component';
 import { ResetPasswordComponent } from './features/auth/reset-password/reset-password.component';
+import {supervisorGuard} from './core/guards/supervisor.guard';
+import {staffGuard} from './core/guards/staff.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   {
-    path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    path: 'supervisor',
+    canActivate: [authGuard, supervisorGuard],
     loadChildren: () =>
-      import('./features/admin/admin.routes').then((m) => m.adminRoutes),
+      import('./features/supervisor/supervisor.routes').then((m) => m.supervisorRoutes),
   },
   {
-    path: 'employee',
-    canActivate: [authGuard, employeeGuard],
+    path: 'staff',
+    canActivate: [authGuard, staffGuard],
     loadChildren: () =>
-      import('./features/employee/employee.routes').then((m) => m.employeeRoutes),
+      import('./features/staff/staff.routes').then((m) => m.staffRoutes),
   },
   { path: '**', redirectTo: '/login' },
 ];

@@ -3,13 +3,14 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
-  selector: 'app-admin-layout',
+  selector: 'app-staff-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './admin-layout.component.html',
+  templateUrl: './staff-layout.component.html',
 })
-export class AdminLayoutComponent {
+export class StaffLayoutComponent {
   private readonly authService = inject(AuthService);
 
+  readonly name = this.authService.currentName;
   readonly email = this.authService.currentEmail;
   readonly sidebarOpen = signal(false);
 
