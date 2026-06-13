@@ -173,3 +173,12 @@ body {
   opacity: 1;
   color: #dc3545;
 }
+
+/* ── Collapse toggle chevron ──────────────────────────────────────────────── */
+
+.pv-collapse-btn .pv-chevron {
+  transition: transform .2s ease;
+}
+.pv-collapse-btn.collapsed .pv-chevron {
+  transform: rotate(-90deg);
+}

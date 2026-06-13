@@ -31,6 +31,17 @@
 
               <!-- Machine header -->
               <div class="card-header bg-white border-bottom d-flex align-items-center gap-3 py-3 px-4">
+                <button
+                  type="button"
+                  class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#view-mc-body-' + mi"
+                  aria-expanded="true"
+                >
+                  <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+                </button>
                 <span class="text-muted small fw-medium">Machine {{ mi + 1 }}</span>
                 <span class="fw-bold">{{ machine.machineName }}</span>
                 <div class="ms-auto">
@@ -71,6 +82,7 @@
                 </div>
               </div>
 
+              <div class="collapse show" [id]="'view-mc-body-' + mi">
               <div class="card-body p-4">
 
                 <!-- Products -->
@@ -169,6 +181,7 @@
                 }
 
               </div>
+              </div><!-- /machine collapse -->
             </div>
           }
 

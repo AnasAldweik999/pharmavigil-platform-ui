@@ -13,8 +13,8 @@
   </div>
 } @else {
 
-<!-- Page header bar -->
-<div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+<!-- Page header -->
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
   <div class="d-flex align-items-center gap-3">
     <a routerLink="/staff/reports" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
@@ -24,16 +24,9 @@
     </a>
     <div>
       <h5 class="fw-bold mb-0">New Work Report</h5>
-      <div class="text-muted small">Fill in all fields for each machine entry</div>
+      <div class="text-muted small d-none d-sm-block">Fill in all fields for each machine entry</div>
     </div>
   </div>
-  <button type="submit" form="reportForm" class="btn btn-primary px-4" [disabled]="submitting()">
-    @if (submitting()) {
-      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting…
-    } @else {
-      Submit Report
-    }
-  </button>
 </div>
 
 @if (submitError()) {
@@ -47,14 +40,14 @@
 
 <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate id="reportForm">
 
-  <!-- ── Report meta card ─────────────────────────────────────────────────── -->
+  <!-- ── Report meta ────────────────────────────────────────────────────────── -->
   <div class="card border-0 shadow-sm mb-4 overflow-hidden">
     <div class="card-header bg-primary bg-opacity-10 border-0 py-2 px-4">
       <span class="fw-semibold text-primary small">Report Details</span>
     </div>
-    <div class="card-body p-4">
-      <div class="row g-4">
-        <div class="col-md-6">
+    <div class="card-body p-3 p-md-4">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
           <label for="reportDate" class="form-label fw-medium">Report Date</label>
           <input
             id="reportDate"
@@ -68,7 +61,7 @@
             <div class="invalid-feedback">Date is required.</div>
           }
         </div>
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
           <label for="shiftId" class="form-label fw-medium">Shift</label>
           <select
             id="shiftId"
@@ -89,315 +82,365 @@
     </div>
   </div>
 
-  <!-- ── Machines ─────────────────────────────────────────────────────────── -->
+  <!-- ── Machines ──────────────────────────────────────────────────────────── -->
   <div formArrayName="machines">
     @for (mc of machinesArray.controls; let mi = $index; track mi) {
       <div class="card border-0 shadow-sm mb-4 overflow-hidden border-start border-primary border-3" [formGroupName]="mi">
 
-        <!-- Machine card header -->
-        <div class="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center gap-3">
-          <span class="badge bg-primary rounded-pill fs-6 px-3">{{ mi + 1 }}</span>
-          <select
-            formControlName="machineId"
-            class="form-select form-select-sm fw-medium"
-            style="max-width: 240px"
-            [class.is-invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
+        <!-- Machine header -->
+        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex align-items-center gap-2 gap-md-3 flex-wrap">
+          <button
+            type="button"
+            class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+            data-bs-toggle="collapse"
+            [attr.data-bs-target]="'#mc-body-' + mi"
+            aria-expanded="true"
           >
-            <option value="">Select machine…</option>
-            @for (m of machines(); track m.id) {
-              <option [value]="m.id">{{ m.name }}</option>
-            }
-          </select>
-          @if (isInvalid(getMachineGroup(mi).get('machineId'))) {
-            <div class="invalid-feedback">Select a machine.</div>
-          }
+            <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </button>
+          <span class="badge bg-primary rounded-pill px-3 flex-shrink-0">{{ mi + 1 }}</span>
+          <div class="flex-grow-1" style="min-width: 0">
+            <select
+              formControlName="machineId"
+              class="form-select form-select-sm fw-medium w-100"
+              [class.is-invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
+            >
+              <option value="">Select machine…</option>
+              @for (m of machines(); track m.id) {
+                <option [value]="m.id">{{ m.name }}</option>
+              }
+            </select>
+          </div>
           @if (machinesArray.length > 1) {
-            <button type="button" class="btn btn-sm btn-outline-danger ms-auto" (click)="removeMachine(mi)">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-              </svg>
+            <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" (click)="removeMachine(mi)">
               Remove
             </button>
           }
         </div>
 
-        <div class="card-body p-4">
+        <!-- Machine body (collapsible) -->
+        <div class="collapse show" [id]="'mc-body-' + mi">
+          <div class="card-body p-3 p-md-4">
 
-          <!-- Status selector -->
-          <div class="mb-4">
-            <div class="fw-medium mb-2">Machine Status</div>
-            <div class="d-flex gap-2 flex-wrap">
-              @for (s of statusList; track s) {
-                <div
-                  class="d-flex flex-column align-items-center justify-content-center rounded p-3 text-center user-select-none"
-                  style="cursor:pointer; min-width:100px; min-height:80px; transition: all .15s ease;"
-                  [ngClass]="statusCardClass(getMachineGroup(mi).get('status')!.value, s)"
-                  (click)="setStatus(mi, s)"
-                >
-                  @switch (s) {
-                    @case ('RUNNING') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
-                      </svg>
+            <!-- Status selector -->
+            <div class="mb-4">
+              <div class="fw-medium mb-2 small">Machine Status</div>
+              <div class="d-flex gap-2 flex-wrap">
+                @for (s of statusList; track s) {
+                  <div
+                    class="d-flex flex-column align-items-center justify-content-center rounded p-2 p-md-3 text-center user-select-none"
+                    style="cursor:pointer; min-width:80px; flex: 1 1 80px; max-width: 120px; transition: all .15s ease;"
+                    [ngClass]="statusCardClass(getMachineGroup(mi).get('status')!.value, s)"
+                    (click)="setStatus(mi, s)"
+                  >
+                    @switch (s) {
+                      @case ('RUNNING') {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"/>
+                        </svg>
+                      }
+                      @case ('STOPPED') {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5z"/>
+                        </svg>
+                      }
+                      @case ('MAINTENANCE') {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3q0-.405-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814z"/>
+                        </svg>
+                      }
+                      @case ('READY') {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                          <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
+                        </svg>
+                      }
                     }
-                    @case ('STOPPED') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5z"/>
-                      </svg>
-                    }
-                    @case ('MAINTENANCE') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M1 0 0 1l2.2 3.081a1 1 0 0 0 .815.419h.07a1 1 0 0 1 .708.293l2.675 2.675-2.617 2.654A3.003 3.003 0 0 0 0 13a3 3 0 1 0 5.878-.851l2.654-2.617.968.968-.305.914a1 1 0 0 0 .242 1.023l3.27 3.27a.997.997 0 0 0 1.414 0l1.586-1.586a.997.997 0 0 0 0-1.414l-3.27-3.27a1 1 0 0 0-1.023-.242L10.5 9.5l-.96-.96 2.68-2.643A3.005 3.005 0 0 0 16 3q0-.405-.102-.777l-2.14 2.141L12 4l-.364-1.757L13.777.102a3 3 0 0 0-3.675 3.68L7.462 6.46 4.793 3.793a1 1 0 0 1-.293-.707v-.071a1 1 0 0 0-.419-.814z"/>
-                      </svg>
-                    }
-                    @case ('READY') {
-                      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                        <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"/>
-                      </svg>
-                    }
-                  }
-                  <div class="small fw-semibold mt-2">{{ statusConfig[s].label }}</div>
-                </div>
-              }
+                    <div class="small fw-semibold mt-1" style="font-size: 0.7rem;">{{ statusConfig[s].label }}</div>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
 
-          <!-- Divider -->
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <div class="fw-semibold text-secondary small text-uppercase ls-1">Products</div>
-            <div class="flex-grow-1 border-top"></div>
-          </div>
+            <!-- Divider: Products -->
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="fw-semibold text-secondary small text-uppercase" style="white-space: nowrap">Products</span>
+              <div class="flex-grow-1 border-top"></div>
+            </div>
 
-          <!-- Products -->
-          <div formArrayName="products">
-            @for (pc of getProductsArray(mi).controls; let pi = $index; track pi) {
-              <div class="card mb-3 border-0 border-start border-2 border-secondary shadow-sm" [formGroupName]="pi">
-                <div class="card-body p-3">
+            <!-- Products -->
+            <div formArrayName="products">
+              @for (pc of getProductsArray(mi).controls; let pi = $index; track pi) {
+                <div class="card mb-3 border-0 border-start border-2 border-secondary shadow-sm" [formGroupName]="pi">
+                  <div class="card-body p-3">
 
-                  <!-- Product header -->
-                  <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="fw-semibold small text-secondary">Product {{ pi + 1 }}</span>
-                    @if (getProductsArray(mi).length > 1) {
-                      <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" (click)="removeProduct(mi, pi)">×</button>
-                    }
-                  </div>
-
-                  <div class="row g-3 mb-3">
-                    <div class="col-md-4">
-                      <label class="form-label small fw-medium mb-1">Product Name</label>
-                      <input
-                        type="text"
-                        formControlName="productName"
-                        class="form-control form-control-sm"
-                        placeholder="e.g. Amoxicillin 500mg"
-                        [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('productName'))"
-                      />
-                      @if (isInvalid(getProductGroup(mi, pi).get('productName'))) {
-                        <div class="invalid-feedback">Required.</div>
+                    <!-- Product header with collapse toggle -->
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                      <button
+                        type="button"
+                        class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+                        data-bs-toggle="collapse"
+                        [attr.data-bs-target]="'#prod-body-' + mi + '-' + pi"
+                        aria-expanded="true"
+                      >
+                        <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                      </button>
+                      <span class="fw-semibold small text-secondary">Product {{ pi + 1 }}</span>
+                      @if (getProductsArray(mi).length > 1) {
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 ms-auto" (click)="removeProduct(mi, pi)">×</button>
                       }
                     </div>
-                    <div class="col-md-4">
-                      <label class="form-label small fw-medium mb-1">Batch No.</label>
-                      <input
-                        type="text"
-                        formControlName="batchNo"
-                        class="form-control form-control-sm"
-                        placeholder="e.g. B2024-001"
-                        [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('batchNo'))"
-                      />
-                      @if (isInvalid(getProductGroup(mi, pi).get('batchNo'))) {
-                        <div class="invalid-feedback">Required.</div>
-                      }
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label small fw-medium mb-1">Output Units</label>
-                      <input
-                        type="number"
-                        formControlName="outputUnits"
-                        class="form-control form-control-sm"
-                        placeholder="0"
-                        min="0"
-                        [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('outputUnits'))"
-                      />
-                      @if (isInvalid(getProductGroup(mi, pi).get('outputUnits'))) {
-                        <div class="invalid-feedback">Required (min 0).</div>
-                      }
-                    </div>
-                  </div>
 
-                  <!-- Quality flags -->
-                  <div formGroupName="quality" class="mb-3">
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <div class="form-check form-switch mb-2">
+                    <!-- Product body (collapsible) -->
+                    <div class="collapse show" [id]="'prod-body-' + mi + '-' + pi">
+
+                      <div class="row g-2 mb-3">
+                        <div class="col-12 col-sm-4">
+                          <label class="form-label small fw-medium mb-1">Product Name</label>
                           <input
-                            class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            [id]="'dev-' + mi + '-' + pi"
-                            formControlName="deviation"
+                            type="text"
+                            formControlName="productName"
+                            class="form-control form-control-sm"
+                            placeholder="e.g. Amoxicillin 500mg"
+                            [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('productName'))"
                           />
-                          <label class="form-check-label fw-medium small" [for]="'dev-' + mi + '-' + pi">Deviation</label>
+                          @if (isInvalid(getProductGroup(mi, pi).get('productName'))) {
+                            <div class="invalid-feedback">Required.</div>
+                          }
                         </div>
-                        @if (getQualityGroup(mi, pi).get('deviation')!.value) {
-                          <div class="alert alert-warning py-2 mb-0">
-                            <textarea
-                              formControlName="deviationDetails"
-                              class="form-control form-control-sm border-0 bg-transparent p-0"
-                              rows="2"
-                              placeholder="Describe the deviation…"
-                              [class.is-invalid]="submitted() && getQualityGroup(mi, pi).hasError('deviationDetailsRequired')"
-                            ></textarea>
-                            @if (submitted() && getQualityGroup(mi, pi).hasError('deviationDetailsRequired')) {
-                              <div class="text-danger small mt-1">Details are required when deviation is enabled.</div>
-                            }
-                          </div>
-                        }
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-check form-switch mb-2">
+                        <div class="col-12 col-sm-4">
+                          <label class="form-label small fw-medium mb-1">Batch No.</label>
                           <input
-                            class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            [id]="'hold-' + mi + '-' + pi"
-                            formControlName="hold"
+                            type="text"
+                            formControlName="batchNo"
+                            class="form-control form-control-sm"
+                            placeholder="e.g. B2024-001"
+                            [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('batchNo'))"
                           />
-                          <label class="form-check-label fw-medium small" [for]="'hold-' + mi + '-' + pi">Hold</label>
+                          @if (isInvalid(getProductGroup(mi, pi).get('batchNo'))) {
+                            <div class="invalid-feedback">Required.</div>
+                          }
                         </div>
-                        @if (getQualityGroup(mi, pi).get('hold')!.value) {
-                          <div class="alert alert-danger py-2 mb-0">
-                            <textarea
-                              formControlName="holdDetails"
-                              class="form-control form-control-sm border-0 bg-transparent p-0"
-                              rows="2"
-                              placeholder="Describe the hold reason…"
-                              [class.is-invalid]="submitted() && getQualityGroup(mi, pi).hasError('holdDetailsRequired')"
-                            ></textarea>
-                            @if (submitted() && getQualityGroup(mi, pi).hasError('holdDetailsRequired')) {
-                              <div class="text-danger small mt-1">Details are required when hold is enabled.</div>
-                            }
-                          </div>
-                        }
+                        <div class="col-12 col-sm-4">
+                          <label class="form-label small fw-medium mb-1">Output Units</label>
+                          <input
+                            type="number"
+                            formControlName="outputUnits"
+                            class="form-control form-control-sm"
+                            placeholder="0"
+                            min="0"
+                            [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('outputUnits'))"
+                          />
+                          @if (isInvalid(getProductGroup(mi, pi).get('outputUnits'))) {
+                            <div class="invalid-feedback">Required (min 0).</div>
+                          }
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <!-- Stops -->
-                  <div formArrayName="stops">
-                    @if (getStopsArray(mi, pi).controls.length > 0) {
-                      <div class="mb-2">
-                        <div class="small fw-medium text-muted mb-2">Production Stops</div>
-                        @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
-                          <div class="rounded bg-light p-2 mb-2 d-flex flex-wrap gap-2 align-items-end" [formGroupName]="si">
-                            <div style="min-width: 140px; flex: 1">
-                              <label class="form-label small mb-1">Stop Type</label>
-                              <select
-                                formControlName="stopTypeId"
-                                class="form-select form-select-sm"
-                                [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))"
-                              >
-                                <option value="">Select…</option>
-                                @for (st of stopTypes(); track st.id) {
-                                  <option [value]="st.id">{{ st.name }}</option>
+                      <!-- Quality flags -->
+                      <div formGroupName="quality" class="mb-3">
+                        <div class="row g-3">
+                          <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch mb-2">
+                              <input class="form-check-input" type="checkbox" role="switch" [id]="'dev-' + mi + '-' + pi" formControlName="deviation" />
+                              <label class="form-check-label fw-medium small" [for]="'dev-' + mi + '-' + pi">Deviation</label>
+                            </div>
+                            @if (getQualityGroup(mi, pi).get('deviation')!.value) {
+                              <div class="alert alert-warning py-2 mb-0">
+                                <textarea
+                                  formControlName="deviationDetails"
+                                  class="form-control form-control-sm border-0 bg-transparent p-0"
+                                  rows="2"
+                                  placeholder="Describe the deviation…"
+                                ></textarea>
+                                @if (submitted() && getQualityGroup(mi, pi).hasError('deviationDetailsRequired')) {
+                                  <div class="text-danger small mt-1">Details are required when deviation is enabled.</div>
                                 }
-                              </select>
-                            </div>
-                            <div style="min-width: 180px; flex: 2">
-                              <label class="form-label small mb-1">From</label>
-                              <input
-                                type="datetime-local"
-                                formControlName="fromDatetime"
-                                class="form-control form-control-sm"
-                                [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('fromDatetime'))"
-                              />
-                            </div>
-                            <div style="min-width: 180px; flex: 2">
-                              <label class="form-label small mb-1">To</label>
-                              <input
-                                type="datetime-local"
-                                formControlName="toDatetime"
-                                class="form-control form-control-sm"
-                                [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('toDatetime'))"
-                              />
-                            </div>
-                            <div>
-                              <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeStop(mi, pi, si)">×</button>
-                            </div>
+                              </div>
+                            }
                           </div>
-                        }
+                          <div class="col-12 col-sm-6">
+                            <div class="form-check form-switch mb-2">
+                              <input class="form-check-input" type="checkbox" role="switch" [id]="'hold-' + mi + '-' + pi" formControlName="hold" />
+                              <label class="form-check-label fw-medium small" [for]="'hold-' + mi + '-' + pi">Hold</label>
+                            </div>
+                            @if (getQualityGroup(mi, pi).get('hold')!.value) {
+                              <div class="alert alert-danger py-2 mb-0">
+                                <textarea
+                                  formControlName="holdDetails"
+                                  class="form-control form-control-sm border-0 bg-transparent p-0"
+                                  rows="2"
+                                  placeholder="Describe the hold reason…"
+                                ></textarea>
+                                @if (submitted() && getQualityGroup(mi, pi).hasError('holdDetailsRequired')) {
+                                  <div class="text-danger small mt-1">Details are required when hold is enabled.</div>
+                                }
+                              </div>
+                            }
+                          </div>
+                        </div>
                       </div>
-                    }
-                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="addStop(mi, pi)">
-                      + Add Stop
-                    </button>
-                  </div>
 
-                </div>
-              </div>
-            }
-            <button type="button" class="btn btn-sm btn-outline-primary mb-1" (click)="addProduct(mi)">
-              + Add Product
-            </button>
-          </div>
+                      <!-- Stops section -->
+                      <div formArrayName="stops">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                          <button
+                            type="button"
+                            class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+                            data-bs-toggle="collapse"
+                            [attr.data-bs-target]="'#stops-sec-' + mi + '-' + pi"
+                            aria-expanded="true"
+                          >
+                            <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                          </button>
+                          <span class="small fw-medium text-muted">
+                            Production Stops
+                            @if (getStopsArray(mi, pi).controls.length > 0) {
+                              <span class="badge bg-secondary ms-1">{{ getStopsArray(mi, pi).controls.length }}</span>
+                            }
+                          </span>
+                          <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 ms-auto" (click)="addStop(mi, pi)">+ Add</button>
+                        </div>
 
-          <!-- Incidents -->
-          <div formArrayName="incidents">
-            @if (getIncidentsArray(mi).controls.length > 0) {
-              <div class="d-flex align-items-center gap-2 my-3">
-                <div class="fw-semibold text-secondary small text-uppercase">Incidents</div>
-                <div class="flex-grow-1 border-top"></div>
-              </div>
-              @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ii) {
-                <div class="rounded border border-warning-subtle bg-warning bg-opacity-10 p-3 mb-2 d-flex flex-wrap gap-2 align-items-end" [formGroupName]="ii">
-                  <div style="min-width: 200px; flex: 3">
-                    <label class="form-label small mb-1">Description</label>
-                    <input
-                      type="text"
-                      formControlName="description"
-                      class="form-control form-control-sm"
-                      placeholder="Incident description…"
-                      [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('description'))"
-                    />
-                    @if (isInvalid(getIncidentsArray(mi).at(ii).get('description'))) {
-                      <div class="invalid-feedback">Required.</div>
-                    }
-                  </div>
-                  <div style="min-width: 180px; flex: 2">
-                    <label class="form-label small mb-1">From</label>
-                    <input
-                      type="datetime-local"
-                      formControlName="fromDatetime"
-                      class="form-control form-control-sm"
-                      [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('fromDatetime'))"
-                    />
-                  </div>
-                  <div style="min-width: 180px; flex: 2">
-                    <label class="form-label small mb-1">To</label>
-                    <input
-                      type="datetime-local"
-                      formControlName="toDatetime"
-                      class="form-control form-control-sm"
-                      [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('toDatetime'))"
-                    />
-                  </div>
-                  <div>
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeIncident(mi, ii)">×</button>
+                        <div class="collapse show" [id]="'stops-sec-' + mi + '-' + pi">
+                          @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
+                            <div class="rounded bg-light p-2 mb-2" [formGroupName]="si">
+                              <div class="row g-2 align-items-end">
+                                <div class="col-12 col-sm-3">
+                                  <label class="form-label small mb-1">Stop Type</label>
+                                  <select
+                                    formControlName="stopTypeId"
+                                    class="form-select form-select-sm"
+                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))"
+                                  >
+                                    <option value="">Select…</option>
+                                    @for (st of stopTypes(); track st.id) {
+                                      <option [value]="st.id">{{ st.name }}</option>
+                                    }
+                                  </select>
+                                </div>
+                                <div class="col-6 col-sm-4">
+                                  <label class="form-label small mb-1">From</label>
+                                  <input
+                                    type="datetime-local"
+                                    formControlName="fromDatetime"
+                                    class="form-control form-control-sm"
+                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('fromDatetime'))"
+                                  />
+                                </div>
+                                <div class="col">
+                                  <label class="form-label small mb-1">To</label>
+                                  <input
+                                    type="datetime-local"
+                                    formControlName="toDatetime"
+                                    class="form-control form-control-sm"
+                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('toDatetime'))"
+                                  />
+                                </div>
+                                <div class="col-auto d-flex align-items-end">
+                                  <button type="button" class="btn btn-sm btn-outline-danger px-2" (click)="removeStop(mi, pi, si)">×</button>
+                                </div>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      </div>
+
+                    </div><!-- /product body collapse -->
                   </div>
                 </div>
               }
-            }
-            <button type="button" class="btn btn-sm btn-outline-warning mt-2" (click)="addIncident(mi)">
-              + Add Incident
-            </button>
-          </div>
+              <button type="button" class="btn btn-sm btn-outline-primary mb-1" (click)="addProduct(mi)">
+                + Add Product
+              </button>
+            </div>
 
-        </div>
-      </div>
+            <!-- Divider + Incidents -->
+            <div formArrayName="incidents" class="mt-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <button
+                  type="button"
+                  class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#incs-sec-' + mi"
+                  aria-expanded="true"
+                >
+                  <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+                </button>
+                <span class="fw-semibold text-secondary small text-uppercase" style="white-space: nowrap">
+                  Incidents
+                  @if (getIncidentsArray(mi).controls.length > 0) {
+                    <span class="badge bg-warning text-dark ms-1">{{ getIncidentsArray(mi).controls.length }}</span>
+                  }
+                </span>
+                <div class="flex-grow-1 border-top"></div>
+                <button type="button" class="btn btn-sm btn-outline-warning flex-shrink-0" (click)="addIncident(mi)">+ Add</button>
+              </div>
+
+              <div class="collapse show" [id]="'incs-sec-' + mi">
+                @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ii) {
+                  <div class="rounded border border-warning-subtle bg-warning bg-opacity-10 p-3 mb-2" [formGroupName]="ii">
+                    <div class="row g-2 align-items-end">
+                      <div class="col-12 col-sm-4">
+                        <label class="form-label small mb-1">Description</label>
+                        <input
+                          type="text"
+                          formControlName="description"
+                          class="form-control form-control-sm"
+                          placeholder="Incident description…"
+                          [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('description'))"
+                        />
+                        @if (isInvalid(getIncidentsArray(mi).at(ii).get('description'))) {
+                          <div class="text-danger small mt-1">Required.</div>
+                        }
+                      </div>
+                      <div class="col-6 col-sm-3">
+                        <label class="form-label small mb-1">From</label>
+                        <input
+                          type="datetime-local"
+                          formControlName="fromDatetime"
+                          class="form-control form-control-sm"
+                          [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('fromDatetime'))"
+                        />
+                        @if (isInvalid(getIncidentsArray(mi).at(ii).get('fromDatetime'))) {
+                          <div class="text-danger small mt-1">Required.</div>
+                        }
+                      </div>
+                      <div class="col">
+                        <label class="form-label small mb-1">To</label>
+                        <input
+                          type="datetime-local"
+                          formControlName="toDatetime"
+                          class="form-control form-control-sm"
+                          [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('toDatetime'))"
+                        />
+                        @if (isInvalid(getIncidentsArray(mi).at(ii).get('toDatetime'))) {
+                          <div class="text-danger small mt-1">Required.</div>
+                        }
+                      </div>
+                      <div class="col-auto d-flex align-items-end">
+                        <button type="button" class="btn btn-sm btn-outline-danger px-2" (click)="removeIncident(mi, ii)">×</button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+          </div><!-- /machine card body -->
+        </div><!-- /machine collapse -->
+
+      </div><!-- /machine card -->
     }
 
     <button type="button" class="btn btn-outline-primary mb-4" (click)="addMachine()">
@@ -405,7 +448,7 @@
     </button>
   </div>
 
-  <!-- Footer actions -->
+  <!-- Footer -->
   <div class="d-flex justify-content-end gap-2 pt-3 border-top">
     <a routerLink="/staff/reports" class="btn btn-outline-secondary">Cancel</a>
     <button type="submit" class="btn btn-primary px-4" [disabled]="submitting()">
