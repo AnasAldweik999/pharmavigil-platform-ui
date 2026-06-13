@@ -21,6 +21,7 @@
               type="email"
               class="form-control"
               [class.is-invalid]="emailControl.invalid && emailControl.touched"
+              [class.is-valid]="emailControl.valid && emailControl.touched"
               formControlName="email"
               placeholder="you@example.com"
               autocomplete="email"
