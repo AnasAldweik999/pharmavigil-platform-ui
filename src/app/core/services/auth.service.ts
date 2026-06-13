@@ -2,7 +2,7 @@ import { inject, Injectable, PLATFORM_ID, signal, computed } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AuthState,
@@ -37,8 +37,13 @@ export class AuthService {
   }
 
   logout(): void {
-    this.clear();
-    this.router.navigate(['/login']);
+    this.http
+      .post<void>(`${this.apiUrl}/api/auth/logout`, {})
+      .pipe(catchError(() => of(null)))
+      .subscribe(() => {
+        this.clear();
+        this.router.navigate(['/login']);
+      });
   }
 
   forgotPassword(email: string): Observable<void> {
