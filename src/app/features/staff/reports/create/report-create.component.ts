@@ -22,6 +22,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
+import { ToastService } from '../../../../core/services/toast.service';
 import {
   CreateWorkReportRequest,
   MachineRef,
@@ -47,11 +48,12 @@ function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
   templateUrl: './report-create.component.html',
 })
 export class ReportCreateComponent implements OnInit {
-  private readonly fb         = inject(FormBuilder);
-  private readonly http       = inject(HttpClient);
-  private readonly router     = inject(Router);
-  private readonly base       = environment.apiUrl;
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly fb           = inject(FormBuilder);
+  private readonly http         = inject(HttpClient);
+  private readonly router       = inject(Router);
+  private readonly base         = environment.apiUrl;
+  private readonly platformId   = inject(PLATFORM_ID);
+  private readonly toastService = inject(ToastService);
 
   @ViewChild('confirmModal') private confirmModalRef!: ElementRef<HTMLElement>;
   private bsConfirmModal: { show(): void; hide(): void } | null = null;
@@ -64,8 +66,7 @@ export class ReportCreateComponent implements OnInit {
   readonly refLoading = signal(true);
   readonly refError   = signal(false);
   readonly submitting = signal(false);
-  readonly submitError = signal('');
-  readonly submitted   = signal(false);
+  readonly submitted  = signal(false);
 
   readonly statusList: MachineStatus[] = ['RUNNING', 'STOPPED', 'MAINTENANCE', 'READY'];
   readonly statusConfig: Record<MachineStatus, { label: string; borderClass: string; bgClass: string }> = {
@@ -185,10 +186,9 @@ export class ReportCreateComponent implements OnInit {
     this.submitted.set(true);
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.submitError.set('Please fix the errors below before submitting.');
+      this.toastService.error('Please fix all required fields before submitting.');
       return;
     }
-    this.submitError.set('');
     this.getConfirmModal()?.show();
   }
 
@@ -202,7 +202,7 @@ export class ReportCreateComponent implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.submitting.set(false);
-        this.submitError.set(this.extractError(err));
+        this.toastService.error(this.extractError(err));
       },
     });
   }
