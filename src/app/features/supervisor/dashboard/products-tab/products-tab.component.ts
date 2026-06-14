@@ -2,7 +2,7 @@ import { Component, inject, Input, OnInit, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Page } from '../../../../core/models/user.models';
-import { ShiftItem } from '../../../../core/models/catalog.models';
+import { CatalogItem, ShiftItem } from '../../../../core/models/catalog.models';
 import { ProductRowResponse } from '../../../../core/models/supervisor.models';
 import { GridColumn, GridFilterField, GridState } from '../../../../shared/grid/grid.models';
 import { GridComponent } from '../../../../shared/grid/grid.component';
@@ -18,7 +18,8 @@ export class ProductsTabComponent implements OnInit {
 
   @Input() shifts: ShiftItem[] = [];
 
-  private readonly _pageData = signal<Page<ProductRowResponse> | null>(null);
+  readonly machines           = signal<CatalogItem[]>([]);
+  private readonly _pageData  = signal<Page<ProductRowResponse> | null>(null);
   get rows()          { return this._pageData()?.content ?? []; }
   get totalElements() { return this._pageData()?.totalElements ?? 0; }
   get totalPages()    { return this._pageData()?.totalPages ?? 0; }
@@ -42,7 +43,7 @@ export class ProductsTabComponent implements OnInit {
     { key: 'productName',    label: 'Product',       sortable: true,  type: 'text' },
     { key: 'batchNo',        label: 'Batch No.',     sortable: true,  type: 'text' },
     { key: 'outputUnits',    label: 'Output',        sortable: true,  type: 'text' },
-    { key: 'stopCount',      label: 'Stops',         sortable: true,  type: 'text' },
+    { key: 'stopCount',      label: 'Stops',         sortable: false, type: 'text' },
     { key: 'deviationDetails', label: 'Deviation',   sortable: false, type: 'text' },
     { key: 'holdDetails',    label: 'Hold',          sortable: false, type: 'text' },
   ];
@@ -63,9 +64,17 @@ export class ProductsTabComponent implements OnInit {
         { label: 'Maintenance',  value: 'MAINTENANCE' },
         { label: 'Ready',        value: 'READY' },
     ]},
+    { key: 'machineName', label: 'Machine', type: 'select', options: [
+        { label: 'All machines', value: '' },
+        ...this.machines().map(m => ({ label: m.name, value: m.name })),
+    ]},
   ]; }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.http.get<Page<CatalogItem>>(`${this.base}/api/supervisor/machines?size=1000&sort=name,asc`).subscribe({
+      next: (page) => this.machines.set(page.content),
+    });
+  }
 
   onGridStateChange(state: GridState): void {
     this._state = state;
