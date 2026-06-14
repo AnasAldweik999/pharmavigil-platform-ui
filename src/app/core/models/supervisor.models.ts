@@ -31,41 +31,4 @@ export interface ProductRowResponse {
   stopCount: number;
 }
 
-export type SavedChartType = 'PIE' | 'BAR' | 'LINE';
-export type ChartMetric = 'REPORT_COUNT' | 'TOTAL_DOWNTIME' | 'AVG_DOWNTIME' | 'TOTAL_INCIDENTS' | 'MACHINE_COUNTS';
 export type SummaryGroupBy = 'DATE' | 'SHIFT' | 'USER';
-
-export interface SavedChartResponse {
-  id: string;
-  name: string;
-  chartType: SavedChartType;
-  fromDate: string | null;
-  toDate: string | null;
-  shiftId: string | null;
-  staffEmail: string | null;
-  groupBy: SummaryGroupBy | null;
-  metrics: ChartMetric[];
-  createdAt: string;
-}
-
-export interface CreateSavedChartRequest {
-  name: string;
-  chartType: SavedChartType;
-  fromDate?: string;
-  toDate?: string;
-  shiftId?: string;
-  staffEmail?: string;
-  groupBy?: SummaryGroupBy;
-  metrics: ChartMetric[];
-}
-
-export interface UpdateSavedChartRequest {
-  name: string;
-  chartType: SavedChartType;
-  fromDate?: string;
-  toDate?: string;
-  shiftId?: string;
-  staffEmail?: string;
-  groupBy?: SummaryGroupBy;
-  metrics: ChartMetric[];
-}
