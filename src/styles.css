@@ -117,18 +117,154 @@ body {
 
 /* ── Auth pages ───────────────────────────────────────────────────────────── */
 
-.auth-page {
+.pv-auth-page {
   min-height: 100vh;
+  display: flex;
+}
+
+/* Left brand panel — hidden on mobile, shown md+ */
+.pv-auth-brand {
+  display: none;
+  flex: 0 0 400px;
+  background: linear-gradient(160deg, #1a2942 0%, #22345a 100%);
+  padding: 3rem 2.5rem;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.pv-auth-brand::before,
+.pv-auth-brand::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+.pv-auth-brand::before { width: 320px; height: 320px; top: -100px; right: -80px; }
+.pv-auth-brand::after  { width: 420px; height: 420px; bottom: -120px; left: -80px; }
+
+.pv-auth-brand-inner { position: relative; z-index: 1; }
+
+.pv-auth-logo-wrap {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8f9fa;
-  padding: 1rem;
+  margin-bottom: 1.75rem;
 }
 
-.auth-card {
+.pv-auth-brand-name {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.pv-auth-brand-tagline {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+.pv-auth-brand-features { display: flex; flex-direction: column; gap: 1rem; }
+.pv-auth-brand-feature {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+.pv-auth-brand-feature-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Right form panel */
+.pv-auth-form-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #fff;
+  padding: 3rem 1.5rem 3rem;
+  min-height: 100vh;
+}
+.pv-auth-form-inner {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
+}
+
+/* Mobile top bar */
+.pv-auth-mobile-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin-bottom: 2rem;
+  align-self: flex-start;
+}
+
+/* Form headings */
+.pv-auth-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin-bottom: 0.3rem;
+}
+.pv-auth-form-subtitle {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-bottom: 1.75rem;
+}
+
+/* Input focus ring in brand colour */
+.pv-auth-form-inner .form-control:focus {
+  border-color: #1a2942;
+  box-shadow: 0 0 0 0.2rem rgba(26, 41, 66, 0.15);
+}
+
+/* Submit button in brand navy */
+.pv-auth-form-inner .btn-primary {
+  background-color: #1a2942;
+  border-color: #1a2942;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+}
+.pv-auth-form-inner .btn-primary:hover:not(:disabled) {
+  background-color: #22345a;
+  border-color: #22345a;
+}
+.pv-auth-form-inner .btn-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(26, 41, 66, 0.35);
+}
+
+/* Auth footer link */
+.pv-auth-link {
+  font-size: 0.875rem;
+  color: #1a2942;
+  text-decoration: none;
+  font-weight: 500;
+}
+.pv-auth-link:hover { text-decoration: underline; color: #1a2942; }
+
+/* md+: show brand panel, tint form panel, re-centre vertically */
+@media (min-width: 768px) {
+  .pv-auth-brand      { display: flex; }
+  .pv-auth-mobile-bar { display: none; }
+  .pv-auth-form-panel { background: #f4f6f9; justify-content: center; padding: 2.5rem 3rem; }
 }
 
 /* ── Grid component ───────────────────────────────────────────────────────── */
