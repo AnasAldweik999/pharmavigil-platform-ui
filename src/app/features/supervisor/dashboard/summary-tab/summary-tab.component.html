@@ -118,16 +118,33 @@
           {{ form.value.groupBy ? 'Grouped Metrics' : 'Metrics Overview' }}
         </span>
         <!-- Chart type switcher -->
-        <div class="btn-group btn-group-sm" role="group" aria-label="Chart type">
-          @for (type of chartTypeOptions; track type) {
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <div class="btn-group btn-group-sm" role="group" aria-label="Chart type">
+            @for (type of chartTypeOptions; track type) {
+              <button
+                type="button"
+                class="btn"
+                [class.btn-primary]="selectedChartType() === type"
+                [class.btn-outline-secondary]="selectedChartType() !== type"
+                (click)="setChartType(type)"
+              >
+                {{ type | titlecase }}
+              </button>
+            }
+          </div>
+          @if (selectedChartType() === 'bar' || selectedChartType() === 'line') {
             <button
               type="button"
-              class="btn"
-              [class.btn-primary]="selectedChartType() === type"
-              [class.btn-outline-secondary]="selectedChartType() !== type"
-              (click)="selectedChartType.set(type)"
+              class="btn btn-sm"
+              [class.btn-warning]="logScale()"
+              [class.btn-outline-secondary]="!logScale()"
+              (click)="logScale.set(!logScale())"
+              title="Balance the chart so small and large values are both clearly visible"
             >
-              {{ type | titlecase }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                <path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zm-4.55 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+              </svg>
+              Fit Scale
             </button>
           }
         </div>
@@ -138,7 +155,7 @@
             baseChart
             [data]="chartData()"
             [type]="selectedChartType()"
-            [options]="chartOptions"
+            [options]="chartOptions()"
           ></canvas>
         </div>
       </div>

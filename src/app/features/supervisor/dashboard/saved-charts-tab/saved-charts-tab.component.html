@@ -99,12 +99,29 @@
 
             <!-- Inline chart when data is loaded -->
             @if (isBrowser && loadedData()[chart.id]) {
+              @if (chart.chartType !== 'PIE') {
+                <div class="d-flex justify-content-end mb-2">
+                  <button
+                    type="button"
+                    class="btn btn-sm"
+                    [class.btn-warning]="logScales()[chart.id]"
+                    [class.btn-outline-secondary]="!logScales()[chart.id]"
+                    (click)="toggleLogScale(chart.id)"
+                    title="Balance the chart so small and large values are both clearly visible"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+                      <path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zm-4.55 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+                    </svg>
+                    Fit Scale
+                  </button>
+                </div>
+              }
               <div style="position: relative; height: 300px; flex: 1">
                 <canvas
                   baseChart
                   [data]="buildChartData(chart, loadedData()[chart.id])"
                   [type]="toChartJsType(chart.chartType)"
-                  [options]="chartOptions"
+                  [options]="buildChartOptions(chart.id, chart.chartType)"
                 ></canvas>
               </div>
             } @else if (!loadedData()[chart.id] && loadingId() !== chart.id) {

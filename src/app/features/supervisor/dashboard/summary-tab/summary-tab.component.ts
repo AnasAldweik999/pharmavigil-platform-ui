@@ -32,6 +32,7 @@ export class SummaryTabComponent implements OnInit {
   readonly summaryData        = signal<DashboardSummaryResponse[]>([]);
   readonly loading            = signal(false);
   readonly selectedChartType  = signal<ChartJsType>('bar');
+  readonly logScale           = signal(false);
 
   readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie', 'doughnut'];
 
@@ -90,15 +91,22 @@ export class SummaryTabComponent implements OnInit {
     };
   });
 
-  readonly chartOptions: ChartOptions = {
+  readonly chartOptions = computed<ChartOptions>(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { position: 'bottom' } },
     scales: {
       x: { grid: { display: false } },
-      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+      y: this.logScale()
+        ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
+        : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
     },
-  };
+  }));
+
+  setChartType(type: ChartJsType): void {
+    this.selectedChartType.set(type);
+    if (type === 'pie' || type === 'doughnut') this.logScale.set(false);
+  }
 
   readonly machineStatusConfig = [
     { key: 'RUNNING',     label: 'Running',     badgeClass: 'bg-success' },

@@ -77,6 +77,7 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
   readonly submitting     = signal(false);
   readonly createError    = signal('');
   readonly chartToDelete  = signal<SavedChartResponse | null>(null);
+  readonly logScales      = signal<Record<string, boolean>>({});
 
   readonly METRICS: { key: ChartMetric; label: string }[] = [
     { key: 'REPORT_COUNT',    label: 'Report Count' },
@@ -261,11 +262,27 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
     return 'bar';
   }
 
-  readonly chartOptions: ChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-  };
+  toggleLogScale(chartId: string): void {
+    this.logScales.update(m => ({ ...m, [chartId]: !m[chartId] }));
+  }
+
+  buildChartOptions(chartId: string, chartType: SavedChartType): ChartOptions {
+    const useLog = !!this.logScales()[chartId];
+    const isRadial = chartType === 'PIE';
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      ...(isRadial ? {} : {
+        scales: {
+          x: { grid: { display: false } },
+          y: useLog
+            ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
+            : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+        },
+      }),
+    };
+  }
 
   private get createModal(): { show(): void; hide(): void } | null {
     if (!this.isBrowser || !this.createModalRef?.nativeElement) return null;
