@@ -395,6 +395,104 @@ body {
   justify-content: center;
 }
 
+/* ── Filter offcanvas panel ───────────────────────────────────────────────── */
+
+.pv-filter-panel {
+  box-shadow: -6px 0 32px rgba(0, 0, 0, 0.12);
+  border-left: none !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.pv-filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem;
+  background: linear-gradient(135deg, #1a2942 0%, #22345a 100%);
+  flex-shrink: 0;
+}
+
+.pv-filter-panel-icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pv-filter-panel-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pv-filter-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #f4f6f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pv-filter-field-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pv-filter-field-card:focus-within {
+  border-color: #1a2942;
+  box-shadow: 0 0 0 3px rgba(26, 41, 66, 0.08);
+}
+
+.pv-filter-panel-footer {
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pv-filter-panel-footer .btn-primary {
+  background-color: #1a2942;
+  border-color: #1a2942;
+  font-weight: 600;
+}
+.pv-filter-panel-footer .btn-primary:hover {
+  background-color: #22345a;
+  border-color: #22345a;
+}
+
+.pv-filter-clear-link {
+  background: none;
+  border: none;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.78rem;
+  color: #8c96a2;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.pv-filter-clear-link:hover {
+  color: #dc3545;
+  text-decoration: underline;
+}
+
 /* ── Collapse toggle chevron ──────────────────────────────────────────────── */
 
 .pv-collapse-btn .pv-chevron {

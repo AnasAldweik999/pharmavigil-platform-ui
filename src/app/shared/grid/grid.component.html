@@ -179,55 +179,80 @@
 
 <!-- Filter offcanvas panel -->
 @if (filterFields.length > 0) {
-  <div #filterPanel class="offcanvas offcanvas-end" tabindex="-1" aria-labelledby="gridFilterLabel" style="width: 320px;">
-    <div class="offcanvas-header border-bottom">
-      <h6 class="offcanvas-title fw-bold" id="gridFilterLabel">Filters</h6>
-      <button type="button" class="btn-close" (click)="closeFilterPanel()" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body d-flex flex-column">
-      <div class="flex-grow-1">
-        @for (field of filterFields; track field.key) {
-          <div class="mb-3">
-            <label class="form-label fw-medium small">{{ field.label }}</label>
-            @if (field.type === 'text') {
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                [placeholder]="field.placeholder || field.label"
-                [value]="draftFilters()[field.key] || ''"
-                (input)="onDraftInput(field.key, $any($event.target).value)"
-              />
-            } @else if (field.type === 'date') {
-              <input
-                type="date"
-                class="form-control form-control-sm"
-                [value]="draftFilters()[field.key] || ''"
-                (input)="onDraftInput(field.key, $any($event.target).value)"
-              />
-            } @else if (field.type === 'daterange') {
-              <app-date-range-picker
-                [fromDate]="draftFilters()[field.fromKey!] || ''"
-                [toDate]="draftFilters()[field.toKey!] || ''"
-                (rangeChange)="onDraftDateRange(field.fromKey!, field.toKey!, $event.from, $event.to)"
-              />
-            } @else {
-              <select
-                class="form-select form-select-sm"
-                [value]="draftFilters()[field.key] || ''"
-                (change)="onDraftInput(field.key, $any($event.target).value)"
-              >
-                @for (opt of field.options; track opt.value) {
-                  <option [value]="opt.value">{{ opt.label }}</option>
-                }
-              </select>
-            }
-          </div>
+  <div #filterPanel class="offcanvas offcanvas-end pv-filter-panel" tabindex="-1" aria-labelledby="gridFilterLabel" style="width: 340px;">
+
+    <!-- Header -->
+    <div class="pv-filter-panel-header">
+      <div class="d-flex align-items-center gap-2">
+        <div class="pv-filter-panel-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+          </svg>
+        </div>
+        <span class="pv-filter-panel-title" id="gridFilterLabel">Filters</span>
+        @if (draftFilterCount() > 0) {
+          <span class="badge rounded-pill bg-white text-primary" style="font-size: 0.65rem; font-weight: 700;">
+            {{ draftFilterCount() }}
+          </span>
         }
       </div>
-      <div class="border-top pt-3 d-flex gap-2">
-        <button class="btn btn-primary flex-grow-1" (click)="applyFilters()">Apply Filters</button>
-        <button class="btn btn-outline-secondary" (click)="clearAllDraft()">Clear All</button>
-      </div>
+      <button type="button" class="btn-close btn-close-white opacity-75" (click)="closeFilterPanel()" aria-label="Close"></button>
     </div>
+
+    <!-- Fields -->
+    <div class="pv-filter-panel-body">
+      @for (field of filterFields; track field.key) {
+        <div class="pv-filter-field-card">
+          <span class="pv-filter-label">{{ field.label }}</span>
+          @if (field.type === 'text') {
+            <input
+              type="text"
+              class="form-control form-control-sm border-0 bg-transparent p-0"
+              style="box-shadow: none;"
+              [placeholder]="field.placeholder || ('Search ' + field.label + '…')"
+              [value]="draftFilters()[field.key] || ''"
+              (input)="onDraftInput(field.key, $any($event.target).value)"
+            />
+          } @else if (field.type === 'date') {
+            <input
+              type="date"
+              class="form-control form-control-sm border-0 bg-transparent p-0"
+              style="box-shadow: none;"
+              [value]="draftFilters()[field.key] || ''"
+              (input)="onDraftInput(field.key, $any($event.target).value)"
+            />
+          } @else if (field.type === 'daterange') {
+            <app-date-range-picker
+              [fromDate]="draftFilters()[field.fromKey!] || ''"
+              [toDate]="draftFilters()[field.toKey!] || ''"
+              (rangeChange)="onDraftDateRange(field.fromKey!, field.toKey!, $event.from, $event.to)"
+            />
+          } @else {
+            <select
+              class="form-select form-select-sm border-0 bg-transparent p-0"
+              style="box-shadow: none;"
+              [value]="draftFilters()[field.key] || ''"
+              (change)="onDraftInput(field.key, $any($event.target).value)"
+            >
+              @for (opt of field.options; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="pv-filter-panel-footer">
+      <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" (click)="applyFilters()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+        </svg>
+        Apply Filters
+      </button>
+      <button type="button" class="pv-filter-clear-link" (click)="clearAllDraft()">Clear all filters</button>
+    </div>
+
   </div>
 }

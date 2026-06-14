@@ -51,7 +51,10 @@ export class GridComponent implements OnInit, AfterViewInit {
   readonly sortDirection = computed(() => this._sort()?.direction ?? null);
   readonly currentPage  = computed(() => this._page());
   readonly currentSize  = computed(() => this._size());
-  readonly draftFilters = this._draftFilters.asReadonly();
+  readonly draftFilters      = this._draftFilters.asReadonly();
+  readonly draftFilterCount  = computed(() =>
+    Object.values(this._draftFilters()).filter(Boolean).length
+  );
 
   readonly appliedFilterEntries = computed(() => {
     const applied = this._appliedFilters();
