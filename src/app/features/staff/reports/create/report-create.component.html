@@ -307,13 +307,13 @@
                               <span class="badge bg-secondary ms-1">{{ getStopsArray(mi, pi).controls.length }}</span>
                             }
                           </span>
-                          <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 ms-auto" (click)="addStop(mi, pi)">+ Add</button>
+                          <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 ms-auto" (click)="addStop(mi, pi)">Add</button>
                         </div>
 
                         <div class="collapse show" [id]="'stops-sec-' + mi + '-' + pi">
                           @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
                             <div class="rounded bg-light p-2 mb-2" [formGroupName]="si">
-                              <div class="row g-2 align-items-end">
+                              <div class="row g-2 align-items-start">
                                 <div class="col-12 col-sm-3">
                                   <label class="form-label small mb-1">Stop Type</label>
                                   <select
@@ -345,8 +345,9 @@
                                     [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('toDatetime'))"
                                   />
                                 </div>
-                                <div class="col-auto d-flex align-items-end">
-                                  <button type="button" class="btn btn-sm btn-outline-danger px-2" (click)="removeStop(mi, pi, si)">×</button>
+                                <div class="col-auto">
+                                  <label class="form-label small mb-1 invisible" aria-hidden="true">x</label>
+                                  <button type="button" class="btn btn-sm btn-outline-danger px-2 d-block" (click)="removeStop(mi, pi, si)">×</button>
                                 </div>
                               </div>
                             </div>
@@ -359,7 +360,7 @@
                 </div>
               }
               <button type="button" class="btn btn-sm btn-outline-primary mb-1" (click)="addProduct(mi)">
-                + Add Product
+                Add Product
               </button>
             </div>
 
@@ -384,13 +385,13 @@
                   }
                 </span>
                 <div class="flex-grow-1 border-top"></div>
-                <button type="button" class="btn btn-sm btn-outline-warning flex-shrink-0" (click)="addIncident(mi)">+ Add</button>
+                <button type="button" class="btn btn-sm btn-outline-warning flex-shrink-0" (click)="addIncident(mi)">Add</button>
               </div>
 
               <div class="collapse show" [id]="'incs-sec-' + mi">
                 @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ii) {
                   <div class="rounded border border-warning-subtle bg-warning bg-opacity-10 p-3 mb-2" [formGroupName]="ii">
-                    <div class="row g-2 align-items-end">
+                    <div class="row g-2 align-items-start">
                       <div class="col-12 col-sm-4">
                         <label class="form-label small mb-1">Description</label>
                         <input
@@ -428,8 +429,9 @@
                           <div class="text-danger small mt-1">Required.</div>
                         }
                       </div>
-                      <div class="col-auto d-flex align-items-end">
-                        <button type="button" class="btn btn-sm btn-outline-danger px-2" (click)="removeIncident(mi, ii)">×</button>
+                      <div class="col-auto">
+                        <label class="form-label small mb-1 invisible" aria-hidden="true">x</label>
+                        <button type="button" class="btn btn-sm btn-outline-danger px-2 d-block" (click)="removeIncident(mi, ii)">×</button>
                       </div>
                     </div>
                   </div>
@@ -444,7 +446,7 @@
     }
 
     <button type="button" class="btn btn-outline-primary mb-4" (click)="addMachine()">
-      + Add Machine
+      Add Machine
     </button>
   </div>
 
