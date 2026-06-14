@@ -1,5 +1,5 @@
 import { Component, computed, inject, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser, TitleCasePipe } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -11,7 +11,7 @@ import { DateRangePickerComponent } from '../../../../shared/date-range-picker/d
 
 @Component({
   selector: 'app-summary-tab',
-  imports: [ReactiveFormsModule, BaseChartDirective, TitleCasePipe, DateRangePickerComponent],
+  imports: [ReactiveFormsModule, BaseChartDirective, DateRangePickerComponent],
   templateUrl: './summary-tab.component.html',
 })
 export class SummaryTabComponent implements OnInit {

@@ -1,59 +1,151 @@
-<!-- Filter bar -->
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-body">
-    <form [formGroup]="form" (ngSubmit)="loadSummary()">
-      <div class="row g-2 align-items-end">
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">Date Range</label>
-          <app-date-range-picker
-            [fromDate]="form.value.fromDate || ''"
-            [toDate]="form.value.toDate || ''"
-            (rangeChange)="onDateRangeChange($event)"
-          />
-        </div>
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">Shift</label>
-          <select class="form-select form-select-sm" formControlName="shiftId">
-            <option value="">All shifts</option>
-            @for (s of shifts; track s.id) {
-              <option [value]="s.id">{{ s.name }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">Staff Email</label>
-          <input type="email" class="form-control form-control-sm" formControlName="staffEmail" placeholder="Filter by email…" />
-        </div>
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">Machine</label>
-          <select class="form-select form-select-sm" formControlName="machineName">
-            <option value="">All machines</option>
-            @for (m of machines(); track m.id) {
-              <option [value]="m.name">{{ m.name }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">Group By</label>
-          <select class="form-select form-select-sm" formControlName="groupBy">
-            @for (opt of groupByOptions; track opt.value) {
-              <option [value]="opt.value">{{ opt.label }}</option>
-            }
-          </select>
-        </div>
-        <div class="col-12 col-lg-auto">
-          <label class="form-label small mb-1 invisible d-none d-lg-block">x</label>
-          <button type="submit" class="btn btn-primary btn-sm w-100" [disabled]="loading()">
-            @if (loading()) {
-              <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
-            }
-            Load Data
-          </button>
-        </div>
+<!-- Filter card -->
+<form [formGroup]="form" (ngSubmit)="loadSummary()" class="mb-4">
+  <div class="card border-0 shadow-sm">
+
+    <!-- Header: title + Load Data -->
+    <div class="card-header bg-white border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2 py-3 px-4">
+      <div class="d-flex align-items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#8c96a2" viewBox="0 0 16 16">
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
+        </svg>
+        <span class="fw-semibold text-dark" style="font-size:0.875rem">Data Filters</span>
       </div>
-    </form>
+      <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center gap-2" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+            <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+          </svg>
+        }
+        Load Data
+      </button>
+    </div>
+
+    <div class="card-body px-4 py-3">
+
+      <!-- Row 1: data filters -->
+      <div class="row g-2 align-items-end">
+
+        <div class="col-12 col-sm-6 col-lg-auto">
+          <div class="pv-filter-field">
+            <span class="pv-filter-label">Date Range</span>
+            <app-date-range-picker
+              [fromDate]="form.value.fromDate || ''"
+              [toDate]="form.value.toDate || ''"
+              (rangeChange)="onDateRangeChange($event)"
+            />
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-auto">
+          <div class="pv-filter-field">
+            <span class="pv-filter-label">Shift</span>
+            <select class="form-select form-select-sm w-100" formControlName="shiftId">
+              <option value="">All shifts</option>
+              @for (s of shifts; track s.id) {
+                <option [value]="s.id">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-auto">
+          <div class="pv-filter-field">
+            <span class="pv-filter-label">Machine</span>
+            <select class="form-select form-select-sm w-100" formControlName="machineName">
+              <option value="">All machines</option>
+              @for (m of machines(); track m.id) {
+                <option [value]="m.name">{{ m.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-auto">
+          <div class="pv-filter-field">
+            <span class="pv-filter-label">Staff Email</span>
+            <input type="email" class="form-control form-control-sm w-100" formControlName="staffEmail" placeholder="Filter by email…" />
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-auto">
+          <div class="pv-filter-field">
+            <span class="pv-filter-label">Group By</span>
+            <select class="form-select form-select-sm w-100" formControlName="groupBy">
+              @for (opt of groupByOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="my-3">
+
+      <!-- Row 2: visualization controls -->
+      <div class="d-flex flex-wrap align-items-center gap-2 row-gap-2">
+        <span class="pv-filter-label">Visualize as</span>
+
+        <div class="d-flex flex-wrap gap-1">
+
+          <!-- Bar -->
+          <button type="button" class="pv-chart-type-btn" [class.active]="selectedChartType() === 'bar'" (click)="setChartType('bar')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/>
+            </svg>
+            Bar
+          </button>
+
+          <!-- Line -->
+          <button type="button" class="pv-chart-type-btn" [class.active]="selectedChartType() === 'line'" (click)="setChartType('line')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+            </svg>
+            Line
+          </button>
+
+          <!-- Pie -->
+          <button type="button" class="pv-chart-type-btn" [class.active]="selectedChartType() === 'pie'" (click)="setChartType('pie')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M7.968 1.076A8 8 0 1 0 14.926 8.4H8.5a.5.5 0 0 1-.5-.5z"/>
+              <path d="M8.5 1.076V7.5a.5.5 0 0 0 .5.5h6.424A8.001 8.001 0 0 0 8.5 1.076"/>
+            </svg>
+            Pie
+          </button>
+
+          <!-- Doughnut -->
+          <button type="button" class="pv-chart-type-btn" [class.active]="selectedChartType() === 'doughnut'" (click)="setChartType('doughnut')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+              <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/>
+            </svg>
+            Doughnut
+          </button>
+
+        </div>
+
+        @if (selectedChartType() === 'bar' || selectedChartType() === 'line') {
+          <div class="vr opacity-25 align-self-stretch"></div>
+          <button
+            type="button"
+            class="pv-fit-scale-btn"
+            [class.active]="logScale()"
+            (click)="logScale.set(!logScale())"
+            title="Balance the chart so small and large values are both clearly visible"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zm-4.55 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
+            </svg>
+            Fit Scale
+          </button>
+        }
+      </div>
+
+    </div>
   </div>
-</div>
+</form>
 
 <!-- Loading spinner -->
 @if (loading()) {
@@ -108,45 +200,9 @@
     </div>
   </div>
 
-  <!-- Chart with type switcher -->
+  <!-- Chart -->
   @if (isBrowser && summaryData().length > 0) {
     <div class="card border-0 shadow-sm">
-      <div class="card-header bg-transparent border-bottom border-light d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <span class="fw-semibold small text-muted text-uppercase">
-          {{ form.value.groupBy ? 'Grouped Metrics' : 'Metrics Overview' }}
-        </span>
-        <!-- Chart type switcher -->
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <div class="btn-group btn-group-sm" role="group" aria-label="Chart type">
-            @for (type of chartTypeOptions; track type) {
-              <button
-                type="button"
-                class="btn"
-                [class.btn-primary]="selectedChartType() === type"
-                [class.btn-outline-secondary]="selectedChartType() !== type"
-                (click)="setChartType(type)"
-              >
-                {{ type | titlecase }}
-              </button>
-            }
-          </div>
-          @if (selectedChartType() === 'bar' || selectedChartType() === 'line') {
-            <button
-              type="button"
-              class="btn btn-sm"
-              [class.btn-warning]="logScale()"
-              [class.btn-outline-secondary]="!logScale()"
-              (click)="logScale.set(!logScale())"
-              title="Balance the chart so small and large values are both clearly visible"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" class="me-1" viewBox="0 0 16 16">
-                <path d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3zm-4.55 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1z"/>
-              </svg>
-              Fit Scale
-            </button>
-          }
-        </div>
-      </div>
       <div class="card-body">
         <div style="position: relative; height: 320px">
           <canvas

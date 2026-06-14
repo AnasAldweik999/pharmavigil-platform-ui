@@ -198,6 +198,75 @@ body {
   color: #1a2942;
 }
 
+/* Summary tab filter panel */
+.pv-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.pv-filter-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #8c96a2;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Chart type pill buttons */
+.pv-chart-type-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1.5px solid #dee2e6;
+  background: transparent;
+  color: #6c757d;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+.pv-chart-type-btn:hover {
+  border-color: #1a2942;
+  color: #1a2942;
+  background: rgba(26, 41, 66, 0.05);
+}
+.pv-chart-type-btn.active {
+  background: #1a2942;
+  border-color: #1a2942;
+  color: #fff;
+}
+.pv-chart-type-btn svg { opacity: 0.75; }
+.pv-chart-type-btn.active svg { opacity: 1; }
+
+/* Fit Scale toggle */
+.pv-fit-scale-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1.5px solid #dee2e6;
+  background: transparent;
+  color: #6c757d;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.pv-fit-scale-btn:hover {
+  border-color: #ffc107;
+  color: #997404;
+}
+.pv-fit-scale-btn.active {
+  background: rgba(255, 193, 7, 0.12);
+  border-color: #ffc107;
+  color: #997404;
+}
+
 .pv-tab-bar {
   display: flex;
   border-bottom: 1.5px solid #e0e4ea;
