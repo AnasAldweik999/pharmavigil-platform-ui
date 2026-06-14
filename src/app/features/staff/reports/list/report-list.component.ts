@@ -57,7 +57,7 @@ export class ReportListComponent implements OnInit {
   ]);
 
   readonly gridActions: GridAction[] = [
-    { key: 'view', label: 'View', btnClass: 'btn-outline-secondary' },
+    { key: 'view', label: 'View', btnClass: 'btn-outline-secondary', icon: 'view' },
   ];
 
   ngOnInit(): void {

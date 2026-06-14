@@ -61,7 +61,7 @@ export class ReportsTabComponent implements OnInit {
   ]; }
 
   readonly gridActions: GridAction[] = [
-    { key: 'view', label: 'View', btnClass: 'btn-outline-primary btn-sm' },
+    { key: 'view', label: 'View', btnClass: 'btn-outline-primary', icon: 'view' },
   ];
 
   ngOnInit(): void {}

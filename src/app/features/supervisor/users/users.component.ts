@@ -82,6 +82,7 @@ export class SupervisorUsersComponent implements OnInit, AfterViewInit {
       key: 'deactivate',
       label: 'Deactivate',
       btnClass: 'btn-outline-danger',
+      icon: 'deactivate',
       condition: (row) => {
         const u = row as UserResponse;
         return u.role === 'STAFF' && u.status === 'ACTIVE';
@@ -91,6 +92,7 @@ export class SupervisorUsersComponent implements OnInit, AfterViewInit {
       key: 'activate',
       label: 'Activate',
       btnClass: 'btn-outline-success',
+      icon: 'activate',
       condition: (row) => {
         const u = row as UserResponse;
         return u.role === 'STAFF' && u.status === 'INACTIVE';

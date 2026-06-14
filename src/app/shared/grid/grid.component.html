@@ -12,16 +12,16 @@
   <!-- Action buttons (icons only) -->
   <div class="d-flex gap-1 flex-shrink-0">
     <!-- Refresh -->
-    <button class="btn btn-sm btn-outline-secondary" (click)="refresh()" [disabled]="loading" title="Refresh">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+    <button class="btn btn-sm btn-outline-secondary pv-grid-toolbar-btn" (click)="refresh()" [disabled]="loading" title="Refresh">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
       </svg>
     </button>
     <!-- Filters (only if filterFields provided) -->
     @if (filterFields.length > 0) {
-      <button class="btn btn-sm btn-outline-secondary position-relative" (click)="openFilterPanel()" title="Filters">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+      <button class="btn btn-sm btn-outline-secondary pv-grid-toolbar-btn position-relative" (click)="openFilterPanel()" title="Filters">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
           <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"/>
         </svg>
         @if (appliedFilterEntries().length > 0) {
@@ -45,12 +45,11 @@
   <p class="text-muted text-center py-3 mb-0">No records found.</p>
 } @else {
   <div class="table-responsive">
-    <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
+    <table class="table table-hover align-middle mb-0 pv-grid-table">
+      <thead>
         <tr>
           @for (col of columns; track col.key) {
             <th
-              class="small fw-semibold text-uppercase text-muted"
               [class.pv-sortable]="col.sortable"
               (click)="col.sortable && onSort(col)"
             >
@@ -62,14 +61,14 @@
                   } @else if (sortField() === col.key && sortDirection() === 'desc') {
                     ▼
                   } @else {
-                    <span class="text-muted opacity-50">⇅</span>
+                    <span class="opacity-25">⇅</span>
                   }
                 </span>
               }
             </th>
           }
           @if (actions.length > 0) {
-            <th class="small fw-semibold text-uppercase text-muted"></th>
+            <th></th>
           }
         </tr>
       </thead>
@@ -90,17 +89,43 @@
               </td>
             }
             @if (actions.length > 0) {
-              <td class="text-end">
+              <td class="text-end" style="white-space: nowrap;">
                 <div class="d-flex gap-1 justify-content-end">
                   @for (action of actions; track action.key) {
                     @if (!action.condition || action.condition(row)) {
                       <button
-                        class="btn btn-sm"
+                        class="pv-grid-action-btn btn"
                         [ngClass]="action.btnClass || 'btn-outline-secondary'"
                         [disabled]="actionsDisabled"
                         (click)="actionClick.emit({ action, row })"
+                        [title]="action.label"
                       >
-                        {{ action.label }}
+                        @switch (action.icon) {
+                          @case ('view') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+                              <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+                            </svg>
+                          }
+                          @case ('delete') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
+                            </svg>
+                          }
+                          @case ('deactivate') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                            </svg>
+                          }
+                          @case ('activate') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                            </svg>
+                          }
+                          @default {
+                            {{ action.label }}
+                          }
+                        }
                       </button>
                     }
                   }

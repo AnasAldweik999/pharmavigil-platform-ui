@@ -311,6 +311,90 @@ body {
   color: #dc3545;
 }
 
+/* ── Grid card header ─────────────────────────────────────────────────────── */
+
+.pv-grid-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.pv-grid-card-icon {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 41, 66, 0.08);
+  color: #1a2942;
+  border-radius: 8px;
+}
+
+.pv-grid-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a2942;
+  letter-spacing: -0.01em;
+}
+
+/* ── Grid table ───────────────────────────────────────────────────────────── */
+
+.pv-grid-table thead th {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0 !important;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  padding: 0.6rem 0.75rem;
+}
+
+.pv-grid-table tbody td {
+  padding: 0.6rem 0.75rem;
+  color: #374151;
+  border-color: #f1f3f5;
+}
+
+.pv-grid-table tbody tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.013);
+}
+
+.pv-grid-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 #1a2942;
+}
+
+/* ── Grid action buttons (icon-only) ──────────────────────────────────────── */
+
+.pv-grid-action-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Grid toolbar buttons ─────────────────────────────────────────────────── */
+
+.pv-grid-toolbar-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ── Collapse toggle chevron ──────────────────────────────────────────────── */
 
 .pv-collapse-btn .pv-chevron {

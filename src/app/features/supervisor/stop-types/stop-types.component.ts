@@ -60,7 +60,7 @@ export class StopTypesComponent implements OnInit, AfterViewInit {
   ];
 
   readonly gridActions: GridAction[] = [
-    { key: 'delete', label: 'Delete', btnClass: 'btn-outline-danger' },
+    { key: 'delete', label: 'Delete', btnClass: 'btn-outline-danger', icon: 'delete' },
   ];
 
   ngOnInit(): void {}
