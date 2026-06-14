@@ -51,7 +51,7 @@ export class ReportsTabComponent implements OnInit {
   ];
 
   get gridFilters(): GridFilterField[] { return [
-    { key: 'dateRange', label: 'Date Range', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
+    { key: 'dateRange', label: 'Working Date', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
     { key: 'shiftId',    label: 'Shift',       type: 'select', options: [
         { label: 'All shifts', value: '' },
         ...this.shifts.map(s => ({ label: s.name, value: s.id })),

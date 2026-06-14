@@ -44,7 +44,7 @@ export class ReportListComponent implements OnInit {
   ];
 
   readonly gridFilters = computed<GridFilterField[]>(() => [
-    { key: 'dateRange', label: 'Date Range', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
+    { key: 'dateRange', label: 'Date', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
     {
       key: 'shiftId',
       label: 'Shift',
