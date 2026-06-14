@@ -5,9 +5,6 @@
     <p class="small text-muted mb-0">Save custom chart configurations. Data loads automatically on open.</p>
   </div>
   <button class="btn btn-primary btn-sm" (click)="openCreateModal()">
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
-      <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-    </svg>
     New Chart
   </button>
 </div>
@@ -54,6 +51,17 @@
                   <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
                 </svg>
               }
+            </button>
+
+            <!-- Edit icon -->
+            <button
+              class="btn btn-link btn-sm p-0 text-secondary"
+              (click)="openEditModal(chart)"
+              title="Edit chart"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+              </svg>
             </button>
 
             <!-- Delete icon -->
@@ -141,7 +149,7 @@
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="createChartModalLabel">New Saved Chart</h5>
+        <h5 class="modal-title" id="createChartModalLabel">{{ editingChart() ? 'Edit Chart' : 'New Saved Chart' }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -230,7 +238,7 @@
           @if (submitting()) {
             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
           }
-          Save Chart
+          {{ editingChart() ? 'Save Changes' : 'Save Chart' }}
         </button>
       </div>
     </div>

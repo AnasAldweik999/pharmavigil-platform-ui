@@ -58,3 +58,14 @@ export interface CreateSavedChartRequest {
   groupBy?: SummaryGroupBy;
   metrics: ChartMetric[];
 }
+
+export interface UpdateSavedChartRequest {
+  name: string;
+  chartType: SavedChartType;
+  fromDate?: string;
+  toDate?: string;
+  shiftId?: string;
+  staffEmail?: string;
+  groupBy?: SummaryGroupBy;
+  metrics: ChartMetric[];
+}

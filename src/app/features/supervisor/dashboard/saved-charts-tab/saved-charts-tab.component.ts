@@ -24,6 +24,7 @@ import {
   SavedChartResponse,
   SavedChartType,
   SummaryGroupBy,
+  UpdateSavedChartRequest,
 } from '../../../../core/models/supervisor.models';
 
 const CHART_METRIC_LABELS: Record<ChartMetric, string> = {
@@ -77,6 +78,7 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
   readonly submitting     = signal(false);
   readonly createError    = signal('');
   readonly chartToDelete  = signal<SavedChartResponse | null>(null);
+  readonly editingChart   = signal<SavedChartResponse | null>(null);
   readonly logScales      = signal<Record<string, boolean>>({});
 
   readonly METRICS: { key: ChartMetric; label: string }[] = [
@@ -123,6 +125,7 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
         this.form.reset({ name: '', chartType: 'BAR', fromDate: '', toDate: '', shiftId: '', staffEmail: '', groupBy: '' });
         this.metricsArray.controls.forEach(c => c.setValue(false));
         this.createError.set('');
+        this.editingChart.set(null);
       });
     }
     if (this.deleteModalRef?.nativeElement) {
@@ -144,7 +147,25 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
     });
   }
 
-  openCreateModal(): void { this.createModal?.show(); }
+  openCreateModal(): void { this.editingChart.set(null); this.createModal?.show(); }
+
+  openEditModal(chart: SavedChartResponse): void {
+    this.editingChart.set(chart);
+    this.form.patchValue({
+      name:       chart.name,
+      chartType:  chart.chartType,
+      fromDate:   chart.fromDate ?? '',
+      toDate:     chart.toDate ?? '',
+      shiftId:    chart.shiftId ?? '',
+      staffEmail: chart.staffEmail ?? '',
+      groupBy:    (chart.groupBy ?? '') as SummaryGroupBy | '',
+    });
+    this.metricsArray.controls.forEach((ctrl, i) => {
+      ctrl.setValue(chart.metrics.includes(this.METRICS[i].key));
+    });
+    this.createError.set('');
+    this.createModal?.show();
+  }
 
   onSubmit(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
@@ -157,7 +178,7 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
     }
 
     const v = this.form.getRawValue();
-    const body: CreateSavedChartRequest = {
+    const payload = {
       name:      v.name,
       chartType: v.chartType,
       metrics:   selectedMetrics,
@@ -168,20 +189,37 @@ export class SavedChartsTabComponent implements OnInit, AfterViewInit {
       ...(v.groupBy    ? { groupBy:    v.groupBy as SummaryGroupBy } : {}),
     };
 
+    const editing = this.editingChart();
     this.submitting.set(true);
     this.createError.set('');
-    this.http.post<SavedChartResponse>(`${this.base}/api/supervisor/charts`, body).subscribe({
-      next: (chart) => {
-        this.submitting.set(false);
-        this.createModal?.hide();
-        this.charts.update(list => [chart, ...list]);
-        this.loadChartData(chart);
-      },
-      error: (err) => {
-        this.submitting.set(false);
-        this.createError.set(err.error?.message ?? 'Failed to save chart.');
-      },
-    });
+
+    if (editing) {
+      this.http.put<SavedChartResponse>(`${this.base}/api/supervisor/charts/${editing.id}`, payload as UpdateSavedChartRequest).subscribe({
+        next: (updated) => {
+          this.submitting.set(false);
+          this.createModal?.hide();
+          this.charts.update(list => list.map(c => c.id === updated.id ? updated : c));
+          this.loadChartData(updated);
+        },
+        error: (err) => {
+          this.submitting.set(false);
+          this.createError.set(err.error?.message ?? 'Failed to update chart.');
+        },
+      });
+    } else {
+      this.http.post<SavedChartResponse>(`${this.base}/api/supervisor/charts`, payload as CreateSavedChartRequest).subscribe({
+        next: (chart) => {
+          this.submitting.set(false);
+          this.createModal?.hide();
+          this.charts.update(list => [chart, ...list]);
+          this.loadChartData(chart);
+        },
+        error: (err) => {
+          this.submitting.set(false);
+          this.createError.set(err.error?.message ?? 'Failed to save chart.');
+        },
+      });
+    }
   }
 
   loadChartData(chart: SavedChartResponse): void {
