@@ -4,12 +4,12 @@
     <form [formGroup]="form" (ngSubmit)="loadSummary()">
       <div class="row g-2 align-items-end">
         <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">From Date</label>
-          <input type="date" class="form-control form-control-sm" formControlName="fromDate" />
-        </div>
-        <div class="col-12 col-sm-6 col-lg-auto">
-          <label class="form-label small fw-medium mb-1">To Date</label>
-          <input type="date" class="form-control form-control-sm" formControlName="toDate" />
+          <label class="form-label small fw-medium mb-1">Date Range</label>
+          <app-date-range-picker
+            [fromDate]="form.value.fromDate || ''"
+            [toDate]="form.value.toDate || ''"
+            (rangeChange)="onDateRangeChange($event)"
+          />
         </div>
         <div class="col-12 col-sm-6 col-lg-auto">
           <label class="form-label small fw-medium mb-1">Shift</label>

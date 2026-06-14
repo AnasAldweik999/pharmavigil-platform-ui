@@ -7,10 +7,11 @@ import { ChartData, ChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { environment } from '../../../../../environments/environment';
 import { CatalogItem, ShiftItem } from '../../../../core/models/catalog.models';
 import { DashboardSummaryResponse, SummaryGroupBy } from '../../../../core/models/supervisor.models';
+import { DateRangePickerComponent } from '../../../../shared/date-range-picker/date-range-picker.component';
 
 @Component({
   selector: 'app-summary-tab',
-  imports: [ReactiveFormsModule, BaseChartDirective, TitleCasePipe],
+  imports: [ReactiveFormsModule, BaseChartDirective, TitleCasePipe, DateRangePickerComponent],
   templateUrl: './summary-tab.component.html',
 })
 export class SummaryTabComponent implements OnInit {
@@ -82,6 +83,10 @@ export class SummaryTabComponent implements OnInit {
         : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
     },
   }));
+
+  onDateRangeChange(range: { from: string; to: string }): void {
+    this.form.patchValue({ fromDate: range.from, toDate: range.to });
+  }
 
   setChartType(type: ChartJsType): void {
     this.selectedChartType.set(type);

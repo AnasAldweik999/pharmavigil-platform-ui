@@ -2,10 +2,10 @@
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
   <!-- Active filter chips -->
   <div class="d-flex flex-wrap gap-1 align-items-center flex-grow-1">
-    @for (entry of appliedFilterEntries(); track entry.key) {
+    @for (entry of appliedFilterEntries(); track entry.keys[0]) {
       <span class="pv-filter-chip">
         <span class="small">{{ entry.label }}: <strong>{{ entry.displayValue }}</strong></span>
-        <button class="pv-filter-chip-remove" (click)="removeFilter(entry.key)" aria-label="Remove filter">✕</button>
+        <button class="pv-filter-chip-remove" (click)="removeFilterKeys(entry.keys)" aria-label="Remove filter">✕</button>
       </span>
     }
   </div>
@@ -178,6 +178,12 @@
                 class="form-control form-control-sm"
                 [value]="draftFilters()[field.key] || ''"
                 (input)="onDraftInput(field.key, $any($event.target).value)"
+              />
+            } @else if (field.type === 'daterange') {
+              <app-date-range-picker
+                [fromDate]="draftFilters()[field.fromKey!] || ''"
+                [toDate]="draftFilters()[field.toKey!] || ''"
+                (rangeChange)="onDraftDateRange(field.fromKey!, field.toKey!, $event.from, $event.to)"
               />
             } @else {
               <select

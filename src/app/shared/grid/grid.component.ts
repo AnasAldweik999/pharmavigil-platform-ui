@@ -14,10 +14,11 @@ import {
 } from '@angular/core';
 import { DatePipe, isPlatformBrowser, NgClass } from '@angular/common';
 import { GridAction, GridColumn, GridFilterField, GridSortState, GridState } from './grid.models';
+import { DateRangePickerComponent } from '../date-range-picker/date-range-picker.component';
 
 @Component({
   selector: 'app-grid',
-  imports: [DatePipe, NgClass],
+  imports: [DatePipe, NgClass, DateRangePickerComponent],
   templateUrl: './grid.component.html',
 })
 export class GridComponent implements OnInit, AfterViewInit {
@@ -53,16 +54,24 @@ export class GridComponent implements OnInit, AfterViewInit {
   readonly draftFilters = this._draftFilters.asReadonly();
 
   readonly appliedFilterEntries = computed(() => {
-    const result: { key: string; label: string; displayValue: string }[] = [];
-    for (const [key, value] of Object.entries(this._appliedFilters())) {
-      if (!value) continue;
-      const field = this.filterFields.find(f => f.key === key);
-      if (!field) continue;
-      const displayValue =
-        field.type === 'select'
-          ? (field.options?.find(o => o.value === value)?.label ?? value)
-          : value;
-      result.push({ key, label: field.label, displayValue });
+    const applied = this._appliedFilters();
+    const result: { keys: string[]; label: string; displayValue: string }[] = [];
+    for (const field of this.filterFields) {
+      if (field.type === 'daterange') {
+        const fromVal = field.fromKey ? (applied[field.fromKey] ?? '') : '';
+        const toVal   = field.toKey   ? (applied[field.toKey]   ?? '') : '';
+        if (!fromVal && !toVal) continue;
+        const parts = [fromVal, toVal].filter(Boolean);
+        result.push({ keys: [field.fromKey!, field.toKey!], label: field.label, displayValue: parts.join(' → ') });
+      } else {
+        const value = applied[field.key];
+        if (!value) continue;
+        const displayValue =
+          field.type === 'select'
+            ? (field.options?.find(o => o.value === value)?.label ?? value)
+            : value;
+        result.push({ keys: [field.key], label: field.label, displayValue });
+      }
     }
     return result;
   });
@@ -117,6 +126,10 @@ export class GridComponent implements OnInit, AfterViewInit {
     this._draftFilters.update(f => ({ ...f, [key]: value }));
   }
 
+  onDraftDateRange(fromKey: string, toKey: string, from: string, to: string): void {
+    this._draftFilters.update(f => ({ ...f, [fromKey]: from, [toKey]: to }));
+  }
+
   applyFilters(): void {
     this._appliedFilters.set({ ...this._draftFilters() });
     this._page.set(0);
@@ -128,15 +141,15 @@ export class GridComponent implements OnInit, AfterViewInit {
     this._draftFilters.set({});
   }
 
-  removeFilter(key: string): void {
+  removeFilterKeys(keys: string[]): void {
     this._appliedFilters.update(f => {
       const next = { ...f };
-      delete next[key];
+      keys.forEach(k => delete next[k]);
       return next;
     });
     this._draftFilters.update(f => {
       const next = { ...f };
-      delete next[key];
+      keys.forEach(k => delete next[k]);
       return next;
     });
     this._page.set(0);

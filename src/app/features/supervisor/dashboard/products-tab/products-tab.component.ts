@@ -49,8 +49,7 @@ export class ProductsTabComponent implements OnInit {
   ];
 
   get gridFilters(): GridFilterField[] { return [
-    { key: 'fromDate',      label: 'From Date',      type: 'date' },
-    { key: 'toDate',        label: 'To Date',        type: 'date' },
+    { key: 'dateRange', label: 'Date Range', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
     { key: 'shiftId',       label: 'Shift',          type: 'select', options: [
         { label: 'All shifts', value: '' },
         ...this.shifts.map(s => ({ label: s.name, value: s.id })),

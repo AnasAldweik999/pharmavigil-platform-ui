@@ -9,9 +9,11 @@ export interface GridColumn {
 export interface GridFilterField {
   key: string;
   label: string;
-  type: 'text' | 'select' | 'date';
+  type: 'text' | 'select' | 'date' | 'daterange';
   placeholder?: string;
   options?: { label: string; value: string }[];
+  fromKey?: string;
+  toKey?: string;
 }
 
 export interface GridAction {
