@@ -182,3 +182,70 @@ body {
 .pv-collapse-btn.collapsed .pv-chevron {
   transform: rotate(-90deg);
 }
+
+/* ── Dashboard tab bar ────────────────────────────────────────────────────── */
+
+.pv-dash-icon-wrap {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(26, 41, 66, 0.08);
+  border-radius: 10px;
+  color: #1a2942;
+}
+
+.pv-tab-bar {
+  display: flex;
+  border-bottom: 1.5px solid #e0e4ea;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.pv-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.pv-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1.1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1.5px;
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: 6px 6px 0 0;
+}
+
+.pv-tab-btn:hover {
+  color: #1a2942;
+  background-color: rgba(26, 41, 66, 0.05);
+}
+
+.pv-tab-btn.active {
+  color: #1a2942;
+  font-weight: 600;
+  border-bottom-color: #1a2942;
+}
+
+.pv-tab-btn svg {
+  flex-shrink: 0;
+  opacity: 0.65;
+  transition: opacity 0.15s ease;
+}
+
+.pv-tab-btn:hover svg,
+.pv-tab-btn.active svg {
+  opacity: 1;
+}
