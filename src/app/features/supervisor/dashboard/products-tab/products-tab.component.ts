@@ -56,23 +56,6 @@ export class ProductsTabComponent implements OnInit {
     ]},
     { key: 'staffEmail',    label: 'Staff Email',    type: 'text', placeholder: 'Filter by email…' },
     { key: 'staffName',     label: 'Staff Name',     type: 'text', placeholder: 'Filter by name…' },
-    { key: 'machineStatus', label: 'Machine Status', type: 'select', options: [
-        { label: 'All statuses',   value: '' },
-        { label: 'Running',        value: 'RUNNING' },
-        { label: 'Stopped',        value: 'STOPPED' },
-        { label: 'Maintenance',    value: 'MAINTENANCE' },
-        { label: 'Ready',          value: 'READY' },
-    ]},
-    { key: 'deviation', label: 'Deviation', type: 'select', options: [
-        { label: 'All',  value: '' },
-        { label: 'Yes',  value: 'true' },
-        { label: 'No',   value: 'false' },
-    ]},
-    { key: 'hold', label: 'Hold', type: 'select', options: [
-        { label: 'All',  value: '' },
-        { label: 'Yes',  value: 'true' },
-        { label: 'No',   value: 'false' },
-    ]},
   ]; }
 
   ngOnInit(): void {}
