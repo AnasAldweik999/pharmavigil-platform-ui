@@ -327,7 +327,7 @@
                                     }
                                   </select>
                                 </div>
-                                <div class="col-6 col-sm-4">
+                                <div class="col-12 col-sm-4">
                                   <label class="form-label small mb-1">From</label>
                                   <input
                                     type="datetime-local"
@@ -405,7 +405,7 @@
                           <div class="text-danger small mt-1">Required.</div>
                         }
                       </div>
-                      <div class="col-6 col-sm-3">
+                      <div class="col-12 col-sm-3">
                         <label class="form-label small mb-1">From</label>
                         <input
                           type="datetime-local"
@@ -465,3 +465,29 @@
 </form>
 
 }
+
+<!-- Confirmation modal — outside @if block so it is always in the DOM -->
+<div #confirmModal class="modal fade" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h6 class="modal-title fw-bold" id="confirmModalLabel">Submit Work Report</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-3">
+        <p class="mb-1">Are you sure you want to submit this report?</p>
+        <p class="text-muted small mb-0">Once submitted, the report will be recorded and cannot be changed.</p>
+      </div>
+      <div class="modal-footer border-0 pt-0 gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary px-4" (click)="confirmSubmit()" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting…
+          } @else {
+            Yes, Submit
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,13 @@
 import {
   Component,
+  ElementRef,
   inject,
   OnInit,
+  PLATFORM_ID,
   signal,
+  ViewChild,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {
   AbstractControl,
   FormArray,
@@ -43,10 +47,14 @@ function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
   templateUrl: './report-create.component.html',
 })
 export class ReportCreateComponent implements OnInit {
-  private readonly fb   = inject(FormBuilder);
-  private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
-  private readonly base = environment.apiUrl;
+  private readonly fb         = inject(FormBuilder);
+  private readonly http       = inject(HttpClient);
+  private readonly router     = inject(Router);
+  private readonly base       = environment.apiUrl;
+  private readonly platformId = inject(PLATFORM_ID);
+
+  @ViewChild('confirmModal') private confirmModalRef!: ElementRef<HTMLElement>;
+  private bsConfirmModal: { show(): void; hide(): void } | null = null;
 
   readonly today = new Date().toISOString().split('T')[0];
 
@@ -74,6 +82,17 @@ export class ReportCreateComponent implements OnInit {
   });
 
   ngOnInit(): void { this.loadRefData(); }
+
+  private getConfirmModal(): { show(): void; hide(): void } | null {
+    if (!isPlatformBrowser(this.platformId) || !this.confirmModalRef?.nativeElement) return null;
+    if (!this.bsConfirmModal) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const BootstrapModal = (window as any).bootstrap?.Modal;
+      if (!BootstrapModal) return null;
+      this.bsConfirmModal = new BootstrapModal(this.confirmModalRef.nativeElement) as { show(): void; hide(): void };
+    }
+    return this.bsConfirmModal;
+  }
 
   loadRefData(): void {
     this.refLoading.set(true);
@@ -170,6 +189,11 @@ export class ReportCreateComponent implements OnInit {
       return;
     }
     this.submitError.set('');
+    this.getConfirmModal()?.show();
+  }
+
+  confirmSubmit(): void {
+    this.getConfirmModal()?.hide();
     this.submitting.set(true);
     this.http.post(`${this.base}/api/staff/work-reports`, this.buildRequest()).subscribe({
       next: () => {
