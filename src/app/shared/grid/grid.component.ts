@@ -23,6 +23,7 @@ import { GridAction, GridColumn, GridFilterField, GridSortState, GridState } fro
 export class GridComponent implements OnInit, AfterViewInit {
   @Input({ required: true }) columns: GridColumn[] = [];
   @Input() filterFields: GridFilterField[] = [];
+  @Input() initialFilters: Record<string, string> = {};
   @Input({ required: true }) rows: unknown[] = [];
   @Input() totalElements = 0;
   @Input() totalPages = 0;
@@ -89,6 +90,10 @@ export class GridComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this._size.set(this.pageSize);
+    if (Object.keys(this.initialFilters).length) {
+      this._appliedFilters.set({ ...this.initialFilters });
+      this._draftFilters.set({ ...this.initialFilters });
+    }
     this.emitState();
   }
 

@@ -22,8 +22,8 @@ export class SummaryTabComponent implements OnInit {
   @Input() shifts: ShiftItem[] = [];
 
   readonly form = this.fb.nonNullable.group({
-    fromDate:    [''],
-    toDate:      [''],
+    fromDate:    [new Date(Date.now() - 30 * 86400000).toLocaleDateString('en-CA')],
+    toDate:      [new Date().toLocaleDateString('en-CA')],
     shiftId:     [''],
     staffEmail:  [''],
     machineName: [''],
