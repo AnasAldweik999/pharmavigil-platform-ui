@@ -1,0 +1,22 @@
+@if (viewLoading()) {
+  <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75" style="z-index: 1050">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading report…</span>
+    </div>
+  </div>
+}
+
+<app-grid
+  [columns]="gridColumns"
+  [filterFields]="gridFilters"
+  [rows]="rows"
+  [totalElements]="totalElements"
+  [totalPages]="totalPages"
+  [loading]="loading()"
+  [actions]="gridActions"
+  [actionsDisabled]="viewLoading()"
+  (stateChange)="onGridStateChange($event)"
+  (actionClick)="onGridAction($event)"
+/>
+
+<app-report-detail-modal #detailModal />

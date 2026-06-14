@@ -20,6 +20,7 @@ export class LoginComponent {
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
+  readonly showPassword = signal(false);
 
   onSubmit(): void {
     if (this.form.invalid) {

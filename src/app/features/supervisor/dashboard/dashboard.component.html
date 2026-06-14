@@ -1,6 +1,39 @@
-<div class="card border-0 shadow-sm">
-  <div class="card-body p-4">
-    <h5 class="card-title fw-bold mb-1">Dashboard</h5>
-    <p class="text-muted mb-0">Hello, <strong>{{ name() }}</strong>! Welcome to the Supervisor Dashboard.</p>
+<!-- Page header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="fw-bold mb-0">Operations Dashboard</h4>
+    <p class="text-muted small mb-0">Welcome back, <strong>{{ name() }}</strong></p>
   </div>
 </div>
+
+<!-- Tab navigation — flex-nowrap + overflow-x-auto for mobile scroll -->
+<ul class="nav nav-pills gap-1 mb-4 flex-nowrap overflow-x-auto pb-1" style="-webkit-overflow-scrolling: touch">
+  @for (tab of tabs; track tab.key) {
+    <li class="nav-item flex-shrink-0">
+      <button
+        type="button"
+        class="nav-link"
+        [class.active]="activeTab() === tab.key"
+        (click)="activeTab.set(tab.key)"
+      >
+        {{ tab.label }}
+      </button>
+    </li>
+  }
+</ul>
+
+<!-- Tab content -->
+@switch (activeTab()) {
+  @case ('reports') {
+    <app-reports-tab [shifts]="shifts()" />
+  }
+  @case ('summary') {
+    <app-summary-tab [shifts]="shifts()" />
+  }
+  @case ('products') {
+    <app-products-tab [shifts]="shifts()" />
+  }
+  @case ('saved-charts') {
+    <app-saved-charts-tab [shifts]="shifts()" />
+  }
+}

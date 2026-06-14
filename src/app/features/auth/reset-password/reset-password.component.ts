@@ -19,6 +19,8 @@ export class ResetPasswordComponent implements OnInit {
   readonly loading = signal(false);
   readonly successMessage = signal('');
   readonly errorMessage = signal('');
+  readonly showNewPassword     = signal(false);
+  readonly showConfirmPassword = signal(false);
 
   readonly forgotForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],

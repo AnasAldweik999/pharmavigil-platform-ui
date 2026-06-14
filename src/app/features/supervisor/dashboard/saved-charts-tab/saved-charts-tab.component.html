@@ -1,0 +1,260 @@
+<!-- Header -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h6 class="mb-1 fw-semibold">Saved Charts</h6>
+    <p class="small text-muted mb-0">Save custom chart configurations. Data loads automatically on open.</p>
+  </div>
+  <button class="btn btn-primary btn-sm" (click)="openCreateModal()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+      <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+    </svg>
+    New Chart
+  </button>
+</div>
+
+<!-- Loading state -->
+@if (listLoading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+  </div>
+}
+
+<!-- Empty state -->
+@if (!listLoading() && charts().length === 0) {
+  <div class="text-center py-5 text-muted">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="mb-3 opacity-25" viewBox="0 0 16 16">
+      <path d="M0 0h1v15h15v1H0zm14.5 4-3.5 4-2.5-2.5-3.5 4h9z"/>
+    </svg>
+    <p class="mb-0">No saved charts yet. Create your first one.</p>
+  </div>
+}
+
+<!-- Charts gallery -->
+@if (!listLoading() && charts().length > 0) {
+  <div class="row g-3">
+    @for (chart of charts(); track chart.id) {
+      <div class="col-12 col-sm-6 col-xl-4">
+        <div class="card border-0 shadow-sm h-100" style="min-height: 460px">
+          <div class="card-header bg-transparent border-bottom border-light d-flex align-items-center gap-2">
+            <span class="badge {{ chartTypeBadgeClass(chart.chartType) }} small">{{ chart.chartType }}</span>
+            <span class="fw-semibold flex-grow-1 text-truncate">{{ chart.name }}</span>
+
+            <!-- Refresh icon -->
+            <button
+              class="btn btn-link btn-sm p-0 text-muted"
+              (click)="loadChartData(chart)"
+              [disabled]="loadingId() === chart.id"
+              title="Refresh data"
+            >
+              @if (loadingId() === chart.id) {
+                <span class="spinner-border" style="width:.85rem;height:.85rem;border-width:2px" role="status"></span>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+                  <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+                </svg>
+              }
+            </button>
+
+            <!-- Delete icon -->
+            <button
+              class="btn btn-link btn-sm p-0 text-danger"
+              (click)="deleteChart(chart)"
+              [disabled]="deletingId() === chart.id"
+              title="Delete chart"
+            >
+              @if (deletingId() === chart.id) {
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                </svg>
+              }
+            </button>
+          </div>
+
+          <div class="card-body d-flex flex-column">
+            <!-- Filter summary -->
+            <div class="small text-muted mb-2">
+              @if (chart.fromDate || chart.toDate) {
+                <span class="me-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5"/>
+                  </svg>
+                  {{ chart.fromDate ?? '…' }} → {{ chart.toDate ?? '…' }}
+                </span>
+              }
+              @if (chart.groupBy) {
+                <span class="badge bg-light text-dark border me-1">{{ chart.groupBy }}</span>
+              }
+            </div>
+
+            <!-- Metric chips -->
+            <div class="d-flex flex-wrap gap-1 mb-3">
+              @for (metric of chart.metrics; track metric) {
+                <span class="badge bg-light text-dark border small">{{ metric.replace('_', ' ') }}</span>
+              }
+            </div>
+
+            <!-- Inline chart when data is loaded -->
+            @if (isBrowser && loadedData()[chart.id]) {
+              <div style="position: relative; height: 300px; flex: 1">
+                <canvas
+                  baseChart
+                  [data]="buildChartData(chart, loadedData()[chart.id])"
+                  [type]="toChartJsType(chart.chartType)"
+                  [options]="chartOptions"
+                ></canvas>
+              </div>
+            } @else if (!loadedData()[chart.id] && loadingId() !== chart.id) {
+              <div class="flex-grow-1 d-flex align-items-center justify-content-center text-muted small py-4">
+                <span>No data — click refresh to load</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+<!-- Create chart modal -->
+<div #createModal class="modal fade" tabindex="-1" aria-labelledby="createChartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createChartModalLabel">New Saved Chart</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form" id="createChartForm" (ngSubmit)="onSubmit()">
+          @if (createError()) {
+            <div class="alert alert-danger py-2 small">{{ createError() }}</div>
+          }
+
+          <!-- Name + Type -->
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-sm-8">
+              <label class="form-label fw-medium">Chart Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="name"
+                     [class.is-invalid]="nameControl.invalid && nameControl.touched"
+                     placeholder="e.g. Weekly Downtime by Date" />
+              @if (nameControl.touched && nameControl.hasError('required')) {
+                <div class="invalid-feedback">Name is required.</div>
+              }
+            </div>
+            <div class="col-12 col-sm-4">
+              <label class="form-label fw-medium">Chart Type <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="chartType">
+                @for (opt of chartTypeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Optional Filters -->
+          <div class="mb-3">
+            <div class="fw-medium small text-muted text-uppercase mb-2">Optional Filters</div>
+            <div class="row g-2">
+              <div class="col-12 col-sm-6">
+                <label class="form-label small">From Date</label>
+                <input type="date" class="form-control form-control-sm" formControlName="fromDate" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small">To Date</label>
+                <input type="date" class="form-control form-control-sm" formControlName="toDate" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small">Shift</label>
+                <select class="form-select form-select-sm" formControlName="shiftId">
+                  <option value="">All shifts</option>
+                  @for (s of shifts; track s.id) {
+                    <option [value]="s.id">{{ s.name }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small">Staff Email</label>
+                <input type="email" class="form-control form-control-sm" formControlName="staffEmail" placeholder="Filter by email…" />
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label small">Group By</label>
+                <select class="form-select form-select-sm" formControlName="groupBy">
+                  @for (opt of groupByOptions; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metrics -->
+          <div>
+            <div class="fw-medium small text-muted text-uppercase mb-2">Metrics <span class="text-danger">*</span></div>
+            <div class="row g-2" formArrayName="metrics">
+              @for (metric of METRICS; track metric.key; let i = $index) {
+                <div class="col-12 col-sm-6">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" [id]="'metric-' + i"
+                           [formControlName]="i" />
+                    <label class="form-check-label small" [for]="'metric-' + i">{{ metric.label }}</label>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" form="createChartForm" class="btn btn-primary btn-sm" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          Save Chart
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div #deleteModal class="modal fade" tabindex="-1" aria-labelledby="deleteChartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title text-danger" id="deleteChartModalLabel">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="me-2 mb-1" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+          </svg>
+          Delete Chart
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p class="mb-0">
+          Are you sure you want to delete
+          <strong>{{ chartToDelete()?.name }}</strong>?
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal"
+                [disabled]="deletingId() !== null">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger btn-sm" (click)="confirmDelete()"
+                [disabled]="deletingId() !== null">
+          @if (deletingId() !== null) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            Deleting…
+          } @else {
+            Delete
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
