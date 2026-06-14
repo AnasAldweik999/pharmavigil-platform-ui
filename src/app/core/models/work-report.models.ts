@@ -23,9 +23,8 @@ export interface ProductEntryRequest {
   quality:      QualityRequest;
 }
 export interface StopRequest {
-  stopTypeId:   string;
-  fromDatetime: string;
-  toDatetime:   string;
+  stopTypeId: string;
+  duration:   number;
 }
 export interface QualityRequest {
   deviation:        boolean;
@@ -34,9 +33,7 @@ export interface QualityRequest {
   holdDetails:      string | null;
 }
 export interface IncidentRequest {
-  description:  string;
-  fromDatetime: string;
-  toDatetime:   string;
+  description: string;
 }
 
 export interface WorkReportResponse {
@@ -68,8 +65,7 @@ export interface StopResponse {
   id:           string;
   stopTypeId:   string;
   stopTypeName: string;
-  fromDatetime: string;
-  toDatetime:   string;
+  duration:     number;
 }
 export interface QualityResponse {
   deviation:        boolean;
@@ -78,8 +74,6 @@ export interface QualityResponse {
   holdDetails:      string | null;
 }
 export interface IncidentResponse {
-  id:           string;
-  description:  string;
-  fromDatetime: string;
-  toDatetime:   string;
+  id:          string;
+  description: string;
 }

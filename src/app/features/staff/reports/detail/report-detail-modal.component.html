@@ -145,11 +145,7 @@
                               <div class="mb-2 position-relative">
                                 <div class="position-absolute" style="left:-1.25rem; top:0.25rem; width:8px; height:8px; background:#6c757d; border-radius:50%;"></div>
                                 <div class="fw-medium small">{{ stop.stopTypeName }}</div>
-                                <div class="text-muted small">
-                                  {{ stop.fromDatetime | date:'dd MMM yyyy, HH:mm' }}
-                                  <span class="mx-1">→</span>
-                                  {{ stop.toDatetime | date:'dd MMM yyyy, HH:mm' }}
-                                </div>
+                                <div class="text-muted small">{{ stop.duration }} min</div>
                               </div>
                             }
                           </div>
@@ -169,11 +165,6 @@
                         <div class="mb-3 position-relative">
                           <div class="position-absolute" style="left:-1.25rem; top:0.3rem; width:8px; height:8px; background:#ffc107; border-radius:50%;"></div>
                           <div class="fw-semibold small">{{ incident.description }}</div>
-                          <div class="text-muted small">
-                            {{ incident.fromDatetime | date:'dd MMM yyyy, HH:mm' }}
-                            <span class="mx-1">→</span>
-                            {{ incident.toDatetime | date:'dd MMM yyyy, HH:mm' }}
-                          </div>
                         </div>
                       }
                     </div>

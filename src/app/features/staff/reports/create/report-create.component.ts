@@ -252,17 +252,14 @@ export class ReportCreateComponent implements OnInit {
 
   private buildStopGroup(): FormGroup {
     return this.fb.group({
-      stopTypeId:   ['', Validators.required],
-      fromDatetime: ['', Validators.required],
-      toDatetime:   ['', Validators.required],
+      stopTypeId: ['', Validators.required],
+      duration:   [null, [Validators.required, Validators.min(1)]],
     });
   }
 
   private buildIncidentGroup(): FormGroup {
     return this.fb.group({
-      description:  ['', Validators.required],
-      fromDatetime: ['', Validators.required],
-      toDatetime:   ['', Validators.required],
+      description: ['', Validators.required],
     });
   }
 
@@ -283,9 +280,8 @@ export class ReportCreateComponent implements OnInit {
           outputUnits: Number(p.outputUnits),
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           stops: p.stops.map((s: any) => ({
-            stopTypeId:   s.stopTypeId as string,
-            fromDatetime: this.toInstant(s.fromDatetime as string),
-            toDatetime:   this.toInstant(s.toDatetime as string),
+            stopTypeId: s.stopTypeId as string,
+            duration:   Number(s.duration),
           })),
           quality: {
             deviation:        !!p.quality.deviation,
@@ -296,16 +292,10 @@ export class ReportCreateComponent implements OnInit {
         })),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         incidents: m.incidents.map((i: any) => ({
-          description:  i.description as string,
-          fromDatetime: this.toInstant(i.fromDatetime as string),
-          toDatetime:   this.toInstant(i.toDatetime as string),
+          description: i.description as string,
         })),
       })),
     };
-  }
-
-  private toInstant(localDt: string): string {
-    return new Date(localDt).toISOString();
   }
 
   private extractError(err: HttpErrorResponse): string {

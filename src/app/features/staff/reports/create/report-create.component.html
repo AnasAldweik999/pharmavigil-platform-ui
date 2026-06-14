@@ -314,7 +314,7 @@
                           @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
                             <div class="rounded bg-light p-2 mb-2" [formGroupName]="si">
                               <div class="row g-2 align-items-start">
-                                <div class="col-12 col-sm-3">
+                                <div class="col-12 col-sm-5">
                                   <label class="form-label small mb-1">Stop Type</label>
                                   <select
                                     formControlName="stopTypeId"
@@ -327,23 +327,19 @@
                                     }
                                   </select>
                                 </div>
-                                <div class="col-12 col-sm-4">
-                                  <label class="form-label small mb-1">From</label>
-                                  <input
-                                    type="datetime-local"
-                                    formControlName="fromDatetime"
-                                    class="form-control form-control-sm"
-                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('fromDatetime'))"
-                                  />
-                                </div>
                                 <div class="col">
-                                  <label class="form-label small mb-1">To</label>
+                                  <label class="form-label small mb-1">Duration (minutes)</label>
                                   <input
-                                    type="datetime-local"
-                                    formControlName="toDatetime"
+                                    type="number"
+                                    formControlName="duration"
                                     class="form-control form-control-sm"
-                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('toDatetime'))"
+                                    placeholder="e.g. 30"
+                                    min="1"
+                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('duration'))"
                                   />
+                                  @if (isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
+                                    <div class="text-danger small mt-1">Must be at least 1 minute.</div>
+                                  }
                                 </div>
                                 <div class="col-auto">
                                   <label class="form-label small mb-1 invisible" aria-hidden="true">x</label>
@@ -391,9 +387,8 @@
               <div class="collapse show" [id]="'incs-sec-' + mi">
                 @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ii) {
                   <div class="rounded border border-warning-subtle bg-warning bg-opacity-10 p-3 mb-2" [formGroupName]="ii">
-                    <div class="row g-2 align-items-start">
-                      <div class="col-12 col-sm-4">
-                        <label class="form-label small mb-1">Description</label>
+                    <div class="row g-2 align-items-center">
+                      <div class="col">
                         <input
                           type="text"
                           formControlName="description"
@@ -405,33 +400,8 @@
                           <div class="text-danger small mt-1">Required.</div>
                         }
                       </div>
-                      <div class="col-12 col-sm-3">
-                        <label class="form-label small mb-1">From</label>
-                        <input
-                          type="datetime-local"
-                          formControlName="fromDatetime"
-                          class="form-control form-control-sm"
-                          [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('fromDatetime'))"
-                        />
-                        @if (isInvalid(getIncidentsArray(mi).at(ii).get('fromDatetime'))) {
-                          <div class="text-danger small mt-1">Required.</div>
-                        }
-                      </div>
-                      <div class="col">
-                        <label class="form-label small mb-1">To</label>
-                        <input
-                          type="datetime-local"
-                          formControlName="toDatetime"
-                          class="form-control form-control-sm"
-                          [class.is-invalid]="isInvalid(getIncidentsArray(mi).at(ii).get('toDatetime'))"
-                        />
-                        @if (isInvalid(getIncidentsArray(mi).at(ii).get('toDatetime'))) {
-                          <div class="text-danger small mt-1">Required.</div>
-                        }
-                      </div>
                       <div class="col-auto">
-                        <label class="form-label small mb-1 invisible" aria-hidden="true">x</label>
-                        <button type="button" class="btn btn-sm btn-outline-danger px-2 d-block" (click)="removeIncident(mi, ii)">×</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger px-2" (click)="removeIncident(mi, ii)">×</button>
                       </div>
                     </div>
                   </div>
