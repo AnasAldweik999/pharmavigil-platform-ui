@@ -9,11 +9,11 @@ export interface SupervisorReportListItem {
 
 export interface DashboardSummaryResponse {
   group: string;
-  reportCount: number;
   totalDowntimeMinutes: number;
-  avgDowntimeMinutes: number;
+  totalProducts: number;
+  totalOutputUnits: number;
+  totalStops: number;
   totalIncidents: number;
-  machineCounts: Record<string, number>;
 }
 
 export interface ProductRowResponse {

@@ -5,7 +5,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { environment } from '../../../../../environments/environment';
-import { ShiftItem } from '../../../../core/models/catalog.models';
+import { CatalogItem, ShiftItem } from '../../../../core/models/catalog.models';
 import { DashboardSummaryResponse, SummaryGroupBy } from '../../../../core/models/supervisor.models';
 
 @Component({
@@ -22,13 +22,15 @@ export class SummaryTabComponent implements OnInit {
   @Input() shifts: ShiftItem[] = [];
 
   readonly form = this.fb.nonNullable.group({
-    fromDate:   [''],
-    toDate:     [''],
-    shiftId:    [''],
-    staffEmail: [''],
-    groupBy:    ['' as SummaryGroupBy | ''],
+    fromDate:    [''],
+    toDate:      [''],
+    shiftId:     [''],
+    staffEmail:  [''],
+    machineName: [''],
+    groupBy:     ['' as SummaryGroupBy | ''],
   });
 
+  readonly machines           = signal<CatalogItem[]>([]);
   readonly summaryData        = signal<DashboardSummaryResponse[]>([]);
   readonly loading            = signal(false);
   readonly selectedChartType  = signal<ChartJsType>('bar');
@@ -45,19 +47,13 @@ export class SummaryTabComponent implements OnInit {
 
   readonly totals = computed(() => {
     const data = this.summaryData();
-    const reports   = data.reduce((s, r) => s + r.reportCount, 0);
-    const downtime  = data.reduce((s, r) => s + r.totalDowntimeMinutes, 0);
-    const incidents = data.reduce((s, r) => s + r.totalIncidents, 0);
-    const avgDown   = data.length
-      ? Math.round(data.reduce((s, r) => s + r.avgDowntimeMinutes, 0) / data.length)
-      : 0;
-    const machines: Record<string, number> = {};
-    for (const row of data) {
-      for (const [status, count] of Object.entries(row.machineCounts)) {
-        machines[status] = (machines[status] ?? 0) + count;
-      }
-    }
-    return { reports, downtime, incidents, avgDown, machines };
+    return {
+      products:    data.reduce((s, r) => s + r.totalProducts, 0),
+      outputUnits: data.reduce((s, r) => s + r.totalOutputUnits, 0),
+      stops:       data.reduce((s, r) => s + r.totalStops, 0),
+      downtime:    data.reduce((s, r) => s + r.totalDowntimeMinutes, 0),
+      incidents:   data.reduce((s, r) => s + r.totalIncidents, 0),
+    };
   });
 
   readonly chartData = computed<ChartData>(() => {
@@ -66,27 +62,11 @@ export class SummaryTabComponent implements OnInit {
     return {
       labels: data.map(d => d.group || 'All Time'),
       datasets: [
-        {
-          label: 'Reports',
-          data: data.map(d => d.reportCount),
-          backgroundColor: 'rgba(13,110,253,0.7)',
-          borderColor: 'rgba(13,110,253,1)',
-          fill: false,
-        },
-        {
-          label: 'Total Downtime (min)',
-          data: data.map(d => d.totalDowntimeMinutes),
-          backgroundColor: 'rgba(220,53,69,0.7)',
-          borderColor: 'rgba(220,53,69,1)',
-          fill: false,
-        },
-        {
-          label: 'Incidents',
-          data: data.map(d => d.totalIncidents),
-          backgroundColor: 'rgba(255,193,7,0.8)',
-          borderColor: 'rgba(255,193,7,1)',
-          fill: false,
-        },
+        { label: 'Products',       data: data.map(d => d.totalProducts),        backgroundColor: 'rgba(13,110,253,0.7)',   borderColor: 'rgba(13,110,253,1)',  fill: false },
+        { label: 'Output Units',   data: data.map(d => d.totalOutputUnits),     backgroundColor: 'rgba(25,135,84,0.7)',    borderColor: 'rgba(25,135,84,1)',   fill: false },
+        { label: 'Stops',          data: data.map(d => d.totalStops),           backgroundColor: 'rgba(255,193,7,0.85)',   borderColor: 'rgba(255,193,7,1)',   fill: false },
+        { label: 'Downtime (min)', data: data.map(d => d.totalDowntimeMinutes), backgroundColor: 'rgba(220,53,69,0.7)',    borderColor: 'rgba(220,53,69,1)',   fill: false },
+        { label: 'Incidents',      data: data.map(d => d.totalIncidents),       backgroundColor: 'rgba(111,66,193,0.75)',  borderColor: 'rgba(111,66,193,1)',  fill: false },
       ],
     };
   });
@@ -108,23 +88,22 @@ export class SummaryTabComponent implements OnInit {
     if (type === 'pie' || type === 'doughnut') this.logScale.set(false);
   }
 
-  readonly machineStatusConfig = [
-    { key: 'RUNNING',     label: 'Running',     badgeClass: 'bg-success' },
-    { key: 'STOPPED',     label: 'Stopped',     badgeClass: 'bg-danger' },
-    { key: 'MAINTENANCE', label: 'Maintenance', badgeClass: 'bg-warning text-dark' },
-    { key: 'READY',       label: 'Ready',       badgeClass: 'bg-primary' },
-  ];
-
-  ngOnInit(): void { this.loadSummary(); }
+  ngOnInit(): void {
+    this.http.get<{ content: CatalogItem[] }>(`${this.base}/api/supervisor/machines?size=1000&sort=name,asc`).subscribe({
+      next: (page) => this.machines.set(page.content),
+    });
+    this.loadSummary();
+  }
 
   loadSummary(): void {
     const v = this.form.getRawValue();
     let params = new HttpParams();
-    if (v.fromDate)   params = params.set('fromDate',   v.fromDate);
-    if (v.toDate)     params = params.set('toDate',     v.toDate);
-    if (v.shiftId)    params = params.set('shiftId',    v.shiftId);
-    if (v.staffEmail) params = params.set('staffEmail', v.staffEmail);
-    if (v.groupBy)    params = params.set('groupBy',    v.groupBy);
+    if (v.fromDate)    params = params.set('fromDate',    v.fromDate);
+    if (v.toDate)      params = params.set('toDate',      v.toDate);
+    if (v.shiftId)     params = params.set('shiftId',     v.shiftId);
+    if (v.staffEmail)  params = params.set('staffEmail',  v.staffEmail);
+    if (v.machineName) params = params.set('machineName', v.machineName);
+    if (v.groupBy)     params = params.set('groupBy',     v.groupBy);
 
     this.loading.set(true);
     this.http.get<DashboardSummaryResponse[]>(`${this.base}/api/supervisor/work-reports/summary`, { params }).subscribe({

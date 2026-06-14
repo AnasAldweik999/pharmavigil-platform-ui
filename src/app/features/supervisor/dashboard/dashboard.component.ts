@@ -27,7 +27,7 @@ export class SupervisorDashboardComponent implements OnInit {
   readonly tabs: { key: DashboardTab; label: string }[] = [
     { key: 'reports',  label: 'Reports' },
     { key: 'summary',  label: 'Summary & Charts' },
-    { key: 'products', label: 'Products' },
+    { key: 'products', label: 'Machines' },
   ];
 
   ngOnInit(): void {

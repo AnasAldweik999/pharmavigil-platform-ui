@@ -25,6 +25,15 @@
           <input type="email" class="form-control form-control-sm" formControlName="staffEmail" placeholder="Filter by email…" />
         </div>
         <div class="col-12 col-sm-6 col-lg-auto">
+          <label class="form-label small fw-medium mb-1">Machine</label>
+          <select class="form-select form-select-sm" formControlName="machineName">
+            <option value="">All machines</option>
+            @for (m of machines(); track m.id) {
+              <option [value]="m.name">{{ m.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-auto">
           <label class="form-label small fw-medium mb-1">Group By</label>
           <select class="form-select form-select-sm" formControlName="groupBy">
             @for (opt of groupByOptions; track opt.value) {
@@ -57,15 +66,31 @@
 
   <!-- Stat cards -->
   <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md">
       <div class="card border-0 shadow-sm h-100 border-start border-4 border-primary">
         <div class="card-body">
-          <div class="fs-2 fw-bold text-primary">{{ totals().reports }}</div>
-          <div class="small text-muted">Total Reports</div>
+          <div class="fs-2 fw-bold text-primary">{{ totals().products }}</div>
+          <div class="small text-muted">Total Products</div>
         </div>
       </div>
     </div>
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md">
+      <div class="card border-0 shadow-sm h-100 border-start border-4 border-success">
+        <div class="card-body">
+          <div class="fs-2 fw-bold text-success">{{ totals().outputUnits }}</div>
+          <div class="small text-muted">Total Output Units</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md">
+      <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
+        <div class="card-body">
+          <div class="fs-2 fw-bold text-warning">{{ totals().stops }}</div>
+          <div class="small text-muted">Total Stops</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md">
       <div class="card border-0 shadow-sm h-100 border-start border-4 border-danger">
         <div class="card-body">
           <div class="fs-2 fw-bold text-danger">{{ totals().downtime }}</div>
@@ -73,39 +98,12 @@
         </div>
       </div>
     </div>
-    <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100 border-start border-4 border-warning">
-        <div class="card-body">
-          <div class="fs-2 fw-bold text-warning">{{ totals().avgDown }}</div>
-          <div class="small text-muted">Avg Downtime (min)</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
+    <div class="col-6 col-md">
       <div class="card border-0 shadow-sm h-100 border-start border-4 border-info">
         <div class="card-body">
           <div class="fs-2 fw-bold text-info">{{ totals().incidents }}</div>
           <div class="small text-muted">Total Incidents</div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Machine status breakdown -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-header bg-transparent border-bottom border-light fw-semibold small text-muted text-uppercase">
-      Machine Status Breakdown
-    </div>
-    <div class="card-body">
-      <div class="row g-2">
-        @for (cfg of machineStatusConfig; track cfg.key) {
-          <div class="col-6 col-md-3">
-            <div class="d-flex align-items-center gap-2 p-2 rounded border">
-              <span class="badge {{ cfg.badgeClass }} fs-6">{{ totals().machines[cfg.key] ?? 0 }}</span>
-              <span class="small fw-medium">{{ cfg.label }}</span>
-            </div>
-          </div>
-        }
       </div>
     </div>
   </div>
