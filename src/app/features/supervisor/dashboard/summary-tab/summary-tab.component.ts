@@ -1,20 +1,22 @@
 import { Component, computed, effect, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-
-type MetricKey = 'outputUnits' | 'products' | 'stops' | 'downtime' | 'incidents';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions, ChartType as ChartJsType } from 'chart.js';
+import { NgxEchartsDirective } from 'ngx-echarts';
+import type { EChartsOption } from 'echarts';
 import { environment } from '../../../../../environments/environment';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DashboardSummaryResponse, SummaryGroupBy } from '../../../../core/models/supervisor.models';
 import { DateRangePickerComponent } from '../../../../shared/date-range-picker/date-range-picker.component';
 import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
 
+type MetricKey = 'outputUnits' | 'products' | 'stops' | 'downtime' | 'incidents';
+
 @Component({
   selector: 'app-summary-tab',
-  imports: [ReactiveFormsModule, BaseChartDirective, DateRangePickerComponent, SearchableDropdownComponent],
+  imports: [ReactiveFormsModule, BaseChartDirective, NgxEchartsDirective, DateRangePickerComponent, SearchableDropdownComponent],
   templateUrl: './summary-tab.component.html',
 })
 export class SummaryTabComponent implements OnInit {
@@ -44,7 +46,7 @@ export class SummaryTabComponent implements OnInit {
   readonly logScale           = signal(false);
   readonly selectedMetrics    = signal<MetricKey[]>(['outputUnits']);
 
-  readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie', 'doughnut'];
+  readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie'];
 
   readonly metricOptions: { key: MetricKey; label: string; bg: string; border: string }[] = [
     { key: 'outputUnits', label: 'Output Units',  bg: 'rgba(25,135,84,0.7)',   border: 'rgba(25,135,84,1)'   },
@@ -86,10 +88,11 @@ export class SummaryTabComponent implements OnInit {
     };
   });
 
+  // ── Chart.js (bar / line) ────────────────────────────────────────────────
+
   readonly chartData = computed<ChartData>(() => {
     const data = this.summaryData();
     if (!data.length) return { labels: [], datasets: [] };
-    const isPie = this.selectedChartType() === 'pie' || this.selectedChartType() === 'doughnut';
     const metrics = this.selectedMetrics();
     return {
       labels: data.map(d => {
@@ -101,10 +104,8 @@ export class SummaryTabComponent implements OnInit {
         return {
           label: opt.label,
           data: data.map(d => this.metricValue(d, key)),
-          backgroundColor: isPie
-            ? data.map((_, i) => this.piePalette[i % this.piePalette.length])
-            : opt.bg,
-          borderColor: isPie ? 'white' : opt.border,
+          backgroundColor: opt.bg,
+          borderColor: opt.border,
           fill: false,
           maxBarThickness: 80,
         };
@@ -114,42 +115,90 @@ export class SummaryTabComponent implements OnInit {
 
   readonly chartOptions = computed<ChartOptions>(() => {
     const count = this.summaryData().length;
-    const isPie = this.selectedChartType() === 'pie' || this.selectedChartType() === 'doughnut';
     return {
       responsive: true,
       maintainAspectRatio: false,
       plugins: { legend: { position: 'bottom' } },
-      ...(isPie ? {} : {
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: {
-              maxRotation: count > 6 ? 45 : 0,
-              minRotation: count > 6 ? 45 : 0,
-            },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            maxRotation: count > 6 ? 45 : 0,
+            minRotation: count > 6 ? 45 : 0,
           },
-          y: this.logScale()
-            ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
-            : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
         },
-      }),
+        y: this.logScale()
+          ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
+          : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+      },
     };
   });
 
-  private readonly piePalette = [
-    'rgba(13,110,253,0.85)',
-    'rgba(25,135,84,0.85)',
-    'rgba(255,193,7,0.90)',
-    'rgba(220,53,69,0.85)',
-    'rgba(111,66,193,0.85)',
-    'rgba(13,202,240,0.85)',
-    'rgba(253,126,20,0.85)',
-    'rgba(102,16,242,0.85)',
-    'rgba(32,201,151,0.85)',
-    'rgba(214,51,132,0.85)',
-    'rgba(108,117,125,0.85)',
-    'rgba(23,162,184,0.85)',
+  // ── ECharts (pie) ────────────────────────────────────────────────────────
+
+  private readonly echartsColors = [
+    '#4361ee', '#3a0ca3', '#7209b7', '#f72585',
+    '#4cc9f0', '#2dc653', '#fbbf24', '#ef4444',
+    '#06b6d4', '#f97316', '#a3e635', '#e879f9',
   ];
+
+  readonly echartsOptionMap = computed<Record<MetricKey, EChartsOption>>(() => {
+    const data = this.summaryData();
+    const metrics = this.selectedMetrics();
+    const multiMetric = metrics.length > 1;
+    const labels = data.map(d => {
+      const l = String(d.group || 'All');
+      return l.length > 20 ? l.slice(0, 19) + '…' : l;
+    });
+
+    const result = {} as Record<MetricKey, EChartsOption>;
+    for (const m of this.metricOptions) {
+      const isSelected = metrics.includes(m.key);
+      result[m.key] = {
+        color: this.echartsColors,
+        ...(multiMetric && isSelected ? {
+          title: {
+            text: m.label,
+            left: 'center',
+            top: 6,
+            textStyle: { fontSize: 12, fontWeight: 600, color: '#374151', fontFamily: 'inherit' },
+          },
+        } : {}),
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)',
+        },
+        legend: { show: false },
+        series: [{
+          type: 'pie',
+          radius: '60%',
+          center: multiMetric && isSelected ? ['50%', '56%'] : ['50%', '52%'],
+          label: {
+            position: 'outside',
+            formatter: '{b}\n{d}%',
+            fontSize: 11,
+            color: '#444',
+            lineHeight: 16,
+          },
+          labelLine: {
+            show: true,
+            length: 12,
+            length2: 10,
+            smooth: false,
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 8,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0,0,0,0.12)',
+            },
+          },
+          data: data.map((d, i) => ({ name: labels[i], value: this.metricValue(d, m.key) })),
+        }],
+      };
+    }
+    return result;
+  });
 
   private metricValue(d: DashboardSummaryResponse, key: MetricKey): number {
     switch (key) {
@@ -177,7 +226,7 @@ export class SummaryTabComponent implements OnInit {
 
   setChartType(type: ChartJsType): void {
     this.selectedChartType.set(type);
-    if (type === 'pie' || type === 'doughnut') this.logScale.set(false);
+    if (type === 'pie') this.logScale.set(false);
   }
 
   constructor() {
