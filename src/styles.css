@@ -445,7 +445,7 @@ body {
   background: #fff;
   border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 0.65rem 0.85rem;
+  padding: 0.4rem 0.85rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -455,6 +455,42 @@ body {
 .pv-filter-field-card:focus-within {
   border-color: #1a2942;
   box-shadow: 0 0 0 3px rgba(26, 41, 66, 0.08);
+}
+
+/* Text / date inputs inside field card: borderless, flush */
+.pv-filter-field-card .form-control {
+  border: none;
+  background: transparent;
+  box-shadow: none !important;
+  padding: 0;
+  font-size: 0.85rem;
+  color: #1a2942;
+}
+.pv-filter-field-card .form-control::placeholder {
+  color: #adb5bd;
+}
+
+/* Select inside field card: strip border/bg, keep native padding for dropdown */
+.pv-filter-field-card .form-select {
+  border: none;
+  background-color: transparent;
+  box-shadow: none !important;
+  font-size: 0.85rem;
+  color: #1a2942;
+}
+
+/* Date-range picker input inside field card */
+.pv-filter-field-card .input-group {
+  gap: 0;
+}
+.pv-filter-field-card .input-group-text {
+  border: none;
+  background: transparent;
+  padding-left: 0;
+  color: #8c96a2;
+}
+.pv-filter-field-card .input-group .form-control {
+  padding: 0;
 }
 
 .pv-filter-panel-footer {
