@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ToastContainerComponent } from '../../../shared/toast/toast-container.component';
@@ -13,6 +13,9 @@ export class StaffLayoutComponent {
 
   readonly name = this.authService.currentName;
   readonly email = this.authService.currentEmail;
+  readonly initials = computed(() =>
+    (this.name() ?? '').split(' ').filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('')
+  );
   readonly sidebarOpen = signal(false);
 
   toggleSidebar(): void {

@@ -38,16 +38,22 @@ body {
 }
 
 .sidebar .nav-link {
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: 6px;
-  padding: 0.6rem 1rem;
+  color: rgba(255, 255, 255, 0.65);
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.875rem;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.sidebar .nav-link:hover,
+.sidebar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .sidebar .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.15);
   color: #fff;
+  font-weight: 600;
 }
 
 /* ── Overlay (mobile only, sits behind sidebar but above content) ────────── */
@@ -87,7 +93,8 @@ body {
 .top-bar {
   height: 56px;
   background-color: #fff;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid #f0f2f5;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   padding: 0 1rem;
   display: flex;
   align-items: center;
@@ -113,6 +120,175 @@ body {
   .page-content {
     padding: 1.5rem;
   }
+}
+
+/* ── Sidebar brand ────────────────────────────────────────────────────────── */
+
+.pv-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.1rem 0.75rem 0.9rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+}
+
+.pv-sidebar-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.pv-sidebar-brand-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.pv-sidebar-brand-sub {
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ── Sidebar user section ─────────────────────────────────────────────────── */
+
+.pv-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.pv-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pv-user-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-user-email {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.48);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pv-sidebar-logout-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pv-sidebar-logout-btn:hover {
+  background: rgba(220, 53, 69, 0.22);
+  color: #ff8a95;
+}
+
+/* ── Top bar elements ─────────────────────────────────────────────────────── */
+
+.pv-topbar-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a2942;
+}
+
+.pv-topbar-user {
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pv-topbar-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.pv-topbar-role {
+  font-size: 0.68rem;
+  color: #9ca3af;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.pv-topbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(26, 41, 66, 0.1);
+  color: #1a2942;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pv-topbar-logout-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: transparent;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.pv-topbar-logout-btn:hover {
+  background: #fff5f5;
+  border-color: #dc3545;
+  color: #dc3545;
 }
 
 /* ── Auth pages ───────────────────────────────────────────────────────────── */
