@@ -1,4 +1,6 @@
 import { Component, computed, effect, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+
+type MetricKey = 'outputUnits' | 'products' | 'stops' | 'downtime' | 'incidents';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -40,8 +42,17 @@ export class SummaryTabComponent implements OnInit {
   readonly loading            = signal(false);
   readonly selectedChartType  = signal<ChartJsType>('bar');
   readonly logScale           = signal(false);
+  readonly selectedMetrics    = signal<MetricKey[]>(['outputUnits']);
 
   readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie', 'doughnut'];
+
+  readonly metricOptions: { key: MetricKey; label: string; bg: string; border: string }[] = [
+    { key: 'outputUnits', label: 'Output Units',  bg: 'rgba(25,135,84,0.7)',   border: 'rgba(25,135,84,1)'   },
+    { key: 'products',    label: 'Products',       bg: 'rgba(13,110,253,0.7)',  border: 'rgba(13,110,253,1)'  },
+    { key: 'stops',       label: 'Stops',          bg: 'rgba(255,193,7,0.85)', border: 'rgba(255,193,7,1)'   },
+    { key: 'downtime',    label: 'Downtime (min)', bg: 'rgba(220,53,69,0.7)',   border: 'rgba(220,53,69,1)'   },
+    { key: 'incidents',   label: 'Incidents',      bg: 'rgba(111,66,193,0.75)',border: 'rgba(111,66,193,1)'  },
+  ];
 
   readonly groupByOptions: { label: string; value: SummaryGroupBy }[] = [
     { label: 'By Date',    value: 'DATE'    },
@@ -78,32 +89,90 @@ export class SummaryTabComponent implements OnInit {
   readonly chartData = computed<ChartData>(() => {
     const data = this.summaryData();
     if (!data.length) return { labels: [], datasets: [] };
+    const isPie = this.selectedChartType() === 'pie' || this.selectedChartType() === 'doughnut';
+    const metrics = this.selectedMetrics();
     return {
-      labels: data.map(d => d.group || 'All Time'),
-      datasets: [
-        { label: 'Products',       data: data.map(d => d.totalProducts),        backgroundColor: 'rgba(13,110,253,0.7)',   borderColor: 'rgba(13,110,253,1)',  fill: false },
-        { label: 'Output Units',   data: data.map(d => d.totalOutputUnits),     backgroundColor: 'rgba(25,135,84,0.7)',    borderColor: 'rgba(25,135,84,1)',   fill: false },
-        { label: 'Stops',          data: data.map(d => d.totalStops),           backgroundColor: 'rgba(255,193,7,0.85)',   borderColor: 'rgba(255,193,7,1)',   fill: false },
-        { label: 'Downtime (min)', data: data.map(d => d.totalDowntimeMinutes), backgroundColor: 'rgba(220,53,69,0.7)',    borderColor: 'rgba(220,53,69,1)',   fill: false },
-        { label: 'Incidents',      data: data.map(d => d.totalIncidents),       backgroundColor: 'rgba(111,66,193,0.75)',  borderColor: 'rgba(111,66,193,1)',  fill: false },
-      ],
+      labels: data.map(d => {
+        const label = String(d.group || 'All');
+        return label.length > 16 ? label.slice(0, 15) + '…' : label;
+      }),
+      datasets: metrics.map(key => {
+        const opt = this.metricOptions.find(m => m.key === key)!;
+        return {
+          label: opt.label,
+          data: data.map(d => this.metricValue(d, key)),
+          backgroundColor: isPie
+            ? data.map((_, i) => this.piePalette[i % this.piePalette.length])
+            : opt.bg,
+          borderColor: isPie ? 'white' : opt.border,
+          fill: false,
+          maxBarThickness: 80,
+        };
+      }),
     };
   });
 
-  readonly chartOptions = computed<ChartOptions>(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } },
-    scales: {
-      x: { grid: { display: false } },
-      y: this.logScale()
-        ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
-        : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-    },
-  }));
+  readonly chartOptions = computed<ChartOptions>(() => {
+    const count = this.summaryData().length;
+    const isPie = this.selectedChartType() === 'pie' || this.selectedChartType() === 'doughnut';
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      ...(isPie ? {} : {
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              maxRotation: count > 6 ? 45 : 0,
+              minRotation: count > 6 ? 45 : 0,
+            },
+          },
+          y: this.logScale()
+            ? { type: 'logarithmic', min: 0.5, grid: { color: 'rgba(0,0,0,0.05)' } }
+            : { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+        },
+      }),
+    };
+  });
+
+  private readonly piePalette = [
+    'rgba(13,110,253,0.85)',
+    'rgba(25,135,84,0.85)',
+    'rgba(255,193,7,0.90)',
+    'rgba(220,53,69,0.85)',
+    'rgba(111,66,193,0.85)',
+    'rgba(13,202,240,0.85)',
+    'rgba(253,126,20,0.85)',
+    'rgba(102,16,242,0.85)',
+    'rgba(32,201,151,0.85)',
+    'rgba(214,51,132,0.85)',
+    'rgba(108,117,125,0.85)',
+    'rgba(23,162,184,0.85)',
+  ];
+
+  private metricValue(d: DashboardSummaryResponse, key: MetricKey): number {
+    switch (key) {
+      case 'outputUnits': return d.totalOutputUnits;
+      case 'products':    return d.totalProducts;
+      case 'stops':       return d.totalStops;
+      case 'downtime':    return d.totalDowntimeMinutes;
+      case 'incidents':   return d.totalIncidents;
+    }
+  }
 
   onDateRangeChange(range: { from: string; to: string }): void {
     this.form.patchValue({ fromDate: range.from, toDate: range.to });
+  }
+
+  toggleMetric(key: MetricKey): void {
+    const current = this.selectedMetrics();
+    if (current.includes(key)) {
+      if (current.length === 1) return;
+      this.selectedMetrics.set(current.filter(k => k !== key));
+    } else {
+      this.selectedMetrics.set([...current, key]);
+    }
   }
 
   setChartType(type: ChartJsType): void {
