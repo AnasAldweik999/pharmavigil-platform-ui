@@ -6,6 +6,7 @@ import {
   forwardRef,
   HostListener,
   inject,
+  input,
   Input,
   Output,
   signal,
@@ -33,7 +34,7 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   private readonly http  = inject(HttpClient);
   private readonly elRef = inject(ElementRef);
 
-  @Input() options: { label: string; value: string }[] = [];
+  readonly options = input<{ label: string; value: string }[]>([]);
   @Input() searchUrl: string | null = null;
   @Input() searchParam: string = 'name';
   @Input() labelFn: (item: any) => string = (i) => i.label ?? i.name ?? String(i);
@@ -63,9 +64,10 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
 
   readonly _filteredItems = computed(() => {
     if (this.searchUrl) return this._asyncItems();
+    const opts = this.options();
     const text = this._searchText().toLowerCase();
-    if (!text) return this.options;
-    return this.options.filter(o => this.labelFn(o).toLowerCase().includes(text));
+    if (!text) return opts;
+    return opts.filter(o => this.labelFn(o).toLowerCase().includes(text));
   });
 
   private readonly _search$ = new Subject<string>();

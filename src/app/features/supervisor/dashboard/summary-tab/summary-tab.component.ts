@@ -1,10 +1,11 @@
-import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { environment } from '../../../../../environments/environment';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { DashboardSummaryResponse, SummaryGroupBy } from '../../../../core/models/supervisor.models';
 import { DateRangePickerComponent } from '../../../../shared/date-range-picker/date-range-picker.component';
 import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
@@ -48,6 +49,20 @@ export class SummaryTabComponent implements OnInit {
     { label: 'By User',    value: 'USER'    },
     { label: 'By Machine', value: 'MACHINE' },
   ];
+
+  private readonly formValues = toSignal(this.form.valueChanges, {
+    initialValue: this.form.getRawValue(),
+  });
+
+  readonly availableGroupByOptions = computed(() => {
+    const v = this.formValues();
+    return this.groupByOptions.filter(opt => {
+      if (opt.value === 'SHIFT'   && v.shiftId)     return false;
+      if (opt.value === 'MACHINE' && v.machineName)  return false;
+      if (opt.value === 'USER'    && v.staffEmail)   return false;
+      return true;
+    });
+  });
 
   readonly totals = computed(() => {
     const data = this.summaryData();
@@ -94,6 +109,16 @@ export class SummaryTabComponent implements OnInit {
   setChartType(type: ChartJsType): void {
     this.selectedChartType.set(type);
     if (type === 'pie' || type === 'doughnut') this.logScale.set(false);
+  }
+
+  constructor() {
+    effect(() => {
+      const current = this.form.getRawValue().groupBy;
+      const available = this.availableGroupByOptions();
+      if (current && !available.some(o => o.value === current)) {
+        this.form.get('groupBy')!.setValue('');
+      }
+    });
   }
 
   ngOnInit(): void {

@@ -86,7 +86,7 @@
             <span class="pv-filter-label">Group By</span>
             <app-searchable-dropdown
               formControlName="groupBy"
-              [options]="groupByOptions"
+              [options]="availableGroupByOptions()"
               placeholder="None (totals only)"
             />
           </div>
