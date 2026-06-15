@@ -45,16 +45,23 @@
 
 <!-- ── Add Stop Type Modal ────────────────────────────────────────────────── -->
 <div #createModal class="modal fade" tabindex="-1" aria-labelledby="createStopTypeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
 
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="createStopTypeModalLabel">Add Stop Type</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="pv-modal-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="pv-modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M11.46.146A.5.5 0 0 0 11.107 0H4.893a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+            </svg>
+          </div>
+          <h5 class="pv-modal-title" id="createStopTypeModalLabel">Add Stop Type</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white opacity-75" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body">
-        <p class="text-muted small mb-3">This stop type will be available when logging production stops.</p>
+      <div class="pv-modal-body">
+        <p class="pv-modal-hint">This stop type will be available when logging production stops.</p>
 
         @if (errorMessage()) {
           <div class="alert alert-danger py-2 small" role="alert">{{ errorMessage() }}</div>
@@ -81,16 +88,19 @@
         </form>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" form="createStopTypeForm" class="btn btn-primary" [disabled]="submitting()">
+      <div class="pv-modal-footer">
+        <button type="submit" form="createStopTypeForm" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="submitting()">
           @if (submitting()) {
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Creating…
           } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+            </svg>
             Add stop type
           }
         </button>
+        <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">Cancel</button>
       </div>
 
     </div>

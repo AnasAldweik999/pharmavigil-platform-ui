@@ -45,16 +45,23 @@
 
 <!-- ── Add Shift Modal ────────────────────────────────────────────────────── -->
 <div #createModal class="modal fade" tabindex="-1" aria-labelledby="createShiftModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow">
 
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="createShiftModalLabel">Add Shift</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="pv-modal-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="pv-modal-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+            </svg>
+          </div>
+          <h5 class="pv-modal-title" id="createShiftModalLabel">Add Shift</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white opacity-75" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body">
-        <p class="text-muted small mb-3">This shift will be available for staff scheduling.</p>
+      <div class="pv-modal-body">
+        <p class="pv-modal-hint">This shift will be available for staff scheduling.</p>
 
         @if (errorMessage()) {
           <div class="alert alert-danger py-2 small" role="alert">{{ errorMessage() }}</div>
@@ -78,7 +85,7 @@
           </div>
 
           <div class="row g-3 mb-1">
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label for="shiftStart" class="form-label fw-medium">Start time</label>
               <input
                 id="shiftStart"
@@ -92,7 +99,7 @@
                 <div class="invalid-feedback">Start time is required.</div>
               }
             </div>
-            <div class="col-6">
+            <div class="col-12 col-sm-6">
               <label for="shiftEnd" class="form-label fw-medium">End time</label>
               <input
                 id="shiftEnd"
@@ -110,16 +117,19 @@
         </form>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" form="createShiftForm" class="btn btn-primary" [disabled]="submitting()">
+      <div class="pv-modal-footer">
+        <button type="submit" form="createShiftForm" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="submitting()">
           @if (submitting()) {
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             Creating…
           } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+            </svg>
             Add shift
           }
         </button>
+        <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">Cancel</button>
       </div>
 
     </div>
