@@ -20,6 +20,7 @@
   <div class="card-body p-4">
     <app-grid
       [columns]="gridColumns"
+      [defaultSort]="{ field: 'createdAt', direction: 'desc' }"
       [filterFields]="gridFilters"
       [actions]="gridActions"
       [actionsDisabled]="!!viewingId()"

@@ -29,6 +29,7 @@
 
     <app-grid
       [columns]="gridColumns"
+      [defaultSort]="{ field: 'createdAt', direction: 'desc' }"
       [filterFields]="gridFilters"
       [actions]="gridActions"
       [actionsDisabled]="!!deletingId()"

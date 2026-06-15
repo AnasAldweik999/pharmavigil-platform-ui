@@ -34,6 +34,7 @@ export class GridComponent implements OnInit, AfterViewInit {
   @Input() pageSizes: number[] = [10, 25, 50];
   @Input() actions: GridAction[] = [];
   @Input() actionsDisabled = false;
+  @Input() defaultSort: GridSortState | null = null;
 
   @Output() stateChange   = new EventEmitter<GridState>();
   @Output() actionClick   = new EventEmitter<{ action: GridAction; row: unknown }>();
@@ -112,6 +113,7 @@ export class GridComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this._size.set(this.pageSize);
+    if (this.defaultSort) this._sort.set(this.defaultSort);
     if (Object.keys(this.initialFilters).length) {
       this._appliedFilters.set({ ...this.initialFilters });
       this._draftFilters.set({ ...this.initialFilters });

@@ -8,6 +8,7 @@
 
 <app-grid
   [columns]="gridColumns"
+  [defaultSort]="{ field: 'createdAt', direction: 'desc' }"
   [filterFields]="gridFilters"
 [rows]="rows"
   [totalElements]="totalElements"

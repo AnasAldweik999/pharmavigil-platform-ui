@@ -1,10 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastContainerComponent } from '../../../shared/toast/toast-container.component';
 
 @Component({
   selector: 'app-supervisor-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ToastContainerComponent],
   templateUrl: './supervisor-layout.component.html',
 })
 export class SupervisorLayoutComponent {
