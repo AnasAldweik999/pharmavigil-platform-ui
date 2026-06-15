@@ -205,15 +205,23 @@
                         <div class="col-12 col-sm-4">
                           <label class="form-label small fw-medium mb-1">Output Units</label>
                           <input
-                            type="number"
+                            type="text"
+                            inputmode="numeric"
                             formControlName="outputUnits"
                             class="form-control form-control-sm"
                             placeholder="0"
-                            min="0"
                             [class.is-invalid]="isInvalid(getProductGroup(mi, pi).get('outputUnits'))"
                           />
                           @if (isInvalid(getProductGroup(mi, pi).get('outputUnits'))) {
-                            <div class="invalid-feedback">Required (min 0).</div>
+                            <div class="invalid-feedback">
+                              @if (getProductGroup(mi, pi).get('outputUnits')?.errors?.['maxIntegerDigits']) {
+                                Max 15 digits allowed.
+                              } @else if (getProductGroup(mi, pi).get('outputUnits')?.errors?.['invalidNumber']) {
+                                Enter a valid number (e.g. 100).
+                              } @else {
+                                Output units is required.
+                              }
+                            </div>
                           }
                         </div>
                       </div>
@@ -313,7 +321,13 @@
                                     [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('duration'))"
                                   />
                                   @if (isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
-                                    <div class="text-danger small mt-1">Must be at least 1 minute.</div>
+                                    <div class="text-danger small mt-1">
+                                      @if (getStopsArray(mi, pi).at(si).get('duration')?.errors?.['max']) {
+                                        Max 10 digits (9,999,999,999 minutes).
+                                      } @else {
+                                        Must be at least 1 minute.
+                                      }
+                                    </div>
                                   }
                                 </div>
                                 <div class="col-auto">

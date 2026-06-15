@@ -27,6 +27,15 @@ import {
 } from '../../../../core/models/work-report.models';
 import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
 
+function outputUnitsValidator(ctrl: AbstractControl): ValidationErrors | null {
+  const raw = ctrl.value;
+  if (raw === null || raw === undefined || raw === '') return null;
+  const str = String(raw).trim();
+  if (!/^\d+$/.test(str)) return { invalidNumber: true };
+  if (str.length > 15)    return { maxIntegerDigits: true };
+  return null;
+}
+
 function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
   const deviation = ctrl.get('deviation')?.value as boolean;
   const deviationDetails = (ctrl.get('deviationDetails')?.value as string | null)?.trim();
@@ -209,7 +218,7 @@ export class ReportCreateComponent {
     return this.fb.group({
       productName:  ['', Validators.required],
       batchNo:      ['', Validators.required],
-      outputUnits:  [0, [Validators.required, Validators.min(0)]],
+      outputUnits:  ['', [Validators.required, outputUnitsValidator]],
       stops:        this.fb.array([]),
       quality:      this.buildQualityGroup(),
     });
@@ -227,7 +236,7 @@ export class ReportCreateComponent {
   private buildStopGroup(): FormGroup {
     return this.fb.group({
       stopTypeId: ['', Validators.required],
-      duration:   [null, [Validators.required, Validators.min(1)]],
+      duration:   [null, [Validators.required, Validators.min(1), Validators.max(9_999_999_999)]],
     });
   }
 
