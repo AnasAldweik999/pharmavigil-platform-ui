@@ -15,10 +15,11 @@ import {
 import { DatePipe, isPlatformBrowser, NgClass } from '@angular/common';
 import { GridAction, GridColumn, GridFilterField, GridSortState, GridState } from './grid.models';
 import { DateRangePickerComponent } from '../date-range-picker/date-range-picker.component';
+import { SearchableDropdownComponent } from '../searchable-dropdown/searchable-dropdown.component';
 
 @Component({
   selector: 'app-grid',
-  imports: [DatePipe, NgClass, DateRangePickerComponent],
+  imports: [DatePipe, NgClass, DateRangePickerComponent, SearchableDropdownComponent],
   templateUrl: './grid.component.html',
 })
 export class GridComponent implements OnInit, AfterViewInit {
@@ -46,6 +47,11 @@ export class GridComponent implements OnInit, AfterViewInit {
   private readonly _size           = signal(10);
   private readonly _draftFilters   = signal<Record<string, string>>({});
   private readonly _appliedFilters = signal<Record<string, string>>({});
+  private readonly _draftLabels    = signal<Record<string, string>>({});
+  private readonly _appliedLabels  = signal<Record<string, string>>({});
+
+  readonly defaultLabelFn = (item: any) => item.label ?? item.name ?? String(item);
+  readonly defaultValueFn = (item: any) => item.value ?? item.id  ?? String(item);
 
   readonly sortField    = computed(() => this._sort()?.field ?? null);
   readonly sortDirection = computed(() => this._sort()?.direction ?? null);
@@ -69,10 +75,14 @@ export class GridComponent implements OnInit, AfterViewInit {
       } else {
         const value = applied[field.key];
         if (!value) continue;
-        const displayValue =
-          field.type === 'select'
-            ? (field.options?.find(o => o.value === value)?.label ?? value)
-            : value;
+        let displayValue: string;
+        if (field.type === 'select') {
+          displayValue = field.options?.find(o => o.value === value)?.label ?? value;
+        } else if (field.type === 'searchable-select') {
+          displayValue = this._appliedLabels()[field.key] ?? value;
+        } else {
+          displayValue = value;
+        }
         result.push({ keys: [field.key], label: field.label, displayValue });
       }
     }
@@ -118,6 +128,7 @@ export class GridComponent implements OnInit, AfterViewInit {
 
   openFilterPanel(): void {
     this._draftFilters.set({ ...this._appliedFilters() });
+    this._draftLabels.set({ ...this._appliedLabels() });
     this.offcanvas?.show();
   }
 
@@ -135,6 +146,7 @@ export class GridComponent implements OnInit, AfterViewInit {
 
   applyFilters(): void {
     this._appliedFilters.set({ ...this._draftFilters() });
+    this._appliedLabels.set({ ...this._draftLabels() });
     this._page.set(0);
     this.emitState();
     this.closeFilterPanel();
@@ -142,21 +154,20 @@ export class GridComponent implements OnInit, AfterViewInit {
 
   clearAllDraft(): void {
     this._draftFilters.set({});
+    this._draftLabels.set({});
   }
 
   removeFilterKeys(keys: string[]): void {
-    this._appliedFilters.update(f => {
-      const next = { ...f };
-      keys.forEach(k => delete next[k]);
-      return next;
-    });
-    this._draftFilters.update(f => {
-      const next = { ...f };
-      keys.forEach(k => delete next[k]);
-      return next;
-    });
+    this._appliedFilters.update(f => { const n = { ...f }; keys.forEach(k => delete n[k]); return n; });
+    this._draftFilters.update(f => { const n = { ...f }; keys.forEach(k => delete n[k]); return n; });
+    this._appliedLabels.update(m => { const n = { ...m }; keys.forEach(k => delete n[k]); return n; });
+    this._draftLabels.update(m => { const n = { ...m }; keys.forEach(k => delete n[k]); return n; });
     this._page.set(0);
     this.emitState();
+  }
+
+  onDraftLabel(key: string, label: string): void {
+    this._draftLabels.update(m => ({ ...m, [key]: label }));
   }
 
   refresh(): void {

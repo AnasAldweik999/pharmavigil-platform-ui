@@ -1,26 +1,24 @@
-import { Component, computed, inject, Input, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartOptions, ChartType as ChartJsType } from 'chart.js';
 import { environment } from '../../../../../environments/environment';
-import { CatalogItem, ShiftItem } from '../../../../core/models/catalog.models';
 import { DashboardSummaryResponse, SummaryGroupBy } from '../../../../core/models/supervisor.models';
 import { DateRangePickerComponent } from '../../../../shared/date-range-picker/date-range-picker.component';
+import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
 
 @Component({
   selector: 'app-summary-tab',
-  imports: [ReactiveFormsModule, BaseChartDirective, DateRangePickerComponent],
+  imports: [ReactiveFormsModule, BaseChartDirective, DateRangePickerComponent, SearchableDropdownComponent],
   templateUrl: './summary-tab.component.html',
 })
 export class SummaryTabComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly fb   = inject(FormBuilder);
-  private readonly base = environment.apiUrl;
-  readonly isBrowser    = isPlatformBrowser(inject(PLATFORM_ID));
-
-  @Input() shifts: ShiftItem[] = [];
+  private readonly http  = inject(HttpClient);
+  private readonly fb    = inject(FormBuilder);
+  protected readonly base = environment.apiUrl;
+  readonly isBrowser      = isPlatformBrowser(inject(PLATFORM_ID));
 
   readonly form = this.fb.nonNullable.group({
     fromDate:    [new Date(Date.now() - 30 * 86400000).toLocaleDateString('en-CA')],
@@ -31,7 +29,12 @@ export class SummaryTabComponent implements OnInit {
     groupBy:     ['' as SummaryGroupBy | ''],
   });
 
-  readonly machines           = signal<CatalogItem[]>([]);
+  readonly shiftLabelFn   = (s: any) => s.name as string;
+  readonly shiftValueFn   = (s: any) => s.id   as string;
+  readonly machLabelFn    = (m: any) => m.name as string;
+  readonly staffLabelFn   = (u: any) => u.name as string;
+  readonly staffEmailFn   = (u: any) => u.email as string;
+
   readonly summaryData        = signal<DashboardSummaryResponse[]>([]);
   readonly loading            = signal(false);
   readonly selectedChartType  = signal<ChartJsType>('bar');
@@ -39,11 +42,10 @@ export class SummaryTabComponent implements OnInit {
 
   readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie', 'doughnut'];
 
-  readonly groupByOptions: { label: string; value: SummaryGroupBy | '' }[] = [
-    { label: 'None (totals only)', value: '' },
-    { label: 'By Date',  value: 'DATE' },
+  readonly groupByOptions: { label: string; value: SummaryGroupBy }[] = [
+    { label: 'By Date',  value: 'DATE'  },
     { label: 'By Shift', value: 'SHIFT' },
-    { label: 'By User',  value: 'USER' },
+    { label: 'By User',  value: 'USER'  },
   ];
 
   readonly totals = computed(() => {
@@ -94,9 +96,6 @@ export class SummaryTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get<{ content: CatalogItem[] }>(`${this.base}/api/supervisor/machines?size=1000&sort=name,asc`).subscribe({
-      next: (page) => this.machines.set(page.content),
-    });
     this.loadSummary();
   }
 

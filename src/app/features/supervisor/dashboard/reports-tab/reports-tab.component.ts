@@ -2,8 +2,6 @@ import {
   Component,
   ElementRef,
   inject,
-  Input,
-  OnInit,
   PLATFORM_ID,
   signal,
   ViewChild,
@@ -12,7 +10,6 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Page } from '../../../../core/models/user.models';
-import { ShiftItem } from '../../../../core/models/catalog.models';
 import { SupervisorReportListItem } from '../../../../core/models/supervisor.models';
 import { WorkReportResponse } from '../../../../core/models/work-report.models';
 import { GridAction, GridColumn, GridFilterField, GridState } from '../../../../shared/grid/grid.models';
@@ -24,12 +21,10 @@ import { ReportDetailModalComponent } from '../../../staff/reports/detail/report
   imports: [GridComponent, ReportDetailModalComponent],
   templateUrl: './reports-tab.component.html',
 })
-export class ReportsTabComponent implements OnInit {
+export class ReportsTabComponent {
   private readonly http       = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly base       = environment.apiUrl;
-
-  @Input() shifts: ShiftItem[] = [];
 
   @ViewChild('detailModal') detailModal!: ReportDetailModalComponent;
 
@@ -50,21 +45,34 @@ export class ReportsTabComponent implements OnInit {
     { key: 'createdAt',  label: 'Submitted At',  sortable: true, type: 'date' },
   ];
 
-  get gridFilters(): GridFilterField[] { return [
+  readonly gridFilters: GridFilterField[] = [
     { key: 'dateRange', label: 'Working Date', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
-    { key: 'shiftId',    label: 'Shift',       type: 'select', options: [
-        { label: 'All shifts', value: '' },
-        ...this.shifts.map(s => ({ label: s.name, value: s.id })),
-    ]},
-    { key: 'staffEmail', label: 'Staff Email', type: 'text', placeholder: 'Filter by email…' },
-    { key: 'staffName',  label: 'Staff Name',  type: 'text', placeholder: 'Filter by name…' },
-  ]; }
+    {
+      key: 'shiftId',
+      label: 'Shift',
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/supervisor/shifts`,
+      searchParam: 'name',
+      labelFn: (s: any) => s.name,
+      valueFn: (s: any) => s.id,
+      placeholder: 'Search shift...',
+    },
+    {
+      key: 'staffEmail',
+      label: 'Staff',
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/supervisor/staff-users`,
+      searchParam: 'search',
+      labelFn: (u: any) => u.name,
+      secondaryLabelFn: (u: any) => u.email,
+      valueFn: (u: any) => u.email,
+      placeholder: 'Search staff...',
+    },
+  ];
 
   readonly gridActions: GridAction[] = [
     { key: 'view', label: 'View', btnClass: 'btn-outline-primary', icon: 'view' },
   ];
-
-  ngOnInit(): void {}
 
   onGridStateChange(state: GridState): void {
     this._state = state;

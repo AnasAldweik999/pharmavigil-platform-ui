@@ -1,18 +1,3 @@
-@if (refLoading()) {
-  <div class="d-flex justify-content-center align-items-center" style="min-height: 260px">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading…</span>
-    </div>
-  </div>
-} @else if (refError()) {
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-5 text-center">
-      <p class="text-muted mb-3">Failed to load reference data. Please try again.</p>
-      <button class="btn btn-outline-primary" (click)="loadRefData()">Retry</button>
-    </div>
-  </div>
-} @else {
-
 <!-- Page header -->
 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
   <div class="d-flex align-items-center gap-3">
@@ -54,17 +39,16 @@
         </div>
         <div class="col-12 col-md-6">
           <label for="shiftId" class="form-label fw-medium">Shift</label>
-          <select
-            id="shiftId"
-            class="form-select"
+          <app-searchable-dropdown
             formControlName="shiftId"
-            [class.is-invalid]="isInvalid(form.get('shiftId'))"
-          >
-            <option value="">Select shift…</option>
-            @for (s of shifts(); track s.id) {
-              <option [value]="s.id">{{ s.name }} ({{ s.startTime }} – {{ s.endTime }})</option>
-            }
-          </select>
+            [searchUrl]="base + '/api/staff/reference/shifts'"
+            searchParam="name"
+            [labelFn]="shiftLabelFn"
+            [valueFn]="shiftValueFn"
+            placeholder="Search shift..."
+            [invalid]="isInvalid(form.get('shiftId'))"
+            [small]="false"
+          />
           @if (isInvalid(form.get('shiftId'))) {
             <div class="invalid-feedback">Shift is required.</div>
           }
@@ -93,16 +77,16 @@
           </button>
           <span class="badge bg-primary rounded-pill px-3 flex-shrink-0">{{ mi + 1 }}</span>
           <div class="flex-grow-1" style="min-width: 0">
-            <select
+            <app-searchable-dropdown
               formControlName="machineId"
-              class="form-select form-select-sm fw-medium w-100"
-              [class.is-invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
-            >
-              <option value="">Select machine…</option>
-              @for (m of machines(); track m.id) {
-                <option [value]="m.id">{{ m.name }}</option>
-              }
-            </select>
+              [searchUrl]="base + '/api/staff/reference/machines'"
+              searchParam="name"
+              [labelFn]="machineLabelFn"
+              [valueFn]="machineValueFn"
+              placeholder="Search machine..."
+              [invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
+              [small]="false"
+            />
           </div>
           @if (machinesArray.length > 1) {
             <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" (click)="removeMachine(mi)">
@@ -307,16 +291,16 @@
                               <div class="row g-2 align-items-start">
                                 <div class="col-12 col-sm-5">
                                   <label class="form-label small mb-1">Stop Type</label>
-                                  <select
+                                  <app-searchable-dropdown
                                     formControlName="stopTypeId"
-                                    class="form-select form-select-sm"
-                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))"
-                                  >
-                                    <option value="">Select…</option>
-                                    @for (st of stopTypes(); track st.id) {
-                                      <option [value]="st.id">{{ st.name }}</option>
-                                    }
-                                  </select>
+                                    [searchUrl]="base + '/api/staff/reference/stop-types'"
+                                    searchParam="name"
+                                    [labelFn]="stopTypeLabelFn"
+                                    [valueFn]="stopTypeValueFn"
+                                    placeholder="Search stop type..."
+                                    [invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))"
+                                    [small]="false"
+                                  />
                                 </div>
                                 <div class="col">
                                   <label class="form-label small mb-1">Duration (minutes)</label>
@@ -425,7 +409,6 @@
 
 </form>
 
-}
 
 <!-- Confirmation modal — outside @if block so it is always in the DOM -->
 <div #confirmModal class="modal fade" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">

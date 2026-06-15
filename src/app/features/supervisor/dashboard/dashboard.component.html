@@ -48,12 +48,12 @@
 <!-- Tab content -->
 @switch (activeTab()) {
   @case ('reports') {
-    <app-reports-tab [shifts]="shifts()" />
+    <app-reports-tab />
   }
   @case ('summary') {
-    <app-summary-tab [shifts]="shifts()" />
+    <app-summary-tab />
   }
   @case ('products') {
-    <app-products-tab [shifts]="shifts()" />
+    <app-products-tab />
   }
 }

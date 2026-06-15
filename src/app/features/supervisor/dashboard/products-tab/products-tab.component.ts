@@ -1,8 +1,7 @@
-import { Component, inject, Input, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Page } from '../../../../core/models/user.models';
-import { CatalogItem, ShiftItem } from '../../../../core/models/catalog.models';
 import { ProductRowResponse } from '../../../../core/models/supervisor.models';
 import { GridColumn, GridFilterField, GridState } from '../../../../shared/grid/grid.models';
 import { GridComponent } from '../../../../shared/grid/grid.component';
@@ -12,13 +11,10 @@ import { GridComponent } from '../../../../shared/grid/grid.component';
   imports: [GridComponent],
   templateUrl: './products-tab.component.html',
 })
-export class ProductsTabComponent implements OnInit {
-  private readonly http = inject(HttpClient);
-  private readonly base = environment.apiUrl;
+export class ProductsTabComponent {
+  private readonly http       = inject(HttpClient);
+  protected readonly base     = environment.apiUrl;
 
-  @Input() shifts: ShiftItem[] = [];
-
-  readonly machines           = signal<CatalogItem[]>([]);
   private readonly _pageData  = signal<Page<ProductRowResponse> | null>(null);
   get rows()          { return this._pageData()?.content ?? []; }
   get totalElements() { return this._pageData()?.totalElements ?? 0; }
@@ -48,32 +44,52 @@ export class ProductsTabComponent implements OnInit {
     { key: 'holdDetails',    label: 'Hold',          sortable: false, type: 'text' },
   ];
 
-  get gridFilters(): GridFilterField[] { return [
+  readonly gridFilters: GridFilterField[] = [
     { key: 'dateRange', label: 'Date', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
-    { key: 'shiftId',       label: 'Shift',          type: 'select', options: [
-        { label: 'All shifts', value: '' },
-        ...this.shifts.map(s => ({ label: s.name, value: s.id })),
-    ]},
-    { key: 'staffEmail',    label: 'Staff Email',    type: 'text', placeholder: 'Filter by email…' },
-    { key: 'staffName',     label: 'Staff Name',     type: 'text', placeholder: 'Filter by name…' },
-    { key: 'machineStatus', label: 'Machine Status', type: 'select', options: [
-        { label: 'All statuses', value: '' },
-        { label: 'Running',      value: 'RUNNING' },
-        { label: 'Stopped',      value: 'STOPPED' },
-        { label: 'Maintenance',  value: 'MAINTENANCE' },
-        { label: 'Ready',        value: 'READY' },
-    ]},
-    { key: 'machineName', label: 'Machine', type: 'select', options: [
-        { label: 'All machines', value: '' },
-        ...this.machines().map(m => ({ label: m.name, value: m.name })),
-    ]},
-  ]; }
-
-  ngOnInit(): void {
-    this.http.get<Page<CatalogItem>>(`${this.base}/api/supervisor/machines?size=1000&sort=name,asc`).subscribe({
-      next: (page) => this.machines.set(page.content),
-    });
-  }
+    {
+      key: 'staffEmail',
+      label: 'Staff',
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/supervisor/staff-users`,
+      searchParam: 'search',
+      labelFn: (u: any) => u.name,
+      secondaryLabelFn: (u: any) => u.email,
+      valueFn: (u: any) => u.email,
+      placeholder: 'Search staff...',
+    },
+    {
+      key: 'shiftId',
+      label: 'Shift',
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/supervisor/shifts`,
+      searchParam: 'name',
+      labelFn: (s: any) => s.name,
+      valueFn: (s: any) => s.id,
+      placeholder: 'Search shift...',
+    },
+    {
+      key: 'machineStatus',
+      label: 'Machine Status',
+      type: 'searchable-select',
+      options: [
+        { label: 'Running',     value: 'RUNNING'     },
+        { label: 'Stopped',     value: 'STOPPED'     },
+        { label: 'Maintenance', value: 'MAINTENANCE' },
+        { label: 'Ready',       value: 'READY'       },
+      ],
+      placeholder: 'Search status...',
+    },
+    {
+      key: 'machineName',
+      label: 'Machine',
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/supervisor/machines`,
+      searchParam: 'name',
+      labelFn: (m: any) => m.name,
+      valueFn: (m: any) => m.name,
+      placeholder: 'Search machine...',
+    },
+  ];
 
   onGridStateChange(state: GridState): void {
     this._state = state;

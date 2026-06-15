@@ -2,7 +2,6 @@ import {
   Component,
   computed,
   inject,
-  OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -10,7 +9,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { Page } from '../../../../core/models/user.models';
-import { WorkReportResponse, ShiftRef } from '../../../../core/models/work-report.models';
+import { WorkReportResponse } from '../../../../core/models/work-report.models';
 import { GridAction, GridColumn, GridFilterField, GridState } from '../../../../shared/grid/grid.models';
 import { GridComponent } from '../../../../shared/grid/grid.component';
 import { ReportDetailModalComponent } from '../detail/report-detail-modal.component';
@@ -20,7 +19,7 @@ import { ReportDetailModalComponent } from '../detail/report-detail-modal.compon
   imports: [GridComponent, RouterLink, ReportDetailModalComponent],
   templateUrl: './report-list.component.html',
 })
-export class ReportListComponent implements OnInit {
+export class ReportListComponent {
   private readonly http    = inject(HttpClient);
   private readonly base    = environment.apiUrl;
 
@@ -33,7 +32,6 @@ export class ReportListComponent implements OnInit {
 
   readonly loading    = signal(false);
   readonly viewingId  = signal<string | null>(null);
-  readonly shifts     = signal<ShiftRef[]>([]);
 
   private _currentState: GridState = { filters: {}, sort: null, page: 0, size: 10 };
 
@@ -43,28 +41,23 @@ export class ReportListComponent implements OnInit {
     { key: 'createdAt',  label: 'Submitted', sortable: true, type: 'date' },
   ];
 
-  readonly gridFilters = computed<GridFilterField[]>(() => [
+  readonly gridFilters: GridFilterField[] = [
     { key: 'dateRange', label: 'Date', type: 'daterange', fromKey: 'fromDate', toKey: 'toDate' },
     {
       key: 'shiftId',
       label: 'Shift',
-      type: 'select',
-      options: [
-        { label: 'All shifts', value: '' },
-        ...this.shifts().map(s => ({ label: s.name, value: s.id })),
-      ],
+      type: 'searchable-select',
+      searchUrl: `${this.base}/api/staff/reference/shifts`,
+      searchParam: 'name',
+      labelFn: (s: any) => `${s.name} (${s.startTime} - ${s.endTime})`,
+      valueFn: (s: any) => s.id,
+      placeholder: 'Search shift...',
     },
-  ]);
+  ];
 
   readonly gridActions: GridAction[] = [
     { key: 'view', label: 'View', btnClass: 'btn-outline-secondary', icon: 'view' },
   ];
-
-  ngOnInit(): void {
-    this.http.get<ShiftRef[]>(`${this.base}/api/staff/reference/shifts`).subscribe({
-      next: (list) => this.shifts.set(list),
-    });
-  }
 
   onGridStateChange(state: GridState): void {
     this._currentState = state;

@@ -2,7 +2,6 @@ import {
   Component,
   ElementRef,
   inject,
-  OnInit,
   PLATFORM_ID,
   signal,
   ViewChild,
@@ -20,16 +19,13 @@ import {
 import { NgClass } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { ToastService } from '../../../../core/services/toast.service';
 import {
   CreateWorkReportRequest,
-  MachineRef,
   MachineStatus,
-  ShiftRef,
-  StopTypeRef,
 } from '../../../../core/models/work-report.models';
+import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
 
 function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
   const deviation = ctrl.get('deviation')?.value as boolean;
@@ -44,29 +40,30 @@ function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-report-create',
-  imports: [ReactiveFormsModule, RouterLink, NgClass],
+  imports: [ReactiveFormsModule, RouterLink, NgClass, SearchableDropdownComponent],
   templateUrl: './report-create.component.html',
 })
-export class ReportCreateComponent implements OnInit {
+export class ReportCreateComponent {
   private readonly fb           = inject(FormBuilder);
   private readonly http         = inject(HttpClient);
   private readonly router       = inject(Router);
-  private readonly base         = environment.apiUrl;
+  protected readonly base       = environment.apiUrl;
   private readonly platformId   = inject(PLATFORM_ID);
   private readonly toastService = inject(ToastService);
 
   @ViewChild('confirmModal') private confirmModalRef!: ElementRef<HTMLElement>;
   private bsConfirmModal: { show(): void; hide(): void } | null = null;
 
-  readonly today = new Date().toISOString().split('T')[0];
-
-  readonly shifts    = signal<ShiftRef[]>([]);
-  readonly machines  = signal<MachineRef[]>([]);
-  readonly stopTypes = signal<StopTypeRef[]>([]);
-  readonly refLoading = signal(true);
-  readonly refError   = signal(false);
+  readonly today      = new Date().toISOString().split('T')[0];
   readonly submitting = signal(false);
   readonly submitted  = signal(false);
+
+  readonly shiftLabelFn    = (s: any) => `${s.name} (${s.startTime} - ${s.endTime})`;
+  readonly shiftValueFn    = (s: any) => s.id as string;
+  readonly machineLabelFn  = (m: any) => m.name as string;
+  readonly machineValueFn  = (m: any) => m.id as string;
+  readonly stopTypeLabelFn = (st: any) => st.name as string;
+  readonly stopTypeValueFn = (st: any) => st.id as string;
 
   readonly statusList: MachineStatus[] = ['RUNNING', 'STOPPED', 'MAINTENANCE', 'READY'];
   readonly statusConfig: Record<MachineStatus, { label: string; borderClass: string; bgClass: string }> = {
@@ -82,8 +79,6 @@ export class ReportCreateComponent implements OnInit {
     machines:   this.fb.array([this.buildMachineGroup()]),
   });
 
-  ngOnInit(): void { this.loadRefData(); }
-
   private getConfirmModal(): { show(): void; hide(): void } | null {
     if (!isPlatformBrowser(this.platformId) || !this.confirmModalRef?.nativeElement) return null;
     if (!this.bsConfirmModal) {
@@ -93,27 +88,6 @@ export class ReportCreateComponent implements OnInit {
       this.bsConfirmModal = new BootstrapModal(this.confirmModalRef.nativeElement) as { show(): void; hide(): void };
     }
     return this.bsConfirmModal;
-  }
-
-  loadRefData(): void {
-    this.refLoading.set(true);
-    this.refError.set(false);
-    forkJoin({
-      shifts:    this.http.get<ShiftRef[]>(`${this.base}/api/staff/reference/shifts`),
-      machines:  this.http.get<MachineRef[]>(`${this.base}/api/staff/reference/machines`),
-      stopTypes: this.http.get<StopTypeRef[]>(`${this.base}/api/staff/reference/stop-types`),
-    }).subscribe({
-      next: ({ shifts, machines, stopTypes }) => {
-        this.shifts.set(shifts);
-        this.machines.set(machines);
-        this.stopTypes.set(stopTypes);
-        this.refLoading.set(false);
-      },
-      error: () => {
-        this.refError.set(true);
-        this.refLoading.set(false);
-      },
-    });
   }
 
   // ── FormArray accessors ───────────────────────────────────────────────────

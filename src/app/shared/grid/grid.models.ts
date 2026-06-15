@@ -9,11 +9,16 @@ export interface GridColumn {
 export interface GridFilterField {
   key: string;
   label: string;
-  type: 'text' | 'select' | 'date' | 'daterange';
+  type: 'text' | 'select' | 'date' | 'daterange' | 'searchable-select';
   placeholder?: string;
   options?: { label: string; value: string }[];
   fromKey?: string;
   toKey?: string;
+  searchUrl?: string;
+  searchParam?: string;
+  labelFn?: (item: any) => string;
+  valueFn?: (item: any) => string;
+  secondaryLabelFn?: (item: any) => string;
 }
 
 export interface GridAction {

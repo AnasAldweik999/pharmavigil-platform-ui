@@ -225,6 +225,19 @@
               [toDate]="draftFilters()[field.toKey!] || ''"
               (rangeChange)="onDraftDateRange(field.fromKey!, field.toKey!, $event.from, $event.to)"
             />
+          } @else if (field.type === 'searchable-select') {
+            <app-searchable-dropdown
+              [options]="field.options ?? []"
+              [searchUrl]="field.searchUrl ?? null"
+              [searchParam]="field.searchParam ?? 'name'"
+              [labelFn]="field.labelFn ?? defaultLabelFn"
+              [valueFn]="field.valueFn ?? defaultValueFn"
+              [secondaryLabelFn]="field.secondaryLabelFn"
+              [placeholder]="field.placeholder ?? 'Search...'"
+              [value]="draftFilters()[field.key] || ''"
+              (valueChange)="onDraftInput(field.key, $event)"
+              (labelChange)="onDraftLabel(field.key, $event)"
+            />
           } @else {
             <select
               class="form-select form-select-sm"

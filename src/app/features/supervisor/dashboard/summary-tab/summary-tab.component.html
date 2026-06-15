@@ -41,42 +41,54 @@
         <div class="col-12 col-sm-6 col-lg-auto">
           <div class="pv-filter-field">
             <span class="pv-filter-label">Shift</span>
-            <select class="form-select form-select-sm w-100" formControlName="shiftId">
-              <option value="">All shifts</option>
-              @for (s of shifts; track s.id) {
-                <option [value]="s.id">{{ s.name }}</option>
-              }
-            </select>
+            <app-searchable-dropdown
+              formControlName="shiftId"
+              [searchUrl]="base + '/api/supervisor/shifts'"
+              searchParam="name"
+              [labelFn]="shiftLabelFn"
+              [valueFn]="shiftValueFn"
+              placeholder="Search shift..."
+            />
           </div>
         </div>
 
         <div class="col-12 col-sm-6 col-lg-auto">
           <div class="pv-filter-field">
             <span class="pv-filter-label">Machine</span>
-            <select class="form-select form-select-sm w-100" formControlName="machineName">
-              <option value="">All machines</option>
-              @for (m of machines(); track m.id) {
-                <option [value]="m.name">{{ m.name }}</option>
-              }
-            </select>
+            <app-searchable-dropdown
+              formControlName="machineName"
+              [searchUrl]="base + '/api/supervisor/machines'"
+              searchParam="name"
+              [labelFn]="machLabelFn"
+              [valueFn]="machLabelFn"
+              placeholder="Search machine..."
+            />
           </div>
         </div>
 
         <div class="col-12 col-sm-6 col-lg-auto">
           <div class="pv-filter-field">
-            <span class="pv-filter-label">Staff Email</span>
-            <input type="email" class="form-control form-control-sm w-100" formControlName="staffEmail" placeholder="Filter by email…" />
+            <span class="pv-filter-label">Staff</span>
+            <app-searchable-dropdown
+              formControlName="staffEmail"
+              [searchUrl]="base + '/api/supervisor/staff-users'"
+              searchParam="search"
+              [labelFn]="staffLabelFn"
+              [secondaryLabelFn]="staffEmailFn"
+              [valueFn]="staffEmailFn"
+              placeholder="Search staff..."
+            />
           </div>
         </div>
 
         <div class="col-12 col-sm-6 col-lg-auto">
           <div class="pv-filter-field">
             <span class="pv-filter-label">Group By</span>
-            <select class="form-select form-select-sm w-100" formControlName="groupBy">
-              @for (opt of groupByOptions; track opt.value) {
-                <option [value]="opt.value">{{ opt.label }}</option>
-              }
-            </select>
+            <app-searchable-dropdown
+              formControlName="groupBy"
+              [options]="groupByOptions"
+              placeholder="None (totals only)"
+            />
           </div>
         </div>
 
