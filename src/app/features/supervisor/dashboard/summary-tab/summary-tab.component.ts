@@ -210,10 +210,12 @@ export class SummaryTabComponent implements OnInit {
     }
   }
 
-  formatKpi(value: number): string {
-    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
-    if (value >= 1_000)     return (value / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-    return value.toLocaleString();
+  kpiFontSize(value: number): string {
+    const digits = Math.abs(value) >= 1 ? Math.floor(Math.log10(Math.abs(value))) + 1 : 1;
+    if (digits <= 6)  return 'clamp(1.3rem, 3vw, 2rem)';
+    if (digits <= 9)  return 'clamp(1rem, 2.5vw, 1.5rem)';
+    if (digits <= 12) return 'clamp(0.8rem, 2vw, 1.1rem)';
+    return 'clamp(0.7rem, 1.5vw, 0.9rem)';
   }
 
   onDateRangeChange(range: { from: string; to: string }): void {

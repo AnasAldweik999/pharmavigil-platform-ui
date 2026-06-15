@@ -150,11 +150,10 @@
       <select
         class="form-select form-select-sm"
         style="width: auto;"
-        [value]="currentSize()"
         (change)="onSizeChange(+$any($event.target).value)"
       >
         @for (s of pageSizes; track s) {
-          <option [value]="s">{{ s }} / page</option>
+          <option [value]="s" [selected]="s === currentSize()">{{ s }} / page</option>
         }
       </select>
 
