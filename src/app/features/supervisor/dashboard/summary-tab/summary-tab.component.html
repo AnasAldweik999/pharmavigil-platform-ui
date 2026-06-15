@@ -120,7 +120,7 @@
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="fs-2 fw-bold text-primary lh-1 mb-1">{{ totals().products }}</div>
+              <div class="fw-bold text-primary lh-1 mb-1" style="font-size:clamp(1.1rem,3.5vw,2rem)" [title]="totals().products | number">{{ formatKpi(totals().products) }}</div>
               <div class="small text-muted">Products</div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="text-primary flex-shrink-0" style="opacity:0.15" viewBox="0 0 16 16">
@@ -137,7 +137,7 @@
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="fs-2 fw-bold text-success lh-1 mb-1">{{ totals().outputUnits }}</div>
+              <div class="fw-bold text-success lh-1 mb-1" style="font-size:clamp(1.1rem,3.5vw,2rem)" [title]="totals().outputUnits | number">{{ formatKpi(totals().outputUnits) }}</div>
               <div class="small text-muted">Output Units</div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="text-success flex-shrink-0" style="opacity:0.15" viewBox="0 0 16 16">
@@ -154,7 +154,7 @@
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="fs-2 fw-bold text-warning lh-1 mb-1">{{ totals().stops }}</div>
+              <div class="fw-bold text-warning lh-1 mb-1" style="font-size:clamp(1.1rem,3.5vw,2rem)" [title]="totals().stops | number">{{ formatKpi(totals().stops) }}</div>
               <div class="small text-muted">Stops</div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="text-warning flex-shrink-0" style="opacity:0.15" viewBox="0 0 16 16">
@@ -172,7 +172,7 @@
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="fs-2 fw-bold text-danger lh-1 mb-1">{{ totals().downtime }}</div>
+              <div class="fw-bold text-danger lh-1 mb-1" style="font-size:clamp(1.1rem,3.5vw,2rem)" [title]="totals().downtime | number">{{ formatKpi(totals().downtime) }}</div>
               <div class="small text-muted">Downtime (min)</div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="text-danger flex-shrink-0" style="opacity:0.15" viewBox="0 0 16 16">
@@ -190,7 +190,7 @@
         <div class="card-body p-3">
           <div class="d-flex justify-content-between align-items-start">
             <div>
-              <div class="fs-2 fw-bold text-info lh-1 mb-1">{{ totals().incidents }}</div>
+              <div class="fw-bold text-info lh-1 mb-1" style="font-size:clamp(1.1rem,3.5vw,2rem)" [title]="totals().incidents | number">{{ formatKpi(totals().incidents) }}</div>
               <div class="small text-muted">Incidents</div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="text-info flex-shrink-0" style="opacity:0.15" viewBox="0 0 16 16">

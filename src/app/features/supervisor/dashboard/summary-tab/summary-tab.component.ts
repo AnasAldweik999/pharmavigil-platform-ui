@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, OnInit, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
@@ -16,7 +16,7 @@ type MetricKey = 'outputUnits' | 'products' | 'stops' | 'downtime' | 'incidents'
 
 @Component({
   selector: 'app-summary-tab',
-  imports: [ReactiveFormsModule, BaseChartDirective, NgxEchartsDirective, DateRangePickerComponent, SearchableDropdownComponent],
+  imports: [ReactiveFormsModule, DecimalPipe, BaseChartDirective, NgxEchartsDirective, DateRangePickerComponent, SearchableDropdownComponent],
   templateUrl: './summary-tab.component.html',
 })
 export class SummaryTabComponent implements OnInit {
@@ -107,7 +107,7 @@ export class SummaryTabComponent implements OnInit {
           backgroundColor: opt.bg,
           borderColor: opt.border,
           fill: false,
-          maxBarThickness: 80,
+          barThickness: Math.max(10, Math.floor(44 / metrics.length))
         };
       }),
     };
@@ -208,6 +208,12 @@ export class SummaryTabComponent implements OnInit {
       case 'downtime':    return d.totalDowntimeMinutes;
       case 'incidents':   return d.totalIncidents;
     }
+  }
+
+  formatKpi(value: number): string {
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (value >= 1_000)     return (value / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return value.toLocaleString();
   }
 
   onDateRangeChange(range: { from: string; to: string }): void {
