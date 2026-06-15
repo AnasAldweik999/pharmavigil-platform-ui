@@ -8,8 +8,8 @@ export const staffRoutes: Routes = [
     path: '',
     component: StaffLayoutComponent,
     children: [
-      { path: 'reports',     component: ReportListComponent },
-      { path: 'reports/new', component: ReportCreateComponent },
+      { path: 'reports',     title: 'PharmaVigil · My Reports', component: ReportListComponent },
+      { path: 'reports/new', title: 'PharmaVigil · New Report',  component: ReportCreateComponent },
       { path: '', redirectTo: 'reports', pathMatch: 'full' },
     ],
   },

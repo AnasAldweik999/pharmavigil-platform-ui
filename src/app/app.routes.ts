@@ -7,8 +7,8 @@ import {staffGuard} from './core/guards/staff.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'login', title: 'PharmaVigil · Sign In', component: LoginComponent },
+  { path: 'reset-password', title: 'PharmaVigil · Reset Password', component: ResetPasswordComponent },
   {
     path: 'supervisor',
     canActivate: [authGuard, supervisorGuard],
