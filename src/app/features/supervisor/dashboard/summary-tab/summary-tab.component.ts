@@ -43,9 +43,10 @@ export class SummaryTabComponent implements OnInit {
   readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie', 'doughnut'];
 
   readonly groupByOptions: { label: string; value: SummaryGroupBy }[] = [
-    { label: 'By Date',  value: 'DATE'  },
-    { label: 'By Shift', value: 'SHIFT' },
-    { label: 'By User',  value: 'USER'  },
+    { label: 'By Date',    value: 'DATE'    },
+    { label: 'By Shift',   value: 'SHIFT'   },
+    { label: 'By User',    value: 'USER'    },
+    { label: 'By Machine', value: 'MACHINE' },
   ];
 
   readonly totals = computed(() => {

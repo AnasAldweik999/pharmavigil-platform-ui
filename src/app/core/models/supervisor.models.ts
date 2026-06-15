@@ -31,4 +31,4 @@ export interface ProductRowResponse {
   stopCount: number;
 }
 
-export type SummaryGroupBy = 'DATE' | 'SHIFT' | 'USER';
+export type SummaryGroupBy = 'DATE' | 'SHIFT' | 'USER' | 'MACHINE';
