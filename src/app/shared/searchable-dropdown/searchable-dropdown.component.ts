@@ -61,6 +61,7 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   readonly _panelTop      = signal(0);
   readonly _panelLeft     = signal(0);
   readonly _panelWidth    = signal(0);
+  readonly _panelVisible  = signal(false);
 
   readonly _filteredItems = computed(() => {
     if (this.searchUrl) return this._asyncItems();
@@ -85,6 +86,7 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   onDocumentMouseDown(event: MouseEvent): void {
     if (!this.elRef.nativeElement.contains(event.target as Node)) {
       this._panelOpen.set(false);
+      this._panelVisible.set(false);
     }
   }
 
@@ -92,13 +94,16 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
     if (this._disabled()) return;
     if (this._panelOpen()) {
       this._panelOpen.set(false);
+      this._panelVisible.set(false);
       return;
     }
     this._searchText.set('');
+    this._panelVisible.set(false);
     this._panelOpen.set(true);
     if (this.searchUrl) this.fetch('');
     setTimeout(() => {
       this.positionPanel();
+      this._panelVisible.set(true);
       this.searchInput?.nativeElement.focus();
     }, 0);
   }
