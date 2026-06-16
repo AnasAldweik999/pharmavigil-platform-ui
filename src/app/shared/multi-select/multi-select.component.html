@@ -1,0 +1,61 @@
+<div class="pv-multi-select" #container>
+
+  <!-- Trigger -->
+  <div class="pv-ms-trigger" (click)="toggle($event)">
+    @if (selected().length === 0) {
+      <span class="pv-ms-placeholder">{{ placeholder }}</span>
+    } @else {
+      <div class="pv-ms-bubbles">
+        @for (s of selected(); track s.value) {
+          <span class="pv-ms-bubble">
+            <span class="pv-ms-bubble-text" [title]="s.label">{{ s.label }}</span>
+            <button type="button" class="pv-ms-bubble-remove" (click)="remove(s.value, $event)" aria-label="Remove">×</button>
+          </span>
+        }
+      </div>
+      <button type="button" class="pv-ms-clear" (click)="clearAll($event)">Clear all</button>
+    }
+    <svg class="pv-ms-chevron" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+    </svg>
+  </div>
+
+  <!-- Dropdown panel -->
+  @if (isOpen()) {
+    <div class="pv-ms-panel">
+      <div class="pv-ms-search-wrap">
+        <input
+          type="text"
+          class="form-control form-control-sm pv-ms-search"
+          placeholder="Search…"
+          [value]="searchText()"
+          (input)="onSearchInput($any($event.target).value)"
+          (click)="$event.stopPropagation()"
+        />
+      </div>
+
+      <div class="pv-ms-options">
+        @if (loading()) {
+          <div class="text-center py-2">
+            <span class="spinner-border spinner-border-sm text-primary"></span>
+          </div>
+        } @else if (displayOptions().length === 0) {
+          <div class="pv-ms-empty">No options found</div>
+        } @else {
+          @for (opt of displayOptions(); track valueFn(opt)) {
+            <label class="pv-ms-option" (click)="$event.preventDefault(); toggleOption(opt)">
+              <input type="checkbox" [checked]="isSelected(valueFn(opt))" (change)="toggleOption(opt)" (click)="$event.stopPropagation()" />
+              <span class="pv-ms-opt-label">
+                {{ labelFn(opt) }}
+                @if (secondaryLabelFn) {
+                  <span class="pv-ms-secondary">{{ secondaryLabelFn(opt) }}</span>
+                }
+              </span>
+            </label>
+          }
+        }
+      </div>
+    </div>
+  }
+
+</div>

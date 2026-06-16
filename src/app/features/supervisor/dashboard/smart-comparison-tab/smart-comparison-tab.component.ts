@@ -1,0 +1,267 @@
+import {
+  afterNextRender,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
+import { DecimalPipe, TitleCasePipe } from '@angular/common';
+import { GridColumn, GridAction, GridState } from '../../../../shared/grid/grid.models';
+import { GridComponent } from '../../../../shared/grid/grid.component';
+import { DateRangePickerComponent } from '../../../../shared/date-range-picker/date-range-picker.component';
+import { MultiSelectComponent } from '../../../../shared/multi-select/multi-select.component';
+import { ProductsInnerGridComponent } from './products-inner-grid/products-inner-grid.component';
+import { IncidentsInnerGridComponent } from './incidents-inner-grid/incidents-inner-grid.component';
+import { SmartComparisonService } from '../../../../core/services/smart-comparison.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { environment } from '../../../../../environments/environment';
+import { AnyGroupRow, SmartGroupBy, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
+
+const today  = new Date().toLocaleDateString('en-CA');
+const last5  = new Date(Date.now() - 4 * 86400000).toLocaleDateString('en-CA');
+
+const sharedMetricCols: GridColumn[] = [
+  { key: 'productCount',   label: 'Products'       },
+  { key: 'outputUnits',    label: 'Output Units'    },
+  { key: 'stopCount',      label: 'Stops'           },
+  { key: 'downtimeMinutes', label: 'Downtime (min)' },
+  { key: 'incidentCount',  label: 'Incidents'       },
+  { key: 'holdCount',      label: 'Holds'           },
+  { key: 'deviationCount', label: 'Deviations'      },
+];
+
+@Component({
+  selector: 'app-smart-comparison-tab',
+  imports: [
+    DecimalPipe,
+    TitleCasePipe,
+    GridComponent,
+    DateRangePickerComponent,
+    MultiSelectComponent,
+    ProductsInnerGridComponent,
+    IncidentsInnerGridComponent,
+  ],
+  templateUrl: './smart-comparison-tab.component.html',
+})
+export class SmartComparisonTabComponent implements OnInit {
+  private readonly service = inject(SmartComparisonService);
+  private readonly toast   = inject(ToastService);
+  protected readonly base  = environment.apiUrl;
+
+  // ── Filter state ──────────────────────────────────────────────────────────
+  readonly groupBy          = signal<SmartGroupBy>('MACHINE');
+  readonly dateRange        = signal({ from: last5, to: today });
+  readonly selectedShifts   = signal<string[]>([]);
+  readonly selectedStaff    = signal<string[]>([]);
+  readonly selectedMachines = signal<string[]>([]);
+
+  readonly groupByOptions: { value: SmartGroupBy; label: string }[] = [
+    { value: 'MACHINE', label: 'Machine' },
+    { value: 'STAFF',   label: 'Staff'   },
+    { value: 'SHIFT',   label: 'Shift'   },
+    { value: 'DATE',    label: 'Date'    },
+  ];
+
+  // ── Label / value fns for dropdowns ──────────────────────────────────────
+  readonly shiftLabelFn  = (s: any) => s.name  as string;
+  readonly shiftValueFn  = (s: any) => s.name  as string;
+  readonly machLabelFn   = (m: any) => m.name  as string;
+  readonly staffLabelFn  = (u: any) => u.name  as string;
+  readonly staffEmailFn  = (u: any) => u.email as string;
+
+  // ── Data state ────────────────────────────────────────────────────────────
+  readonly summaryCards    = signal<SummaryCardsData | null>(null);
+  readonly groupedDataLink = signal<string | null>(null);
+  readonly groupedRows     = signal<AnyGroupRow[]>([]);
+  readonly groupedTotal    = signal(0);
+  readonly groupedPages    = signal(0);
+  readonly loadingSummary  = signal(false);
+  readonly loadingGrouped  = signal(false);
+  readonly hasLoaded       = signal(false);
+
+  // ── Inner grid state ──────────────────────────────────────────────────────
+  readonly activeProductsId   = signal<string | null>(null);
+  readonly productsBaseUrl    = signal<string | null>(null);
+  readonly productsTitle      = signal('');
+  readonly activeIncidentsId  = signal<string | null>(null);
+  readonly incidentsBaseUrl   = signal<string | null>(null);
+  readonly incidentsTitle     = signal('');
+
+  @ViewChild('productsRef') productsRef?: ElementRef<HTMLElement>;
+  @ViewChild('incidentsRef') incidentsRef?: ElementRef<HTMLElement>;
+
+  // ── Grid config ───────────────────────────────────────────────────────────
+  readonly gridColumns = computed<GridColumn[]>(() => {
+    switch (this.groupBy()) {
+      case 'MACHINE': return [{ key: 'machineName', label: 'Machine' }, ...sharedMetricCols];
+      case 'STAFF':   return [{ key: 'staffName', label: 'Staff Name' }, { key: 'staffEmail', label: 'Email' }, ...sharedMetricCols];
+      case 'SHIFT':   return [{ key: 'shiftName', label: 'Shift' }, ...sharedMetricCols];
+      case 'DATE':    return [{ key: 'date', label: 'Date', type: 'date' }, ...sharedMetricCols];
+    }
+  });
+
+  readonly gridActions: GridAction[] = [
+    { key: 'products',  label: 'Products',  icon: 'products',  btnClass: 'btn-sm btn-outline-primary' },
+    { key: 'incidents', label: 'Incidents', icon: 'incidents', btnClass: 'btn-sm btn-outline-danger',
+      condition: (row: any) => row.hasIncidents },
+  ];
+
+  ngOnInit(): void {
+    this.applyFilters();
+  }
+
+  onGroupByChange(value: SmartGroupBy): void {
+    this.groupBy.set(value);
+    this.clearResults();
+  }
+
+  onDateRangeChange(range: { from: string; to: string }): void {
+    this.dateRange.set(range);
+    this.clearResults();
+  }
+
+  onShiftsChange(values: string[]): void {
+    this.selectedShifts.set(values);
+    this.clearResults();
+  }
+
+  onStaffChange(values: string[]): void {
+    this.selectedStaff.set(values);
+    this.clearResults();
+  }
+
+  onMachinesChange(values: string[]): void {
+    this.selectedMachines.set(values);
+    this.clearResults();
+  }
+
+  applyFilters(): void {
+    this.closeInnerGrids();
+    this.loadingSummary.set(true);
+    const f = {
+      groupBy:      this.groupBy(),
+      startDate:    this.dateRange().from,
+      endDate:      this.dateRange().to,
+      shifts:       this.selectedShifts().length   ? this.selectedShifts()   : undefined,
+      staffEmails:  this.selectedStaff().length    ? this.selectedStaff()    : undefined,
+      machineNames: this.selectedMachines().length ? this.selectedMachines() : undefined,
+    };
+
+    this.service.getSummary(f).subscribe({
+      next: res => {
+        this.summaryCards.set(res.summaryCards);
+        this.groupedDataLink.set(res.groupedDataLink);
+        this.hasLoaded.set(true);
+        this.loadGrouped(0);
+      },
+      error: () => {
+        this.toast.error('Failed to load summary. Please try again.');
+        this.loadingSummary.set(false);
+      },
+    });
+  }
+
+  onPageChange(state: GridState): void {
+    const link = this.groupedDataLink();
+    if (!link) return;
+    this.loadGrouped(state.page, state.size);
+  }
+
+  onActionClick(event: { action: GridAction; row: unknown }): void {
+    const row = event.action as any;
+    const r   = event.row   as any;
+    const id  = this.getRowId(r);
+    const title = this.getRowTitle(r);
+
+    if (event.action.key === 'products') {
+      if (this.activeProductsId() === id) {
+        this.activeProductsId.set(null);
+        this.productsBaseUrl.set(null);
+      } else {
+        this.activeProductsId.set(id);
+        this.productsBaseUrl.set(r._links?.['products'] ?? null);
+        this.productsTitle.set(title);
+        afterNextRender(() => {
+          this.productsRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    } else if (event.action.key === 'incidents') {
+      if (this.activeIncidentsId() === id) {
+        this.activeIncidentsId.set(null);
+        this.incidentsBaseUrl.set(null);
+      } else {
+        this.activeIncidentsId.set(id);
+        this.incidentsBaseUrl.set(r._links?.['incidents'] ?? null);
+        this.incidentsTitle.set(title);
+        afterNextRender(() => {
+          this.incidentsRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }
+  }
+
+  kpiFontSize(value: number): string {
+    const digits = Math.abs(value) >= 1 ? Math.floor(Math.log10(Math.abs(value))) + 1 : 1;
+    if (digits <= 6)  return 'clamp(1.3rem, 3vw, 2rem)';
+    if (digits <= 9)  return 'clamp(1rem, 2.5vw, 1.5rem)';
+    if (digits <= 12) return 'clamp(0.8rem, 2vw, 1.1rem)';
+    return 'clamp(0.7rem, 1.5vw, 0.9rem)';
+  }
+
+  private loadGrouped(page: number, size = 10): void {
+    const link = this.groupedDataLink();
+    if (!link) return;
+    this.loadingGrouped.set(true);
+    this.service.getGrouped(link, page, size).subscribe({
+      next: res => {
+        this.groupedRows.set(res.content);
+        this.groupedTotal.set(res.totalElements);
+        this.groupedPages.set(res.totalPages);
+        this.loadingSummary.set(false);
+        this.loadingGrouped.set(false);
+      },
+      error: () => {
+        this.toast.error('Failed to load grouped data. Please try again.');
+        this.loadingSummary.set(false);
+        this.loadingGrouped.set(false);
+      },
+    });
+  }
+
+  private clearResults(): void {
+    this.summaryCards.set(null);
+    this.groupedRows.set([]);
+    this.groupedTotal.set(0);
+    this.groupedPages.set(0);
+    this.hasLoaded.set(false);
+    this.closeInnerGrids();
+  }
+
+  private closeInnerGrids(): void {
+    this.activeProductsId.set(null);
+    this.productsBaseUrl.set(null);
+    this.activeIncidentsId.set(null);
+    this.incidentsBaseUrl.set(null);
+  }
+
+  private getRowId(row: any): string {
+    switch (this.groupBy()) {
+      case 'MACHINE': return row.machineName ?? '';
+      case 'STAFF':   return row.staffEmail  ?? '';
+      case 'SHIFT':   return row.shiftName   ?? '';
+      case 'DATE':    return row.date        ?? '';
+    }
+  }
+
+  private getRowTitle(row: any): string {
+    switch (this.groupBy()) {
+      case 'MACHINE': return row.machineName ?? '';
+      case 'STAFF':   return row.staffName   ?? row.staffEmail ?? '';
+      case 'SHIFT':   return row.shiftName   ?? '';
+      case 'DATE':    return row.date        ?? '';
+    }
+  }
+}

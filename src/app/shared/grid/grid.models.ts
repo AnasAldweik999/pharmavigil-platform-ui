@@ -2,7 +2,7 @@ export interface GridColumn {
   key: string;
   label: string;
   sortable?: boolean;
-  type?: 'text' | 'date' | 'badge';
+  type?: 'text' | 'date' | 'date-only' | 'badge';
   badgeClass?: (value: string) => string;
 }
 
@@ -25,7 +25,7 @@ export interface GridAction {
   key: string;
   label: string;
   btnClass?: string;
-  icon?: 'view' | 'delete' | 'deactivate' | 'activate';
+  icon?: 'view' | 'delete' | 'deactivate' | 'activate' | 'products' | 'incidents';
   condition?: (row: unknown) => boolean;
 }
 
