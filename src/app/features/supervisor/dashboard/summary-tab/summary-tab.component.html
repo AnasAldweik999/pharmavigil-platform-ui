@@ -278,15 +278,11 @@
             ></canvas>
           </div>
         } @else {
-          <div class="d-flex flex-column flex-md-row gap-3 w-100" style="overflow:auto">
-            @for (m of metricOptions; track m.key) {
-              <div
-                echarts
-                [options]="echartsOptionMap()[m.key]"
-                [style.flex]="selectedMetrics().includes(m.key) ? '1' : '0 0 0px'"
-                [style.height]="selectedMetrics().includes(m.key) ? '300px' : '0'"
-                style="overflow:hidden;min-width:0"
-              ></div>
+          <div class="row g-3">
+            @for (m of selectedMetricOptions(); track m.key; let last = $last) {
+              <div [class]="last && (selectedMetricOptions().length % 2 === 1) ? 'col-12 col-md-6 mx-auto' : 'col-12 col-md-6'">
+                <div echarts [options]="echartsOptionMap()[m.key]" style="height:300px"></div>
+              </div>
             }
           </div>
         }

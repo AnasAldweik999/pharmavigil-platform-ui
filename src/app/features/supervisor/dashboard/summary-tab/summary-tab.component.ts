@@ -48,6 +48,10 @@ export class SummaryTabComponent implements OnInit {
 
   readonly chartTypeOptions: ChartJsType[] = ['bar', 'line', 'pie'];
 
+  readonly selectedMetricOptions = computed(() =>
+    this.metricOptions.filter(m => this.selectedMetrics().includes(m.key))
+  );
+
   readonly metricOptions: { key: MetricKey; label: string; bg: string; border: string }[] = [
     { key: 'outputUnits', label: 'Output Units',  bg: 'rgba(25,135,84,0.7)',   border: 'rgba(25,135,84,1)'   },
     { key: 'products',    label: 'Products',       bg: 'rgba(13,110,253,0.7)',  border: 'rgba(13,110,253,1)'  },
@@ -160,7 +164,7 @@ export class SummaryTabComponent implements OnInit {
         } : {}),
         tooltip: {
           trigger: 'item',
-          formatter: '{b}: {c} ({d}%)',
+          formatter: '{b}: {c}',
           appendToBody: true,
         },
         legend: { show: false },
@@ -170,10 +174,11 @@ export class SummaryTabComponent implements OnInit {
           center: multiMetric && isSelected ? ['50%', '56%'] : ['50%', '52%'],
           label: {
             position: 'outside',
-            formatter: '{b}\n{d}%',
+            formatter: '{b}',
             fontSize: 11,
             color: '#444',
             lineHeight: 16,
+            overflow: 'none',
           },
           labelLine: {
             show: true,
