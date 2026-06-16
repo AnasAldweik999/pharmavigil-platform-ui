@@ -157,21 +157,23 @@
         }
       </select>
 
-      <nav aria-label="Page navigation">
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [class.disabled]="currentPage() === 0">
-            <button class="page-link" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0">‹</button>
-          </li>
-          @for (p of pageNumbers(); track p) {
-            <li class="page-item" [class.active]="p === currentPage()">
-              <button class="page-link" (click)="onPageChange(p)">{{ p + 1 }}</button>
+      @if (totalPages > 1) {
+        <nav aria-label="Page navigation">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage() === 0">
+              <button class="page-link" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0 || loading">‹</button>
             </li>
-          }
-          <li class="page-item" [class.disabled]="currentPage() >= totalPages - 1">
-            <button class="page-link" (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() >= totalPages - 1">›</button>
-          </li>
-        </ul>
-      </nav>
+            @for (p of pageNumbers(); track p) {
+              <li class="page-item" [class.active]="p === currentPage()">
+                <button class="page-link" (click)="onPageChange(p)" [disabled]="loading">{{ p + 1 }}</button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="currentPage() >= totalPages - 1">
+              <button class="page-link" (click)="onPageChange(currentPage() + 1)" [disabled]="currentPage() >= totalPages - 1 || loading">›</button>
+            </li>
+          </ul>
+        </nav>
+      }
     </div>
   </div>
 }
