@@ -95,10 +95,7 @@ export class SummaryTabComponent implements OnInit {
     if (!data.length) return { labels: [], datasets: [] };
     const metrics = this.selectedMetrics();
     return {
-      labels: data.map(d => {
-        const label = String(d.group || 'All');
-        return label.length > 16 ? label.slice(0, 15) + '…' : label;
-      }),
+      labels: data.map(d => String(d.group || 'All')),
       datasets: metrics.map(key => {
         const opt = this.metricOptions.find(m => m.key === key)!;
         return {
@@ -146,10 +143,7 @@ export class SummaryTabComponent implements OnInit {
     const data = this.summaryData();
     const metrics = this.selectedMetrics();
     const multiMetric = metrics.length > 1;
-    const labels = data.map(d => {
-      const l = String(d.group || 'All');
-      return l.length > 20 ? l.slice(0, 19) + '…' : l;
-    });
+    const labels = data.map(d => String(d.group || 'All'));
 
     const result = {} as Record<MetricKey, EChartsOption>;
     for (const m of this.metricOptions) {
@@ -167,6 +161,7 @@ export class SummaryTabComponent implements OnInit {
         tooltip: {
           trigger: 'item',
           formatter: '{b}: {c} ({d}%)',
+          appendToBody: true,
         },
         legend: { show: false },
         series: [{
