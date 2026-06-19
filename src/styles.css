@@ -493,6 +493,87 @@ body {
   color: #dc3545;
 }
 
+/* ── Page header (title + primary CTA) ───────────────────────────────────── */
+
+.pv-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pv-page-header-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26, 41, 66, 0.08);
+  border-radius: 11px;
+  color: #1a2942;
+}
+
+.pv-page-header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a2942;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.pv-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.1rem;
+  background: #1a2942;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(26, 41, 66, 0.3);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.pv-cta-btn:hover {
+  background: #22345a;
+  box-shadow: 0 4px 16px rgba(26, 41, 66, 0.38);
+  transform: translateY(-1px);
+}
+
+.pv-cta-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(26, 41, 66, 0.3);
+}
+
+.pv-cta-btn-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
+}
+
+@media (max-width: 575.98px) {
+  .pv-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pv-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ── Grid card header ─────────────────────────────────────────────────────── */
 
 .pv-grid-card-header {

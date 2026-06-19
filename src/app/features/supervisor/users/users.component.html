@@ -1,26 +1,27 @@
-<!-- ── Users Table ────────────────────────────────────────────────────────── -->
-<div class="card border-0 shadow-sm">
-
-  <div class="pv-grid-card-header">
-    <div class="d-flex align-items-center gap-2">
-      <div class="pv-grid-card-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16">
-          <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
-        </svg>
-      </div>
-      <span class="pv-grid-card-title">All Users</span>
+<!-- ── Page header ────────────────────────────────────────────────────────── -->
+<div class="pv-page-header mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="pv-page-header-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+      </svg>
     </div>
-    <button class="btn btn-sm btn-primary d-flex align-items-center gap-1" (click)="openModal()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+    <h1 class="pv-page-header-title">Users</h1>
+  </div>
+  <button class="pv-cta-btn" (click)="openModal()">
+    <span class="pv-cta-btn-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
         <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
       </svg>
-      Create User
-    </button>
-  </div>
+    </span>
+    Create User
+  </button>
+</div>
 
+<!-- ── Users Table ────────────────────────────────────────────────────────── -->
+<div class="card border-0 shadow-sm">
   <div class="card-body p-4">
 
-    <!-- Success alert (auto-dismisses after 6 s) -->
     @if (tableSuccessMessage()) {
       <div class="alert alert-success alert-dismissible py-2 small mb-3" role="alert">
         {{ tableSuccessMessage() }}
@@ -28,7 +29,6 @@
       </div>
     }
 
-    <!-- Grid -->
     <app-grid
       [columns]="gridColumns"
       [defaultSort]="{ field: 'createdAt', direction: 'desc' }"
@@ -71,7 +71,6 @@
         }
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate id="createUserForm">
-          <!-- Account type -->
           <div class="mb-3">
             <label class="form-label fw-medium small text-secondary">Account type</label>
             <div class="d-flex gap-2">
@@ -98,7 +97,6 @@
             </div>
           </div>
 
-          <!-- Full name -->
           <div class="mb-3">
             <label for="modalName" class="form-label fw-medium">Full name</label>
             <input
@@ -117,7 +115,6 @@
             }
           </div>
 
-          <!-- Email -->
           <div class="mb-1">
             <label for="modalEmail" class="form-label fw-medium">Email address</label>
             <input
