@@ -1,5 +1,5 @@
 <!-- ── GroupBy selector ──────────────────────────────────────────────────── -->
-<div class="d-flex flex-wrap gap-3 mb-4">
+<div class="pv-groupby-row mb-4">
   @for (opt of groupByOptions; track opt.value) {
     <button
       type="button"
@@ -40,9 +40,9 @@
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-body px-3 py-3">
 
-    <!-- Row 1: Date range + Apply -->
-    <div class="row g-2 align-items-end mb-2">
-      <div class="col-auto">
+    <!-- Date range -->
+    <div class="row g-2 mb-2">
+      <div class="col-12 col-md-auto">
         <div class="pv-filter-field">
           <span class="pv-filter-label">Date Range</span>
           <app-date-range-picker
@@ -52,40 +52,10 @@
           />
         </div>
       </div>
-      <div class="col-auto ms-auto d-flex align-items-center gap-2">
-        @if (hasLoaded()) {
-          <button
-            type="button"
-            class="btn btn-danger btn-sm d-flex align-items-center gap-2"
-            (click)="clearResults()"
-            [disabled]="loadingSummary() || loadingGrouped()"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-            </svg>
-            Clear
-          </button>
-        }
-        <button
-          type="button"
-          class="btn btn-primary btn-sm d-flex align-items-center gap-2"
-          (click)="applyFilters()"
-          [disabled]="loadingSummary() || loadingGrouped()"
-        >
-          @if (loadingSummary()) {
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
-              <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
-            </svg>
-          }
-          Apply
-        </button>
-      </div>
     </div>
 
-    <!-- Row 2: Three multi-selects, equal width -->
-    <div class="row g-2">
+    <!-- Three multi-selects -->
+    <div class="row g-2 mb-0">
 
       <div class="col-12 col-md-4">
         <div class="pv-filter-field">
@@ -132,6 +102,39 @@
 
     </div>
 
+  </div>
+
+  <!-- Action footer — below all inputs, separated by divider -->
+  <div class="pv-filter-footer">
+    <!-- DOM: Clear first → right on desktop, bottom on mobile (column-reverse) -->
+    @if (hasLoaded()) {
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary pv-filter-footer-btn d-flex align-items-center justify-content-center gap-2"
+        (click)="clearResults()"
+        [disabled]="loadingSummary() || loadingGrouped()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+        </svg>
+        Clear results
+      </button>
+    }
+    <button
+      type="button"
+      class="btn btn-sm btn-primary pv-filter-footer-btn d-flex align-items-center justify-content-center gap-2"
+      (click)="applyFilters()"
+      [disabled]="loadingSummary() || loadingGrouped()"
+    >
+      @if (loadingSummary()) {
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+          <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+        </svg>
+      }
+      Apply
+    </button>
   </div>
 </div>
 
