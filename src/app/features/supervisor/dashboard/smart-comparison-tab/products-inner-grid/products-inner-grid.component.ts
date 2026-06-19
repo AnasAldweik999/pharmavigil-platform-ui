@@ -66,7 +66,7 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
           { key: 'staffName',   label: 'Staff Name' },
           { key: 'staffEmail',  label: 'Email' },
           { key: 'shiftName',   label: 'Shift' },
-          ...shared,
+          ...shared.filter(c => c.key !== 'workingDate'),
         ];
     }
   });
