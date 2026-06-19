@@ -42,13 +42,24 @@
 
 <!-- Table -->
 @if (loading) {
-  <div class="text-center py-4">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading…</span>
+  <div class="pv-grid-loading">
+    <div class="pv-grid-loading-spinner">
+      <div class="spinner-border spinner-border-sm" style="color:#1a2942;width:1.5rem;height:1.5rem;" role="status">
+        <span class="visually-hidden">Loading…</span>
+      </div>
     </div>
+    <span class="pv-grid-loading-text">Loading data…</span>
   </div>
 } @else if (rows.length === 0) {
-  <p class="text-muted text-center py-3 mb-0">No records found.</p>
+  <div class="pv-grid-empty">
+    <div class="pv-grid-empty-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
+      </svg>
+    </div>
+    <p class="pv-grid-empty-title">No records found</p>
+    <p class="pv-grid-empty-hint">Try adjusting your filters or search criteria</p>
+  </div>
 } @else {
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0 pv-grid-table">
@@ -57,6 +68,7 @@
           @for (col of displayColumns(); track col.key) {
             <th
               [class.pv-sortable]="col.sortable"
+              [class.pv-sort-active]="sortField() === col.key"
               [style.minWidth]="getColWidth(col.key)"
               (click)="col.sortable && onSort(col)"
             >
@@ -79,7 +91,7 @@
             </th>
           }
           @if (actions.length > 0) {
-            <th></th>
+            <th class="pv-grid-actions-th"></th>
           }
         </tr>
       </thead>
@@ -181,7 +193,7 @@
       </select>
 
       @if (totalPages > 1) {
-        <nav aria-label="Page navigation">
+        <nav aria-label="Page navigation" class="pv-grid-pagination">
           <ul class="pagination pagination-sm mb-0">
             <li class="page-item" [class.disabled]="currentPage() === 0">
               <button class="page-link" (click)="onPageChange(currentPage() - 1)" [disabled]="currentPage() === 0 || loading">‹</button>
