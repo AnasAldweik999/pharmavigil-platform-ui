@@ -743,6 +743,12 @@ body {
   white-space: nowrap;
 }
 
+@media (max-width: 767px) {
+  .pv-filter-field {
+    width: 100%;
+  }
+}
+
 /* Chart type pill buttons */
 .pv-chart-type-btn {
   display: inline-flex;
@@ -1007,17 +1013,15 @@ body {
 
 .pv-multi-select {
   position: relative;
-  width: 230px;
+  width: 100%;
 }
 
 .pv-ms-trigger {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.3rem;
   min-height: 36px;
-  max-height: 130px;
-  overflow-y: auto;
   padding: 0.3rem 2rem 0.3rem 0.5rem;
   border: 1px solid #ced4da;
   border-radius: 6px;
@@ -1026,6 +1030,7 @@ body {
   font-size: 0.825rem;
   position: relative;
   transition: border-color 0.15s;
+  overflow: hidden;
 }
 
 .pv-ms-trigger:hover {
@@ -1049,11 +1054,13 @@ body {
 }
 
 .pv-ms-bubbles {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
   gap: 0.25rem;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .pv-ms-bubble {
@@ -1068,6 +1075,18 @@ body {
   font-weight: 500;
   min-width: 0;
   overflow: hidden;
+  flex: 0 1 auto;
+  flex-shrink: 0;
+  max-width: 120px;
+}
+
+.pv-ms-bubble--more {
+  flex-shrink: 0;
+  background: #1a2942;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: default;
 }
 
 .pv-ms-bubble-text {

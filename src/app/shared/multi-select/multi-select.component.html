@@ -6,11 +6,14 @@
       <span class="pv-ms-placeholder">{{ placeholder }}</span>
     } @else {
       <div class="pv-ms-bubbles">
-        @for (s of selected(); track s.value) {
+        @for (s of visibleItems(); track s.value) {
           <span class="pv-ms-bubble">
             <span class="pv-ms-bubble-text" [title]="s.label">{{ s.label }}</span>
             <button type="button" class="pv-ms-bubble-remove" (click)="remove(s.value, $event)" aria-label="Remove">×</button>
           </span>
+        }
+        @if (hiddenCount() > 0) {
+          <span class="pv-ms-bubble pv-ms-bubble--more" [title]="hiddenTooltip()">+{{ hiddenCount() }}</span>
         }
       </div>
       <button type="button" class="pv-ms-clear" (click)="clearAll($event)">Clear all</button>

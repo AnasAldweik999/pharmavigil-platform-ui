@@ -39,9 +39,10 @@
 <!-- ── Filters card ──────────────────────────────────────────────────────── -->
 <div class="card border-0 shadow-sm mb-4">
   <div class="card-body px-3 py-3">
-    <div class="row g-2 align-items-end">
 
-      <div class="col-12 col-md-auto">
+    <!-- Row 1: Date range + Apply -->
+    <div class="row g-2 align-items-end mb-2">
+      <div class="col-auto">
         <div class="pv-filter-field">
           <span class="pv-filter-label">Date Range</span>
           <app-date-range-picker
@@ -51,51 +52,7 @@
           />
         </div>
       </div>
-
-      <div class="col-12 col-md-auto">
-        <div class="pv-filter-field">
-          <span class="pv-filter-label">Shifts</span>
-          <app-multi-select
-            placeholder="All Shifts"
-            [searchUrl]="base + '/api/supervisor/shifts'"
-            searchParam="name"
-            [labelFn]="shiftLabelFn"
-            [valueFn]="shiftValueFn"
-            (selectionChange)="onShiftsChange($event)"
-          />
-        </div>
-      </div>
-
-      <div class="col-12 col-md-auto">
-        <div class="pv-filter-field">
-          <span class="pv-filter-label">Staff</span>
-          <app-multi-select
-            placeholder="All Staff"
-            [searchUrl]="base + '/api/supervisor/staff-users'"
-            searchParam="search"
-            [labelFn]="staffLabelFn"
-            [valueFn]="staffEmailFn"
-            [secondaryLabelFn]="staffEmailFn"
-            (selectionChange)="onStaffChange($event)"
-          />
-        </div>
-      </div>
-
-      <div class="col-12 col-md-auto">
-        <div class="pv-filter-field">
-          <span class="pv-filter-label">Machines</span>
-          <app-multi-select
-            placeholder="All Machines"
-            [searchUrl]="base + '/api/supervisor/machines'"
-            searchParam="name"
-            [labelFn]="machLabelFn"
-            [valueFn]="machLabelFn"
-            (selectionChange)="onMachinesChange($event)"
-          />
-        </div>
-      </div>
-
-      <div class="col-12 col-md-auto ms-md-auto">
+      <div class="col-auto ms-auto">
         <button
           type="button"
           class="btn btn-primary btn-sm d-flex align-items-center gap-2"
@@ -112,8 +69,56 @@
           Apply
         </button>
       </div>
+    </div>
+
+    <!-- Row 2: Three multi-selects, equal width -->
+    <div class="row g-2">
+
+      <div class="col-12 col-md-4">
+        <div class="pv-filter-field">
+          <span class="pv-filter-label">Shifts</span>
+          <app-multi-select
+            placeholder="All Shifts"
+            [searchUrl]="base + '/api/supervisor/shifts'"
+            searchParam="name"
+            [labelFn]="shiftLabelFn"
+            [valueFn]="shiftValueFn"
+            (selectionChange)="onShiftsChange($event)"
+          />
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="pv-filter-field">
+          <span class="pv-filter-label">Staff</span>
+          <app-multi-select
+            placeholder="All Staff"
+            [searchUrl]="base + '/api/supervisor/staff-users'"
+            searchParam="search"
+            [labelFn]="staffLabelFn"
+            [valueFn]="staffEmailFn"
+            [secondaryLabelFn]="staffEmailFn"
+            (selectionChange)="onStaffChange($event)"
+          />
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="pv-filter-field">
+          <span class="pv-filter-label">Machines</span>
+          <app-multi-select
+            placeholder="All Machines"
+            [searchUrl]="base + '/api/supervisor/machines'"
+            searchParam="name"
+            [labelFn]="machLabelFn"
+            [valueFn]="machLabelFn"
+            (selectionChange)="onMachinesChange($event)"
+          />
+        </div>
+      </div>
 
     </div>
+
   </div>
 </div>
 
