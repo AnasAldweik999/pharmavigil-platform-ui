@@ -7,13 +7,13 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
 import { MachineStatus, WorkReportResponse } from '../../../../core/models/work-report.models';
 
 @Component({
   selector: 'app-report-detail-modal',
-  imports: [DatePipe],
+  imports: [DatePipe, DecimalPipe],
   templateUrl: './report-detail-modal.component.html',
 })
 export class ReportDetailModalComponent implements AfterViewInit {
