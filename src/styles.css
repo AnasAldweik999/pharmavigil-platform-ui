@@ -1270,3 +1270,28 @@ body {
 .pv-inner-grid-card {
   animation: pv-slide-down 0.3s ease both;
 }
+
+/* Stale results (filter changed, Apply not yet clicked) */
+.pv-results-stale {
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.pv-stale-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  color: #7a5f00;
+}
+
+.pv-stale-banner span {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+}

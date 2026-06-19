@@ -8,6 +8,9 @@
         <span class="pv-inner-grid-label">Products</span>
         <span class="pv-inner-grid-subtitle">{{ title }}</span>
       </div>
+      @if (loading()) {
+        <span class="spinner-border spinner-border-sm text-white opacity-75 ms-1" role="status" aria-hidden="true"></span>
+      }
     </div>
     <button type="button" class="btn-close btn-close-white opacity-75" aria-label="Close" (click)="closed.emit()"></button>
   </div>

@@ -34,6 +34,7 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
       { key: 'batchNumber',   label: 'Batch No.' },
       { key: 'outputUnits',   label: 'Output Units' },
       { key: 'stopCount',     label: 'Stops' },
+      { key: 'duration',      label: 'Downtime Count (min)' },
       { key: 'stopNames',     label: 'Stop Names' },
       { key: 'deviation',     label: 'Deviation' },
       { key: 'hold',          label: 'Hold' },

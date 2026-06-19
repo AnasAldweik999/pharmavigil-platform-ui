@@ -81,6 +81,8 @@ export class SmartComparisonTabComponent implements OnInit {
   readonly loadingSummary  = signal(false);
   readonly loadingGrouped  = signal(false);
   readonly hasLoaded       = signal(false);
+  readonly isStale         = signal(false);
+  readonly appliedGroupBy  = signal<SmartGroupBy>('MACHINE');
 
   // ── Inner grid state ──────────────────────────────────────────────────────
   readonly activeProductsId   = signal<string | null>(null);
@@ -95,7 +97,7 @@ export class SmartComparisonTabComponent implements OnInit {
 
   // ── Grid config ───────────────────────────────────────────────────────────
   readonly gridColumns = computed<GridColumn[]>(() => {
-    switch (this.groupBy()) {
+    switch (this.appliedGroupBy()) {
       case 'MACHINE': return [{ key: 'machineName', label: 'Machine' }, ...sharedMetricCols];
       case 'STAFF':   return [{ key: 'staffName', label: 'Staff Name' }, { key: 'staffEmail', label: 'Email' }, ...sharedMetricCols];
       case 'SHIFT':   return [{ key: 'shiftName', label: 'Shift' }, ...sharedMetricCols];
@@ -113,32 +115,40 @@ export class SmartComparisonTabComponent implements OnInit {
     this.applyFilters();
   }
 
+  private markStale(): void {
+    if (this.hasLoaded()) {
+      this.isStale.set(true);
+    }
+  }
+
   onGroupByChange(value: SmartGroupBy): void {
     this.groupBy.set(value);
-    this.clearResults();
+    this.markStale();
   }
 
   onDateRangeChange(range: { from: string; to: string }): void {
     this.dateRange.set(range);
-    this.clearResults();
+    this.markStale();
   }
 
   onShiftsChange(values: string[]): void {
     this.selectedShifts.set(values);
-    this.clearResults();
+    this.markStale();
   }
 
   onStaffChange(values: string[]): void {
     this.selectedStaff.set(values);
-    this.clearResults();
+    this.markStale();
   }
 
   onMachinesChange(values: string[]): void {
     this.selectedMachines.set(values);
-    this.clearResults();
+    this.markStale();
   }
 
   applyFilters(): void {
+    this.isStale.set(false);
+    this.appliedGroupBy.set(this.groupBy());
     this.closeInnerGrids();
     this.loadingSummary.set(true);
     const f = {
@@ -231,7 +241,8 @@ export class SmartComparisonTabComponent implements OnInit {
     });
   }
 
-  private clearResults(): void {
+  clearResults(): void {
+    this.isStale.set(false);
     this.summaryCards.set(null);
     this.groupedRows.set([]);
     this.groupedTotal.set(0);

@@ -52,7 +52,20 @@
           />
         </div>
       </div>
-      <div class="col-auto ms-auto">
+      <div class="col-auto ms-auto d-flex align-items-center gap-2">
+        @if (hasLoaded()) {
+          <button
+            type="button"
+            class="btn btn-danger btn-sm d-flex align-items-center gap-2"
+            (click)="clearResults()"
+            [disabled]="loadingSummary() || loadingGrouped()"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+            </svg>
+            Clear
+          </button>
+        }
         <button
           type="button"
           class="btn btn-primary btn-sm d-flex align-items-center gap-2"
@@ -121,6 +134,20 @@
 
   </div>
 </div>
+
+<!-- ── Stale banner ───────────────────────────────────────────────────────── -->
+@if (isStale() && hasLoaded()) {
+  <div class="pv-stale-banner mb-3">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0">
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+      <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+    </svg>
+    <span>Filters changed — results below are from the previous query. Click <strong>Apply</strong> to refresh.</span>
+  </div>
+}
+
+<!-- ── Results wrapper (dims when stale) ─────────────────────────────────── -->
+<div [class.pv-results-stale]="isStale()">
 
 <!-- ── KPI cards ─────────────────────────────────────────────────────────── -->
 @if (summaryCards(); as cards) {
@@ -252,8 +279,11 @@
         <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
       </svg>
       <span class="fw-semibold text-dark" style="font-size:0.875rem">
-        Grouped by {{ groupBy() | titlecase }}
+        Grouped by {{ appliedGroupBy() | titlecase }}
       </span>
+      @if (loadingGrouped()) {
+        <span class="spinner-border spinner-border-sm text-secondary ms-1" role="status" aria-hidden="true"></span>
+      }
     </div>
     <div class="card-body p-3">
       <app-grid
@@ -276,7 +306,7 @@
     <app-products-inner-grid
       [baseUrl]="productsBaseUrl()!"
       [title]="productsTitle()"
-      [groupBy]="groupBy()"
+      [groupBy]="appliedGroupBy()"
       (closed)="activeProductsId.set(null); productsBaseUrl.set(null)"
     />
   </div>
@@ -288,13 +318,13 @@
     <app-incidents-inner-grid
       [baseUrl]="incidentsBaseUrl()!"
       [title]="incidentsTitle()"
-      [groupBy]="groupBy()"
+      [groupBy]="appliedGroupBy()"
       (closed)="activeIncidentsId.set(null); incidentsBaseUrl.set(null)"
     />
   </div>
 }
 
-<!-- ── Empty state ────────────────────────────────────────────────────────── -->
+<!-- ── Empty state (data loaded, but no rows) ─────────────────────────────── -->
 @if (hasLoaded() && !loadingGrouped() && groupedRows().length === 0) {
   <div class="text-center py-5 text-muted">
     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" style="opacity:0.2" viewBox="0 0 16 16">
@@ -302,5 +332,19 @@
     </svg>
     <div class="fw-semibold mt-3" style="font-size:0.95rem">No data found</div>
     <div class="small mt-1">Adjust the filters above and click Apply</div>
+  </div>
+}
+
+</div><!-- /pv-results-stale wrapper -->
+
+<!-- ── Initial state (cleared / never loaded) ────────────────────────────── -->
+@if (!hasLoaded() && !loadingSummary()) {
+  <div class="text-center py-5 text-muted">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" style="opacity:0.15" viewBox="0 0 16 16">
+      <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+      <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+    </svg>
+    <div class="fw-semibold mt-3" style="font-size:0.95rem">No results to show</div>
+    <div class="small mt-1">Adjust the filters above and click Apply to load data</div>
   </div>
 }
