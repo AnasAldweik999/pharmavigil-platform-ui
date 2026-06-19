@@ -31,6 +31,12 @@
         }
       </button>
     }
+    <!-- Columns visibility -->
+    <button class="btn btn-sm btn-outline-secondary pv-grid-toolbar-btn" (click)="openColPanel()" title="Show / hide columns">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm6 0v5h4V2zm4 6H6v6h4zm1 6h4V8h-4zm0-7h4V2h-4zM5 2H1v5h4zm0 6H1v6h4z"/>
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -48,9 +54,10 @@
     <table class="table table-hover align-middle mb-0 pv-grid-table">
       <thead>
         <tr>
-          @for (col of columns; track col.key) {
+          @for (col of displayColumns(); track col.key) {
             <th
               [class.pv-sortable]="col.sortable"
+              [style.minWidth]="getColWidth(col.key)"
               (click)="col.sortable && onSort(col)"
             >
               {{ col.label }}
@@ -65,6 +72,10 @@
                   }
                 </span>
               }
+              <div class="pv-col-resize-handle"
+                   (mousedown)="onResizeStart($event, col.key)"
+                   (click)="$event.stopPropagation()">
+              </div>
             </th>
           }
           @if (actions.length > 0) {
@@ -75,7 +86,7 @@
       <tbody>
         @for (row of rows; track $index) {
           <tr>
-            @for (col of columns; track col.key) {
+            @for (col of displayColumns(); track col.key) {
               <td class="small">
                 @if (col.type === 'badge') {
                   <span class="badge" [ngClass]="col.badgeClass ? col.badgeClass('' + getCell(row, col.key)) : ''">
@@ -189,6 +200,49 @@
     </div>
   </div>
 }
+
+<!-- Column visibility offcanvas panel -->
+<div #colPanel class="offcanvas offcanvas-end pv-filter-panel" tabindex="-1" style="width:300px">
+
+  <div class="pv-filter-panel-header">
+    <div class="d-flex align-items-center gap-2">
+      <div class="pv-filter-panel-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm6 0v5h4V2zm4 6H6v6h4zm1 6h4V8h-4zm0-7h4V2h-4zM5 2H1v5h4zm0 6H1v6h4z"/>
+        </svg>
+      </div>
+      <span class="pv-filter-panel-title">Columns</span>
+    </div>
+    <button type="button" class="btn-close btn-close-white opacity-75" (click)="closeColPanel()" aria-label="Close"></button>
+  </div>
+
+  <div class="pv-filter-panel-body">
+    @for (col of allColumns(); track col.key) {
+      <div class="pv-filter-field-card">
+        <label class="d-flex align-items-center gap-2 mb-0 py-1" style="cursor:pointer">
+          <input
+            type="checkbox"
+            class="form-check-input flex-shrink-0 mt-0"
+            [checked]="isDraftColChecked(col.key)"
+            (change)="toggleDraftCol(col.key)"
+          />
+          <span style="font-size:0.85rem; color:#374151">{{ col.label }}</span>
+        </label>
+      </div>
+    }
+  </div>
+
+  <div class="pv-filter-panel-footer">
+    <button class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 btn-sm" (click)="applyColPanel()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/>
+      </svg>
+      Apply
+    </button>
+    <button type="button" class="pv-filter-clear-link" (click)="resetDraftCols()">Show all columns</button>
+  </div>
+
+</div>
 
 <!-- Filter offcanvas panel -->
 @if (filterFields.length > 0) {

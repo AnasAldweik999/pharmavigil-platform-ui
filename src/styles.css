@@ -531,6 +531,40 @@ body {
   letter-spacing: 0.05em;
   white-space: nowrap;
   padding: 0.6rem 0.75rem;
+  position: relative;
+}
+
+.pv-col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pv-col-resize-handle::after {
+  content: '';
+  display: block;
+  width: 2px;
+  height: 55%;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 1px;
+  transition: background 0.15s ease;
+}
+.pv-col-resize-handle:hover::after,
+.pv-col-resize-handle:active::after {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+body.pv-resizing,
+body.pv-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
 }
 
 .pv-grid-table tbody td {
@@ -1244,12 +1278,12 @@ body {
 /* ── Smart Comparison animations ─────────────────────────────────────────── */
 @keyframes pv-fade-up {
   from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes pv-slide-down {
   from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: none; }
 }
 
 .pv-kpi-col {
