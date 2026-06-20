@@ -20,7 +20,6 @@ import { environment } from '../../../../../environments/environment';
 import { AnyGroupRow, SmartGroupBy, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
 
 const today  = new Date().toLocaleDateString('en-CA');
-const last5  = new Date(Date.now() - 4 * 86400000).toLocaleDateString('en-CA');
 
 const sharedMetricCols: GridColumn[] = [
   { key: 'productCount',   label: 'Products'       },
@@ -51,7 +50,7 @@ export class SmartComparisonTabComponent implements OnInit {
 
   // ── Filter state ──────────────────────────────────────────────────────────
   readonly groupBy          = signal<SmartGroupBy>('MACHINE');
-  readonly dateRange        = signal({ from: last5, to: today });
+  readonly dateRange        = signal({ from: today, to: today });
   readonly selectedShifts   = signal<string[]>([]);
   readonly selectedStaff    = signal<string[]>([]);
   readonly selectedMachines = signal<string[]>([]);
