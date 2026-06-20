@@ -138,10 +138,10 @@ export class GridComponent implements OnInit, OnChanges, AfterViewInit, OnDestro
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['columns']) {
-      const allKeys = new Set(this.columns.map(c => c.key));
+      const defaultVisible = new Set(this.columns.filter(c => !c.hidden).map(c => c.key));
       this.allColumns.set([...this.columns]);
-      this._visibleKeys.set(new Set(allKeys));
-      this._draftKeys.set(new Set(allKeys));
+      this._visibleKeys.set(new Set(defaultVisible));
+      this._draftKeys.set(new Set(defaultVisible));
       this._colWidths.set(new Map());
     }
   }
@@ -292,7 +292,7 @@ export class GridComponent implements OnInit, OnChanges, AfterViewInit, OnDestro
   }
 
   resetDraftCols(): void {
-    this._draftKeys.set(new Set(this.allColumns().map(c => c.key)));
+    this._draftKeys.set(new Set(this.allColumns().filter(c => !c.hidden).map(c => c.key)));
   }
 
   // ── Column resize ─────────────────────────────────────────────────────────

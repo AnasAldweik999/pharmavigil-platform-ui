@@ -28,7 +28,7 @@ export class IncidentsInnerGridComponent implements OnInit, OnChanges {
       case 'MACHINE':
         return [
           { key: 'staffName',   label: 'Staff Name' },
-          { key: 'staffEmail',  label: 'Email' },
+          { key: 'staffEmail',  label: 'Email', hidden: true },
           { key: 'workingDate', label: 'Working Date', type: 'date-only' },
           { key: 'shiftName',   label: 'Shift' },
           { key: 'incidentText', label: 'Incident' },
@@ -44,7 +44,7 @@ export class IncidentsInnerGridComponent implements OnInit, OnChanges {
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },
-          { key: 'staffEmail',  label: 'Email' },
+          { key: 'staffEmail',  label: 'Email', hidden: true },
           { key: 'workingDate', label: 'Working Date', type: 'date-only' },
           { key: 'incidentText', label: 'Incident' },
         ];
@@ -52,7 +52,7 @@ export class IncidentsInnerGridComponent implements OnInit, OnChanges {
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },
-          { key: 'staffEmail',  label: 'Email' },
+          { key: 'staffEmail',  label: 'Email', hidden: true },
           { key: 'shiftName',   label: 'Shift' },
           { key: 'incidentText', label: 'Incident' },
         ];

@@ -99,7 +99,7 @@ export class SmartComparisonTabComponent implements OnInit {
   readonly gridColumns = computed<GridColumn[]>(() => {
     switch (this.appliedGroupBy()) {
       case 'MACHINE': return [{ key: 'machineName', label: 'Machine' }, ...sharedMetricCols];
-      case 'STAFF':   return [{ key: 'staffName', label: 'Staff Name' }, { key: 'staffEmail', label: 'Email' }, ...sharedMetricCols];
+      case 'STAFF':   return [{ key: 'staffName', label: 'Staff Name' }, { key: 'staffEmail', label: 'Email', hidden: true }, ...sharedMetricCols];
       case 'SHIFT':   return [{ key: 'shiftName', label: 'Shift' }, ...sharedMetricCols];
       case 'DATE':    return [{ key: 'date', label: 'Date', type: 'date-only' }, ...sharedMetricCols];
     }

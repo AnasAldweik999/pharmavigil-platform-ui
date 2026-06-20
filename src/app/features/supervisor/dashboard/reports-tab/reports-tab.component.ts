@@ -39,7 +39,7 @@ export class ReportsTabComponent {
 
   readonly gridColumns: GridColumn[] = [
     { key: 'staffName',  label: 'Staff Name',   sortable: true, type: 'text' },
-    { key: 'staffEmail', label: 'Email',         sortable: true, type: 'text' },
+    { key: 'staffEmail', label: 'Email',         sortable: true, type: 'text', hidden: true },
     { key: 'reportDate', label: 'Working Date',  sortable: true, type: 'text' },
     { key: 'shiftName',  label: 'Shift',         sortable: true, type: 'text' },
     { key: 'createdAt',  label: 'Submitted At',  sortable: true, type: 'date' },

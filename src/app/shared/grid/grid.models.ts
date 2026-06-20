@@ -4,6 +4,7 @@ export interface GridColumn {
   sortable?: boolean;
   type?: 'text' | 'date' | 'date-only' | 'badge';
   badgeClass?: (value: string) => string;
+  hidden?: boolean;
 }
 
 export interface GridFilterField {

@@ -49,7 +49,7 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
       case 'MACHINE':
         return [
           { key: 'staffName',  label: 'Staff Name' },
-          { key: 'staffEmail', label: 'Email' },
+          { key: 'staffEmail', label: 'Email', hidden: true },
           { key: 'shiftName',  label: 'Shift' },
           ...shared,
         ];
@@ -63,14 +63,14 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },
-          { key: 'staffEmail',  label: 'Email' },
+          { key: 'staffEmail',  label: 'Email', hidden: true },
           ...shared,
         ];
       case 'DATE':
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },
-          { key: 'staffEmail',  label: 'Email' },
+          { key: 'staffEmail',  label: 'Email', hidden: true },
           { key: 'shiftName',   label: 'Shift' },
           ...shared.filter(c => c.key !== 'workingDate'),
         ];
