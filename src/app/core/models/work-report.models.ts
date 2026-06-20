@@ -1,6 +1,6 @@
 export type MachineStatus = 'RUNNING' | 'STOPPED' | 'MAINTENANCE' | 'READY';
 
-export interface ShiftRef    { id: string; name: string; startTime: string; endTime: string; }
+export interface ShiftRef    { id: string; name: string; }
 export interface MachineRef  { id: string; name: string; }
 export interface StopTypeRef { id: string; name: string; }
 

@@ -34,9 +34,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   private bsModal: { show(): void; hide(): void } | null = null;
 
   readonly form = this.fb.nonNullable.group({
-    name:      ['', [Validators.required, Validators.minLength(1)]],
-    startTime: ['', Validators.required],
-    endTime:   ['', Validators.required],
+    name: ['', [Validators.required, Validators.minLength(1)]],
   });
 
   private readonly _pageData = signal<Page<ShiftItem> | null>(null);
@@ -53,10 +51,8 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   private _currentGridState: GridState = { filters: {}, sort: null, page: 0, size: 10 };
 
   readonly gridColumns: GridColumn[] = [
-    { key: 'name',      label: 'Name',       sortable: true,  type: 'text' },
-    { key: 'startTime', label: 'Start Time',  sortable: false, type: 'text' },
-    { key: 'endTime',   label: 'End Time',    sortable: false, type: 'text' },
-    { key: 'createdAt', label: 'Created',     sortable: true,  type: 'date' },
+    { key: 'name',      label: 'Name',    sortable: true, type: 'text' },
+    { key: 'createdAt', label: 'Created', sortable: true, type: 'date' },
   ];
 
   readonly gridFilters: GridFilterField[] = [
@@ -72,7 +68,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId) || !this.modalRef?.nativeElement) return;
     this.modalRef.nativeElement.addEventListener('hidden.bs.modal', () => {
-      this.form.reset({ name: '', startTime: '', endTime: '' });
+      this.form.reset({ name: '' });
       this.errorMessage.set('');
     });
   }
@@ -138,9 +134,7 @@ export class ShiftsComponent implements OnInit, AfterViewInit {
   }
 
   dismissSuccess(): void { this.tableSuccessMessage.set(''); }
-  get nameControl()      { return this.form.controls.name; }
-  get startTimeControl() { return this.form.controls.startTime; }
-  get endTimeControl()   { return this.form.controls.endTime; }
+  get nameControl() { return this.form.controls.name; }
 
   private get modal(): { show(): void; hide(): void } | null {
     if (!isPlatformBrowser(this.platformId) || !this.modalRef?.nativeElement) return null;

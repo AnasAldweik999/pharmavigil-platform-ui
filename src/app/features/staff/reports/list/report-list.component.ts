@@ -49,7 +49,7 @@ export class ReportListComponent {
       type: 'searchable-select',
       searchUrl: `${this.base}/api/staff/reference/shifts`,
       searchParam: 'name',
-      labelFn: (s: any) => `${s.name} (${s.startTime} - ${s.endTime})`,
+      labelFn: (s: any) => s.name,
       valueFn: (s: any) => s.id,
       placeholder: 'Search shift...',
     },

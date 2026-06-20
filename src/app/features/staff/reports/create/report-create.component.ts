@@ -6,7 +6,7 @@ import {
   signal,
   ViewChild,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { DecimalPipe, isPlatformBrowser, NgClass } from '@angular/common';
 import {
   AbstractControl,
   FormArray,
@@ -16,7 +16,6 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { NgClass } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
@@ -24,6 +23,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import {
   CreateWorkReportRequest,
   MachineStatus,
+  WorkReportResponse,
 } from '../../../../core/models/work-report.models';
 import { SearchableDropdownComponent } from '../../../../shared/searchable-dropdown/searchable-dropdown.component';
 
@@ -49,7 +49,7 @@ function qualityValidator(ctrl: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-report-create',
-  imports: [ReactiveFormsModule, RouterLink, NgClass, SearchableDropdownComponent],
+  imports: [ReactiveFormsModule, RouterLink, NgClass, SearchableDropdownComponent, DecimalPipe],
   templateUrl: './report-create.component.html',
 })
 export class ReportCreateComponent {
@@ -63,11 +63,16 @@ export class ReportCreateComponent {
   @ViewChild('confirmModal') private confirmModalRef!: ElementRef<HTMLElement>;
   private bsConfirmModal: { show(): void; hide(): void } | null = null;
 
-  readonly today      = new Date().toISOString().split('T')[0];
-  readonly submitting = signal(false);
-  readonly submitted  = signal(false);
+  readonly today          = new Date().toISOString().split('T')[0];
+  readonly submitting     = signal(false);
+  readonly submitted      = signal(false);
+  readonly confirmPreview = signal<WorkReportResponse | null>(null);
 
-  readonly shiftLabelFn    = (s: any) => `${s.name} (${s.startTime} - ${s.endTime})`;
+  private shiftLabel                                      = '';
+  private readonly machineLabels: Record<number, string>  = {};
+  private readonly stopTypeLabels: Record<string, string> = {};
+
+  readonly shiftLabelFn    = (s: any) => s.name as string;
   readonly shiftValueFn    = (s: any) => s.id as string;
   readonly machineLabelFn  = (m: any) => m.name as string;
   readonly machineValueFn  = (m: any) => m.id as string;
@@ -163,6 +168,14 @@ export class ReportCreateComponent {
     this.getIncidentsArray(mi).removeAt(ii);
   }
 
+  // ── Label tracking for confirmation preview ───────────────────────────────
+
+  onShiftLabelChange(label: string): void { this.shiftLabel = label; }
+  onMachineLabelChange(mi: number, label: string): void { this.machineLabels[mi] = label; }
+  onStopTypeLabelChange(mi: number, pi: number, si: number, label: string): void {
+    this.stopTypeLabels[`${mi}-${pi}-${si}`] = label;
+  }
+
   // ── Submit ────────────────────────────────────────────────────────────────
 
   onSubmit(): void {
@@ -172,6 +185,7 @@ export class ReportCreateComponent {
       this.toastService.error('Please fix all required fields before submitting.');
       return;
     }
+    this.confirmPreview.set(this.buildPreview());
     this.getConfirmModal()?.show();
   }
 
@@ -244,6 +258,44 @@ export class ReportCreateComponent {
     return this.fb.group({
       description: ['', Validators.required],
     });
+  }
+
+  private buildPreview(): WorkReportResponse {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const v = this.form.getRawValue() as any;
+    return {
+      id: '', shiftId: v.shiftId as string,
+      shiftName:  this.shiftLabel,
+      reportDate: v.reportDate as string,
+      createdAt: '', updatedAt: '',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      machines: (v.machines as any[]).map((m, mi) => ({
+        id: '', machineId: m.machineId as string,
+        machineName: this.machineLabels[mi] ?? `Machine ${mi + 1}`,
+        status: m.status as MachineStatus,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        products: (m.products as any[]).map((p, pi) => ({
+          id: '',
+          productName: p.productName as string,
+          batchNo:     p.batchNo as string,
+          outputUnits: Number(p.outputUnits),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          stops: (p.stops as any[]).map((s, si) => ({
+            id: '', stopTypeId: s.stopTypeId as string,
+            stopTypeName: this.stopTypeLabels[`${mi}-${pi}-${si}`] ?? '—',
+            duration: Number(s.duration),
+          })),
+          quality: {
+            deviation:        !!p.quality.deviation,
+            deviationDetails: p.quality.deviation ? (p.quality.deviationDetails as string || null) : null,
+            hold:             !!p.quality.hold,
+            holdDetails:      p.quality.hold ? (p.quality.holdDetails as string || null) : null,
+          },
+        })),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        incidents: (m.incidents as any[]).map(i => ({ id: '', description: i.description as string })),
+      })),
+    };
   }
 
   private buildRequest(): CreateWorkReportRequest {

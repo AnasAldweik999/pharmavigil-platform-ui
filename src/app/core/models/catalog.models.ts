@@ -11,13 +11,9 @@ export interface CreateCatalogRequest {
 export interface ShiftItem {
   id: string;
   name: string;
-  startTime: string;
-  endTime: string;
   createdAt: string;
 }
 
 export interface CreateShiftRequest {
   name: string;
-  startTime: string;
-  endTime: string;
 }

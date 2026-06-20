@@ -87,36 +87,6 @@
             }
           </div>
 
-          <div class="row g-3 mb-1">
-            <div class="col-12 col-sm-6">
-              <label for="shiftStart" class="form-label fw-medium">Start time</label>
-              <input
-                id="shiftStart"
-                type="time"
-                class="form-control"
-                [class.is-invalid]="startTimeControl.invalid && startTimeControl.touched"
-                [class.is-valid]="startTimeControl.valid && startTimeControl.touched"
-                formControlName="startTime"
-              />
-              @if (startTimeControl.touched && startTimeControl.hasError('required')) {
-                <div class="invalid-feedback">Start time is required.</div>
-              }
-            </div>
-            <div class="col-12 col-sm-6">
-              <label for="shiftEnd" class="form-label fw-medium">End time</label>
-              <input
-                id="shiftEnd"
-                type="time"
-                class="form-control"
-                [class.is-invalid]="endTimeControl.invalid && endTimeControl.touched"
-                [class.is-valid]="endTimeControl.valid && endTimeControl.touched"
-                formControlName="endTime"
-              />
-              @if (endTimeControl.touched && endTimeControl.hasError('required')) {
-                <div class="invalid-feedback">End time is required.</div>
-              }
-            </div>
-          </div>
         </form>
       </div>
 
