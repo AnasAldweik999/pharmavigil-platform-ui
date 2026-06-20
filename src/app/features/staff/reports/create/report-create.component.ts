@@ -88,7 +88,7 @@ export class ReportCreateComponent {
   };
 
   form = this.fb.group({
-    reportDate: ['', Validators.required],
+    reportDate: [this.today, Validators.required],
     shiftId:    ['', Validators.required],
     machines:   this.fb.array([this.buildMachineGroup()]),
   });
