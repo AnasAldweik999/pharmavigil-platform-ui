@@ -54,9 +54,13 @@ export class ResetPasswordComponent implements OnInit {
         this.loading.set(false);
         this.successMessage.set('If that email is registered, a reset link has been sent.');
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set('Something went wrong. Please try again.');
+        this.errorMessage.set(
+          err.status === 400
+            ? (err.error?.violation || err.error?.message || 'An error occurred.')
+            : 'Something went wrong. Please try again.'
+        );
       },
     });
   }
@@ -82,9 +86,13 @@ export class ResetPasswordComponent implements OnInit {
         this.successMessage.set('Password reset successfully. Redirecting to login…');
         setTimeout(() => this.router.navigate(['/login']), 2000);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
-        this.errorMessage.set('Reset link is invalid or expired. Please request a new one.');
+        this.errorMessage.set(
+          err.status === 400
+            ? (err.error?.violation || err.error?.message || 'An error occurred.')
+            : 'Something went wrong. Please try again.'
+        );
       },
     });
   }

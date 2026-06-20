@@ -16,7 +16,6 @@ import { MultiSelectComponent } from '../../../../shared/multi-select/multi-sele
 import { ProductsInnerGridComponent } from './products-inner-grid/products-inner-grid.component';
 import { IncidentsInnerGridComponent } from './incidents-inner-grid/incidents-inner-grid.component';
 import { SmartComparisonService } from '../../../../core/services/smart-comparison.service';
-import { ToastService } from '../../../../core/services/toast.service';
 import { environment } from '../../../../../environments/environment';
 import { AnyGroupRow, SmartGroupBy, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
 
@@ -48,7 +47,6 @@ const sharedMetricCols: GridColumn[] = [
 })
 export class SmartComparisonTabComponent implements OnInit {
   private readonly service = inject(SmartComparisonService);
-  private readonly toast   = inject(ToastService);
   protected readonly base  = environment.apiUrl;
 
   // ── Filter state ──────────────────────────────────────────────────────────
@@ -168,7 +166,6 @@ export class SmartComparisonTabComponent implements OnInit {
         this.loadGrouped(0);
       },
       error: () => {
-        this.toast.error('Failed to load summary. Please try again.');
         this.loadingSummary.set(false);
       },
     });
@@ -234,7 +231,6 @@ export class SmartComparisonTabComponent implements OnInit {
         this.loadingGrouped.set(false);
       },
       error: () => {
-        this.toast.error('Failed to load grouped data. Please try again.');
         this.loadingSummary.set(false);
         this.loadingGrouped.set(false);
       },

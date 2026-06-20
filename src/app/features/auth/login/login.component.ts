@@ -44,9 +44,9 @@ export class LoginComponent {
       error: (err) => {
         this.loading.set(false);
         this.errorMessage.set(
-          err.status === 500
-            ? 'Something went wrong. Please try again.'
-            : (err.error?.message ?? 'Something went wrong. Please try again.')
+          err.status === 400
+            ? (err.error?.violation || err.error?.message || 'An error occurred.')
+            : 'Something went wrong. Please try again.'
         );
       },
     });

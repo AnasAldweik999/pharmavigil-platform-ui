@@ -16,7 +16,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -197,9 +197,8 @@ export class ReportCreateComponent {
         this.submitting.set(false);
         this.router.navigate(['/staff/reports']);
       },
-      error: (err: HttpErrorResponse) => {
+      error: () => {
         this.submitting.set(false);
-        this.toastService.error(this.extractError(err));
       },
     });
   }
@@ -333,12 +332,4 @@ export class ReportCreateComponent {
     };
   }
 
-  private extractError(err: HttpErrorResponse): string {
-    if (err.error?.message) return err.error.message as string;
-    if (typeof err.error === 'object' && err.error !== null) {
-      const values = Object.values(err.error) as string[];
-      if (values.length) return values.join(' | ');
-    }
-    return 'Failed to submit report. Please try again.';
-  }
 }
