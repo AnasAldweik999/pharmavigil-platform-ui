@@ -258,6 +258,11 @@ export class GridComponent implements OnInit, OnChanges, AfterViewInit, OnDestro
     return (row as Record<string, unknown>)[key];
   }
 
+  isCellEmpty(row: unknown, key: string): boolean {
+    const v = this.getCell(row, key);
+    return v === null || v === undefined || v === '';
+  }
+
   // ── Column visibility panel ───────────────────────────────────────────────
 
   openColPanel(): void {

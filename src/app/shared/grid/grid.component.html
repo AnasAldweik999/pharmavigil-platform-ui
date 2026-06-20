@@ -100,7 +100,9 @@
           <tr>
             @for (col of displayColumns(); track col.key) {
               <td class="small">
-                @if (col.type === 'badge') {
+                @if (isCellEmpty(row, col.key)) {
+                  <span class="text-muted">-</span>
+                } @else if (col.type === 'badge') {
                   <span class="badge" [ngClass]="col.badgeClass ? col.badgeClass('' + getCell(row, col.key)) : ''">
                     {{ getCell(row, col.key) }}
                   </span>
