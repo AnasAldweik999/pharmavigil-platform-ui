@@ -25,7 +25,7 @@ export interface GridAction {
   key: string;
   label: string;
   btnClass?: string;
-  icon?: 'view' | 'delete' | 'deactivate' | 'activate' | 'products' | 'incidents';
+  icon?: 'view' | 'delete' | 'deactivate' | 'activate' | 'products' | 'incidents' | 'stops';
   condition?: (row: unknown) => boolean;
 }
 

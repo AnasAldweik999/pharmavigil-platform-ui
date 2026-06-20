@@ -1,8 +1,8 @@
 import { Component, computed, EventEmitter, inject, Input, OnChanges, OnInit, Output, signal, SimpleChanges } from '@angular/core';
-import { GridColumn, GridState } from '../../../../../shared/grid/grid.models';
+import { GridAction, GridColumn, GridState } from '../../../../../shared/grid/grid.models';
 import { GridComponent } from '../../../../../shared/grid/grid.component';
 import { SmartComparisonService } from '../../../../../core/services/smart-comparison.service';
-import { SmartGroupBy } from '../../../../../core/models/smart-comparison.models';
+import { ProductStopRow, SmartGroupBy } from '../../../../../core/models/smart-comparison.models';
 
 @Component({
   selector: 'app-products-inner-grid',
@@ -18,12 +18,18 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
 
   private readonly service = inject(SmartComparisonService);
 
-  readonly rows         = signal<unknown[]>([]);
+  // ── Products grid state ───────────────────────────────────────────────────
+  readonly rows          = signal<unknown[]>([]);
   readonly totalElements = signal(0);
-  readonly totalPages   = signal(0);
-  readonly loading      = signal(false);
-  private  currentPage  = 0;
-  private  currentSize  = 10;
+  readonly totalPages    = signal(0);
+  readonly loading       = signal(false);
+  private  currentPage   = 0;
+  private  currentSize   = 10;
+
+  readonly gridActions: GridAction[] = [
+    { key: 'stops', label: 'View Stops', icon: 'stops', btnClass: 'btn-sm btn-outline-warning',
+      condition: (row: any) => (row.stopCount ?? 0) > 0 },
+  ];
 
   readonly columns = computed<GridColumn[]>(() => {
     const shared: GridColumn[] = [
@@ -34,8 +40,7 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
       { key: 'batchNumber',   label: 'Batch No.' },
       { key: 'outputUnits',   label: 'Output Units' },
       { key: 'stopCount',     label: 'Stops' },
-      { key: 'duration',      label: 'Downtime Count (min)' },
-      { key: 'stopNames',     label: 'Stop Names' },
+      { key: 'duration',      label: 'Downtime (min)' },
       { key: 'deviation',     label: 'Deviation' },
       { key: 'hold',          label: 'Hold' },
     ];
@@ -72,6 +77,19 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
     }
   });
 
+  // ── Stops sub-grid state ──────────────────────────────────────────────────
+  readonly activeStopsUrl = signal<string | null>(null);
+  readonly stopsTitle     = signal('');
+  readonly stopsRows      = signal<ProductStopRow[]>([]);
+  readonly stopsTotal     = signal(0);
+  readonly stopsPages     = signal(0);
+  readonly stopsLoading   = signal(false);
+
+  readonly stopsColumns: GridColumn[] = [
+    { key: 'stopTypeName', label: 'Stop Type' },
+    { key: 'duration',     label: 'Duration (min)' },
+  ];
+
   ngOnInit(): void {
     this.load(0, 10);
   }
@@ -81,12 +99,32 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
       this.rows.set([]);
       this.totalElements.set(0);
       this.totalPages.set(0);
+      this.activeStopsUrl.set(null);
       this.load(0, 10);
     }
   }
 
   onStateChange(state: GridState): void {
     this.load(state.page, state.size);
+  }
+
+  onStopActionClick(event: { action: GridAction; row: unknown }): void {
+    const r   = event.row as any;
+    const url = r.stopsLink ?? null;
+    if (!url) return;
+
+    if (this.activeStopsUrl() === url) {
+      this.activeStopsUrl.set(null);
+    } else {
+      const batch = r.batchNumber ? ` — Batch ${r.batchNumber}` : '';
+      this.stopsTitle.set(`${r.productName ?? ''}${batch}`);
+      this.activeStopsUrl.set(url);
+      this.loadStops(0, 10);
+    }
+  }
+
+  onStopsStateChange(state: GridState): void {
+    this.loadStops(state.page, state.size);
   }
 
   private load(page: number, size: number): void {
@@ -101,6 +139,21 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
+    });
+  }
+
+  private loadStops(page: number, size: number): void {
+    const url = this.activeStopsUrl();
+    if (!url) return;
+    this.stopsLoading.set(true);
+    this.service.getInnerGrid<ProductStopRow>(url, page, size).subscribe({
+      next: res => {
+        this.stopsRows.set(res.content);
+        this.stopsTotal.set(res.totalElements);
+        this.stopsPages.set(res.totalPages);
+        this.stopsLoading.set(false);
+      },
+      error: () => this.stopsLoading.set(false),
     });
   }
 }

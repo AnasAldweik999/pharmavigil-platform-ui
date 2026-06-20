@@ -49,3 +49,8 @@ export interface ScPageResponse<T> {
   totalElements: number;
   totalPages: number;
 }
+
+export interface ProductStopRow {
+  stopTypeName: string;
+  duration: number;
+}

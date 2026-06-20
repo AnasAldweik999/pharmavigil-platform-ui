@@ -1527,6 +1527,17 @@ body.pv-resizing * {
   color: #fff;
 }
 
+.pv-stops-subgrid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  background: #fffbf0;
+  color: #664d03;
+}
+.pv-stops-subgrid-header .pv-inner-grid-label    { opacity: 0.7; color: #856404; }
+.pv-stops-subgrid-header .pv-inner-grid-subtitle { color: #1a2942; }
+
 .pv-inner-grid-title-wrap {
   display: flex;
   flex-direction: column;
