@@ -1780,9 +1780,6 @@ body.pv-resizing * {
   padding: 0.625rem 0.75rem;
 }
 
-.pv-stop-field { display: flex; flex-direction: column; min-width: 0; }
-.pv-stop-field--type     { flex: 2 1 160px; }
-.pv-stop-field--duration { flex: 1 1 100px; }
 
 /* Inline add button (small, inside sections) */
 .pv-inline-add-btn {

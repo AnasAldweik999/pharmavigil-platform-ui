@@ -301,8 +301,9 @@
                         <div class="collapse show" [id]="'stops-sec-' + mi + '-' + pi">
                           @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
                             <div class="pv-stop-row mb-2" [formGroupName]="si">
-                              <div class="d-flex align-items-end gap-2">
-                                <div class="pv-stop-field pv-stop-field--type">
+                              <div class="row g-2 align-items-end">
+                                <!-- Stop Type: full width on mobile, grows to fill on sm+ -->
+                                <div class="col-12 col-sm">
                                   <label class="form-label small mb-1">Stop Type</label>
                                   <app-searchable-dropdown
                                     formControlName="stopTypeId"
@@ -315,8 +316,12 @@
                                     [small]="false"
                                     (labelChange)="onStopTypeLabelChange(mi, pi, si, $event)"
                                   />
+                                  @if (isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))) {
+                                    <div class="text-danger small mt-1">Stop type is required.</div>
+                                  }
                                 </div>
-                                <div class="pv-stop-field pv-stop-field--duration">
+                                <!-- Duration: takes remaining width next to delete btn on mobile, auto on sm+ -->
+                                <div class="col col-sm-auto" style="min-width: 110px">
                                   <label class="form-label small mb-1">Duration (min)</label>
                                   <input
                                     type="number"
@@ -326,34 +331,25 @@
                                     min="1"
                                     [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('duration'))"
                                   />
+                                  @if (isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
+                                    <div class="text-danger small mt-1">
+                                      @if (getStopsArray(mi, pi).at(si).get('duration')?.errors?.['max']) {
+                                        Max 10 digits.
+                                      } @else {
+                                        Min 1 minute.
+                                      }
+                                    </div>
+                                  }
                                 </div>
-                                <button type="button" class="pv-remove-btn flex-shrink-0" (click)="removeStop(mi, pi, si)" title="Remove stop">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                                  </svg>
-                                </button>
+                                <!-- Delete button: auto width, aligned to bottom -->
+                                <div class="col-auto d-flex align-items-end">
+                                  <button type="button" class="pv-remove-btn flex-shrink-0" (click)="removeStop(mi, pi, si)" title="Remove stop">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                  </button>
+                                </div>
                               </div>
-                              @if (isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId')) || isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
-                                <div class="d-flex gap-2">
-                                  <div class="pv-stop-field--type">
-                                    @if (isInvalid(getStopsArray(mi, pi).at(si).get('stopTypeId'))) {
-                                      <div class="text-danger small mt-1">Stop type is required.</div>
-                                    }
-                                  </div>
-                                  <div class="pv-stop-field--duration">
-                                    @if (isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
-                                      <div class="text-danger small mt-1">
-                                        @if (getStopsArray(mi, pi).at(si).get('duration')?.errors?.['max']) {
-                                          Max 10 digits.
-                                        } @else {
-                                          Min 1 minute.
-                                        }
-                                      </div>
-                                    }
-                                  </div>
-                                  <div style="width: 26px; flex-shrink: 0"></div>
-                                </div>
-                              }
                             </div>
                           }
                         </div>
