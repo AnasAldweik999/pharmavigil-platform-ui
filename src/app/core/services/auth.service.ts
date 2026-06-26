@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { catchError, Observable, of, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.staff';
 import {
   AuthState,
   ForgotPasswordRequest,
@@ -30,8 +30,8 @@ export class AuthService {
   readonly currentName = computed(() => this._authState()?.name ?? null);
   readonly currentEmail = computed(() => this._authState()?.email ?? null);
 
-  login(email: string, password: string): Observable<LoginResponse> {
-    const body: LoginRequest = { email, password };
+  login(email: string, password: string, portalType: 'STAFF' | 'SUPERVISOR'): Observable<LoginResponse> {
+    const body: LoginRequest = { email, password, portalType };
     return this.http.post<LoginResponse>(`${this.apiUrl}/api/auth/login`, body).pipe(
       tap((res) => this.persist({ accessToken: res.accessToken, refreshToken: res.refreshToken, role: res.role, name: res.name, email: res.email }))
     );
@@ -76,6 +76,13 @@ export class AuthService {
 
   getAccessToken(): string | null {
     return this._authState()?.accessToken ?? null;
+  }
+
+  clearAuth(): void {
+    this._authState.set(null);
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
   }
 
   private persist(state: AuthState): void {

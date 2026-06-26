@@ -1,6 +1,7 @@
 export interface LoginRequest {
   email: string;
   password: string;
+  portalType: 'STAFF' | 'SUPERVISOR';
 }
 
 export interface LoginResponse {

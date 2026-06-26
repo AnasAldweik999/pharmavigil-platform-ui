@@ -12,7 +12,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
-import { environment } from '../../../../environments/environment';
+import { environment } from '../../../../environments/environment.staff';
 import { Page, UserResponse } from '../../../core/models/user.models';
 import { GridAction, GridColumn, GridFilterField, GridState } from '../../../shared/grid/grid.models';
 import { GridComponent } from '../../../shared/grid/grid.component';

@@ -17,7 +17,7 @@ import { ProductsInnerGridComponent } from './products-inner-grid/products-inner
 import { IncidentsInnerGridComponent } from './incidents-inner-grid/incidents-inner-grid.component';
 import { StopMachinesInnerGridComponent } from './stop-machines-inner-grid/stop-machines-inner-grid.component';
 import { SmartComparisonService } from '../../../../core/services/smart-comparison.service';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment.staff';
 import { AnyGroupRow, SmartGroupBy, StopGroupRow, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
 
 const today  = new Date().toLocaleDateString('en-CA');

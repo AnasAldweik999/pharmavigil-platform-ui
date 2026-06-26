@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment.staff';
 
 @Component({
   selector: 'app-login',
@@ -32,7 +33,7 @@ export class LoginComponent {
     this.errorMessage.set('');
     const { email, password } = this.form.getRawValue();
 
-    this.authService.login(email, password).subscribe({
+    this.authService.login(email, password, environment.portalType).subscribe({
       next: (res) => {
         this.loading.set(false);
         if (res.role === 'SUPERVISOR') {

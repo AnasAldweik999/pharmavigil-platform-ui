@@ -50,14 +50,47 @@
               ],
               "outputHashing": "all"
             },
+            "production-supervisor": {
+              "outputPath": "dist/pharmavigil-platform-ui-supervisor",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.staff.ts",
+                  "with": "src/environments/environment.supervisor.ts"
+                }
+              ]
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
+                  "replace": "src/environments/environment.staff.ts",
+                  "with": "src/environments/environment.staff.development.ts"
+                }
+              ]
+            },
+            "development-supervisor": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.staff.ts",
+                  "with": "src/environments/environment.supervisor.development.ts"
                 }
               ]
             }
@@ -72,6 +105,9 @@
             },
             "development": {
               "buildTarget": "pharmavigil-platform-ui:build:development"
+            },
+            "supervisor": {
+              "buildTarget": "pharmavigil-platform-ui:build:development-supervisor"
             }
           },
           "defaultConfiguration": "development"

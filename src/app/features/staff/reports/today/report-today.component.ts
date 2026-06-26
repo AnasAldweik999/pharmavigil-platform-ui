@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment.staff';
 import { WorkReportResponse } from '../../../../core/models/work-report.models';
 import { ReportDetailModalComponent } from '../detail/report-detail-modal.component';
 
