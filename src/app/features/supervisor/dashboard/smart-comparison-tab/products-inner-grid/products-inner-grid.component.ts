@@ -67,6 +67,7 @@ export class ProductsInnerGridComponent implements OnInit, OnChanges {
           ...shared,
         ];
       case 'DATE':
+      default:
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },

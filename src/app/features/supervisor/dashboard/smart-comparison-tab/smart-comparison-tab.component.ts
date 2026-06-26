@@ -15,9 +15,10 @@ import { DateRangePickerComponent } from '../../../../shared/date-range-picker/d
 import { MultiSelectComponent } from '../../../../shared/multi-select/multi-select.component';
 import { ProductsInnerGridComponent } from './products-inner-grid/products-inner-grid.component';
 import { IncidentsInnerGridComponent } from './incidents-inner-grid/incidents-inner-grid.component';
+import { StopMachinesInnerGridComponent } from './stop-machines-inner-grid/stop-machines-inner-grid.component';
 import { SmartComparisonService } from '../../../../core/services/smart-comparison.service';
 import { environment } from '../../../../../environments/environment';
-import { AnyGroupRow, SmartGroupBy, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
+import { AnyGroupRow, SmartGroupBy, StopGroupRow, SummaryCardsData } from '../../../../core/models/smart-comparison.models';
 
 const today  = new Date().toLocaleDateString('en-CA');
 
@@ -41,6 +42,7 @@ const sharedMetricCols: GridColumn[] = [
     MultiSelectComponent,
     ProductsInnerGridComponent,
     IncidentsInnerGridComponent,
+    StopMachinesInnerGridComponent,
   ],
   templateUrl: './smart-comparison-tab.component.html',
 })
@@ -60,6 +62,7 @@ export class SmartComparisonTabComponent implements OnInit {
     { value: 'STAFF',   label: 'Staff'   },
     { value: 'SHIFT',   label: 'Shift'   },
     { value: 'DATE',    label: 'Date'    },
+    { value: 'STOP',    label: 'Stops'   },
   ];
 
   // ── Label / value fns for dropdowns ──────────────────────────────────────
@@ -88,9 +91,13 @@ export class SmartComparisonTabComponent implements OnInit {
   readonly activeIncidentsId  = signal<string | null>(null);
   readonly incidentsBaseUrl   = signal<string | null>(null);
   readonly incidentsTitle     = signal('');
+  readonly activeStopId        = signal<string | null>(null);
+  readonly stopMachinesBaseUrl = signal<string | null>(null);
+  readonly stopMachinesTitle   = signal('');
 
-  @ViewChild('productsRef') productsRef?: ElementRef<HTMLElement>;
-  @ViewChild('incidentsRef') incidentsRef?: ElementRef<HTMLElement>;
+  @ViewChild('productsRef')     productsRef?: ElementRef<HTMLElement>;
+  @ViewChild('incidentsRef')    incidentsRef?: ElementRef<HTMLElement>;
+  @ViewChild('stopMachinesRef') stopMachinesRef?: ElementRef<HTMLElement>;
 
   // ── Grid config ───────────────────────────────────────────────────────────
   readonly gridColumns = computed<GridColumn[]>(() => {
@@ -98,15 +105,28 @@ export class SmartComparisonTabComponent implements OnInit {
       case 'MACHINE': return [{ key: 'machineName', label: 'Machine' }, ...sharedMetricCols];
       case 'STAFF':   return [{ key: 'staffName', label: 'Staff Name' }, { key: 'staffEmail', label: 'Email', hidden: true }, ...sharedMetricCols];
       case 'SHIFT':   return [{ key: 'shiftName', label: 'Shift' }, ...sharedMetricCols];
-      case 'DATE':    return [{ key: 'date', label: 'Date', type: 'date-only' }, ...sharedMetricCols];
+      case 'DATE':    return [{ key: 'date', label: 'Date', type: 'date-only' as const }, ...sharedMetricCols];
+      case 'STOP':    return [
+        { key: 'stopName',             label: 'Stop'           },
+        { key: 'totalMachines',        label: 'Machines'       },
+        { key: 'totalProducts',        label: 'Products'       },
+        { key: 'totalDowntimeMinutes', label: 'Downtime (min)' },
+      ];
     }
   });
 
-  readonly gridActions: GridAction[] = [
-    { key: 'products',  label: 'Products',  icon: 'products',  btnClass: 'btn-sm btn-outline-primary' },
-    { key: 'incidents', label: 'Incidents', icon: 'incidents', btnClass: 'btn-sm btn-outline-danger',
-      condition: (row: any) => row.hasIncidents },
-  ];
+  readonly gridActions = computed<GridAction[]>(() => {
+    if (this.appliedGroupBy() === 'STOP') {
+      return [
+        { key: 'machines', label: 'Machines', icon: 'machines', btnClass: 'btn-sm btn-outline-primary' },
+      ];
+    }
+    return [
+      { key: 'products',  label: 'Products',  icon: 'products',  btnClass: 'btn-sm btn-outline-primary' },
+      { key: 'incidents', label: 'Incidents', icon: 'incidents', btnClass: 'btn-sm btn-outline-danger',
+        condition: (row: any) => row.hasIncidents },
+    ];
+  });
 
   ngOnInit(): void {
     this.applyFilters();
@@ -177,9 +197,8 @@ export class SmartComparisonTabComponent implements OnInit {
   }
 
   onActionClick(event: { action: GridAction; row: unknown }): void {
-    const row = event.action as any;
-    const r   = event.row   as any;
-    const id  = this.getRowId(r);
+    const r     = event.row as any;
+    const id    = this.getRowId(r);
     const title = this.getRowTitle(r);
 
     if (event.action.key === 'products') {
@@ -204,6 +223,18 @@ export class SmartComparisonTabComponent implements OnInit {
         this.incidentsTitle.set(title);
         afterNextRender(() => {
           this.incidentsRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    } else if (event.action.key === 'machines') {
+      if (this.activeStopId() === id) {
+        this.activeStopId.set(null);
+        this.stopMachinesBaseUrl.set(null);
+      } else {
+        this.activeStopId.set(id);
+        this.stopMachinesBaseUrl.set(r._links?.['machines'] ?? null);
+        this.stopMachinesTitle.set(title);
+        afterNextRender(() => {
+          this.stopMachinesRef?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       }
     }
@@ -251,23 +282,27 @@ export class SmartComparisonTabComponent implements OnInit {
     this.productsBaseUrl.set(null);
     this.activeIncidentsId.set(null);
     this.incidentsBaseUrl.set(null);
+    this.activeStopId.set(null);
+    this.stopMachinesBaseUrl.set(null);
   }
 
   private getRowId(row: any): string {
-    switch (this.groupBy()) {
+    switch (this.appliedGroupBy()) {
       case 'MACHINE': return row.machineName ?? '';
       case 'STAFF':   return row.staffEmail  ?? '';
       case 'SHIFT':   return row.shiftName   ?? '';
       case 'DATE':    return row.date        ?? '';
+      case 'STOP':    return row.stopName    ?? '';
     }
   }
 
   private getRowTitle(row: any): string {
-    switch (this.groupBy()) {
+    switch (this.appliedGroupBy()) {
       case 'MACHINE': return row.machineName ?? '';
       case 'STAFF':   return row.staffName   ?? row.staffEmail ?? '';
       case 'SHIFT':   return row.shiftName   ?? '';
       case 'DATE':    return row.date        ?? '';
+      case 'STOP':    return row.stopName    ?? '';
     }
   }
 }

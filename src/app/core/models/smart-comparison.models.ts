@@ -1,4 +1,4 @@
-export type SmartGroupBy = 'MACHINE' | 'STAFF' | 'SHIFT' | 'DATE';
+export type SmartGroupBy = 'MACHINE' | 'STAFF' | 'SHIFT' | 'DATE' | 'STOP';
 
 export interface SmartComparisonFilters {
   groupBy: SmartGroupBy;
@@ -17,6 +17,7 @@ export interface SummaryCardsData {
   totalIncidents: number;
   totalHolds: number;
   totalDeviations: number;
+  totalMachines: number;
 }
 
 export interface SmartSummaryResponse {
@@ -40,7 +41,33 @@ export interface MachineGroupRow extends BaseGroupRow { machineName: string; }
 export interface StaffGroupRow   extends BaseGroupRow { staffName: string; staffEmail: string; }
 export interface ShiftGroupRow   extends BaseGroupRow { shiftName: string; }
 export interface DateGroupRow    extends BaseGroupRow { date: string; }
-export type AnyGroupRow = MachineGroupRow | StaffGroupRow | ShiftGroupRow | DateGroupRow;
+
+export interface StopGroupRow {
+  stopName: string;
+  totalMachines: number;
+  totalProducts: number;
+  totalDowntimeMinutes: number;
+  _links: Record<string, string>;
+}
+
+export interface StopMachineRow {
+  machineName: string;
+  machineStatus: string;
+  staffName: string;
+  staffEmail: string;
+  shift: string;
+  workingDate: string;
+  totalProducts: number;
+  totalDowntimeMinutes: number;
+  _links: Record<string, string>;
+}
+
+export interface StopProductRow {
+  productName: string;
+  batchNo: string;
+}
+
+export type AnyGroupRow = MachineGroupRow | StaffGroupRow | ShiftGroupRow | DateGroupRow | StopGroupRow;
 
 export interface ScPageResponse<T> {
   content: T[];

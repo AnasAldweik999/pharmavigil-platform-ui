@@ -49,6 +49,7 @@ export class IncidentsInnerGridComponent implements OnInit, OnChanges {
           { key: 'incidentText', label: 'Incident' },
         ];
       case 'DATE':
+      default:
         return [
           { key: 'machineName', label: 'Machine' },
           { key: 'staffName',   label: 'Staff Name' },
