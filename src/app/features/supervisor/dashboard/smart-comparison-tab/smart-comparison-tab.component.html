@@ -1,5 +1,19 @@
 <!-- ── GroupBy selector ──────────────────────────────────────────────────── -->
-<div class="pv-groupby-row mb-4">
+<div class="card border-0 shadow-sm mb-4 overflow-hidden">
+  <div class="card-body p-3">
+
+    <!-- Section label -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#1a2942" viewBox="0 0 16 16">
+        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5z"/>
+      </svg>
+      <div>
+        <div class="fw-semibold" style="font-size:0.9rem;color:#1a2942">View Results By</div>
+        <div class="text-muted" style="font-size:0.78rem">Choose how to organize and break down the comparison data</div>
+      </div>
+    </div>
+
+    <div class="pv-groupby-row">
   @for (opt of groupByOptions; track opt.value) {
     <button
       type="button"
@@ -39,7 +53,9 @@
       {{ opt.label }}
     </button>
   }
-</div>
+    </div><!-- /pv-groupby-row -->
+  </div><!-- /card-body -->
+</div><!-- /groupby card -->
 
 <!-- ── Filters card ──────────────────────────────────────────────────────── -->
 <div class="card border-0 shadow-sm mb-4">
