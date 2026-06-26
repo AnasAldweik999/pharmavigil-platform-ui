@@ -9,7 +9,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toastService = inject(ToastService);
   return next(req).pipe(
     catchError((err) => {
-      if (err instanceof HttpErrorResponse && !AUTH_PATHS.some(p => req.url.includes(p))) {
+      if (err instanceof HttpErrorResponse && err.status !== 401 && !AUTH_PATHS.some(p => req.url.includes(p))) {
         if (err.status === 400) {
           toastService.error(extractApiMessage(err) ?? 'An error occurred.');
         } else {
