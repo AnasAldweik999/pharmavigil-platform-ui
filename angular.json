@@ -84,6 +84,7 @@
               ]
             },
             "development-supervisor": {
+              "outputPath": "dist/pharmavigil-platform-ui-supervisor",
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
