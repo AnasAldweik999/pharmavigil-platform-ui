@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   computed,
   ElementRef,
@@ -8,6 +9,7 @@ import {
   inject,
   input,
   Input,
+  OnDestroy,
   Output,
   signal,
   ViewChild,
@@ -30,7 +32,7 @@ import { Page } from '../../core/models/user.models';
     },
   ],
 })
-export class SearchableDropdownComponent implements ControlValueAccessor {
+export class SearchableDropdownComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
   private readonly http  = inject(HttpClient);
   private readonly elRef = inject(ElementRef);
 
@@ -48,7 +50,8 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   @Output() valueChange = new EventEmitter<string>();
   @Output() labelChange = new EventEmitter<string>();
 
-  @ViewChild('trigger')     triggerEl?:   ElementRef<HTMLElement>;
+  @ViewChild('trigger') triggerEl?:   ElementRef<HTMLElement>;
+  @ViewChild('panel')   panelEl?:     ElementRef<HTMLElement>;
   @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>;
 
   readonly _selectedLabel = signal('');
@@ -75,6 +78,9 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   private onChange: (v: string) => void = () => {};
   private onTouched: () => void = () => {};
 
+  // Reposition on scroll/resize so the panel tracks the trigger
+  private readonly _onScrollOrResize = (): void => this.positionPanel();
+
   constructor() {
     this._search$.pipe(
       debounceTime(300),
@@ -82,19 +88,39 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
     ).subscribe(q => this.fetch(q));
   }
 
+  // Move the panel to <body> so position:fixed is relative to the viewport,
+  // not to a transformed ancestor in the layout tree.
+  ngAfterViewInit(): void {
+    if (this.panelEl?.nativeElement) {
+      document.body.appendChild(this.panelEl.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('scroll', this._onScrollOrResize, { capture: true });
+    window.removeEventListener('resize', this._onScrollOrResize);
+    const el = this.panelEl?.nativeElement;
+    if (el && el.parentNode === document.body) {
+      document.body.removeChild(el);
+    }
+  }
+
   @HostListener('document:mousedown', ['$event'])
   onDocumentMouseDown(event: MouseEvent): void {
-    if (!this.elRef.nativeElement.contains(event.target as Node)) {
-      this._panelOpen.set(false);
-      this._panelVisible.set(false);
+    const target = event.target as Node;
+    // Panel lives in <body> outside this component's host — check both
+    if (
+      !this.elRef.nativeElement.contains(target) &&
+      !this.panelEl?.nativeElement.contains(target)
+    ) {
+      this._closePanel();
     }
   }
 
   togglePanel(): void {
     if (this._disabled()) return;
     if (this._panelOpen()) {
-      this._panelOpen.set(false);
-      this._panelVisible.set(false);
+      this._closePanel();
       return;
     }
     this._searchText.set('');
@@ -104,8 +130,18 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
     setTimeout(() => {
       this.positionPanel();
       this._panelVisible.set(true);
+      // capture:true catches scroll on any container, not just window
+      window.addEventListener('scroll', this._onScrollOrResize, { capture: true, passive: true });
+      window.addEventListener('resize', this._onScrollOrResize, { passive: true });
       this.searchInput?.nativeElement.focus();
     }, 0);
+  }
+
+  private _closePanel(): void {
+    this._panelOpen.set(false);
+    this._panelVisible.set(false);
+    window.removeEventListener('scroll', this._onScrollOrResize, { capture: true });
+    window.removeEventListener('resize', this._onScrollOrResize);
   }
 
   private positionPanel(): void {
@@ -127,7 +163,7 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
     const label = this.labelFn(item);
     this._selectedValue.set(value);
     this._selectedLabel.set(label);
-    this._panelOpen.set(false);
+    this._closePanel();
     this.onChange(value);
     this.onTouched();
     this.valueChange.emit(value);
@@ -137,7 +173,7 @@ export class SearchableDropdownComponent implements ControlValueAccessor {
   clear(): void {
     this._selectedValue.set('');
     this._selectedLabel.set('');
-    this._panelOpen.set(false);
+    this._closePanel();
     this.onChange('');
     this.onTouched();
     this.valueChange.emit('');

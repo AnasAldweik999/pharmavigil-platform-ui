@@ -39,58 +39,58 @@
     }
   </div>
 
-  <!-- Dropdown panel — position:fixed to escape overflow:hidden ancestors -->
-  @if (_panelOpen() && !_disabled()) {
-    <div
-      class="dropdown-menu show p-0 shadow-sm"
-      style="position:fixed;z-index:1060;min-width:220px"
-      [style.top.px]="_panelTop()"
-      [style.left.px]="_panelLeft()"
-      [style.width.px]="_panelWidth()"
-      [style.visibility]="_panelVisible() ? 'visible' : 'hidden'"
-    >
+  <!-- Dropdown panel — rendered in <body> via portal so position:fixed is viewport-relative -->
+  <div
+    #panel
+    class="dropdown-menu show p-0 shadow-sm"
+    style="position:fixed;z-index:1060;min-width:220px"
+    [style.display]="(_panelOpen() && !_disabled()) ? 'block' : 'none'"
+    [style.top.px]="_panelTop()"
+    [style.left.px]="_panelLeft()"
+    [style.width.px]="_panelWidth()"
+    [style.visibility]="_panelVisible() ? 'visible' : 'hidden'"
+  >
 
-      <!-- Search input inside panel -->
-      <div class="p-2 border-bottom">
-        <div class="input-group input-group-sm">
-          <input
-            #searchInput
-            type="text"
-            class="form-control"
-            placeholder="Search..."
-            [value]="_searchText()"
-            (input)="onSearch($event)"
-            autocomplete="off"
-          />
-          @if (_loading()) {
-            <span class="input-group-text bg-white border-start-0 px-2">
-              <span class="spinner-border spinner-border-sm text-secondary" style="width:12px;height:12px;border-width:1.5px"></span>
-            </span>
-          }
-        </div>
-      </div>
-
-      <!-- Items -->
-      <div style="max-height:200px;overflow-y:auto;overflow-x:hidden">
-        @for (item of _filteredItems(); track valueFn(item)) {
-          <button
-            type="button"
-            class="dropdown-item py-1 px-3"
-            [class.active]="_selectedValue() === valueFn(item)"
-            (click)="select(item)"
-          >
-            <div style="font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ labelFn(item) }}</div>
-            @if (secondaryLabelFn) {
-              <div style="font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" class="text-muted">{{ secondaryLabelFn(item) }}</div>
-            }
-          </button>
-        }
-        @if (!_loading() && _filteredItems().length === 0) {
-          <div class="dropdown-item-text py-1 px-3 text-muted" style="font-size:0.82rem">No results</div>
+    <!-- Search input inside panel -->
+    <div class="p-2 border-bottom">
+      <div class="input-group input-group-sm">
+        <input
+          #searchInput
+          type="text"
+          class="form-control"
+          placeholder="Search..."
+          [value]="_searchText()"
+          (input)="onSearch($event)"
+          autocomplete="off"
+        />
+        @if (_loading()) {
+          <span class="input-group-text bg-white border-start-0 px-2">
+            <span class="spinner-border spinner-border-sm text-secondary" style="width:12px;height:12px;border-width:1.5px"></span>
+          </span>
         }
       </div>
-
     </div>
-  }
+
+    <!-- Items -->
+    <div style="max-height:200px;overflow-y:auto;overflow-x:hidden">
+      @for (item of _filteredItems(); track valueFn(item)) {
+        <button
+          type="button"
+          class="dropdown-item py-1 px-3"
+          [class.active]="_selectedValue() === valueFn(item)"
+          (click)="select(item)"
+        >
+          <div style="font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ labelFn(item) }}</div>
+          @if (secondaryLabelFn) {
+            <div style="font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" class="text-muted">{{ secondaryLabelFn(item) }}</div>
+          }
+        </button>
+      }
+      @if (!_loading() && _filteredItems().length === 0) {
+        <div class="dropdown-item-text py-1 px-3 text-muted" style="font-size:0.82rem">No results</div>
+      }
+    </div>
+
+  </div>
 
 </div>
