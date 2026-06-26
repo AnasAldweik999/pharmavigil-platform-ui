@@ -68,9 +68,9 @@ export class ReportCreateComponent {
   readonly submitted      = signal(false);
   readonly confirmPreview = signal<WorkReportResponse | null>(null);
 
-  private shiftLabel                                      = '';
-  private readonly machineLabels: Record<number, string>  = {};
-  private readonly stopTypeLabels: Record<string, string> = {};
+  private shiftLabel                                                 = '';
+  private readonly machineLabels  = new WeakMap<AbstractControl, string>();
+  private readonly stopTypeLabels = new WeakMap<AbstractControl, string>();
 
   readonly shiftLabelFn    = (s: any) => s.name as string;
   readonly shiftValueFn    = (s: any) => s.id as string;
@@ -171,9 +171,11 @@ export class ReportCreateComponent {
   // ── Label tracking for confirmation preview ───────────────────────────────
 
   onShiftLabelChange(label: string): void { this.shiftLabel = label; }
-  onMachineLabelChange(mi: number, label: string): void { this.machineLabels[mi] = label; }
+  onMachineLabelChange(mi: number, label: string): void {
+    this.machineLabels.set(this.machinesArray.at(mi), label);
+  }
   onStopTypeLabelChange(mi: number, pi: number, si: number, label: string): void {
-    this.stopTypeLabels[`${mi}-${pi}-${si}`] = label;
+    this.stopTypeLabels.set(this.getStopsArray(mi, pi).at(si), label);
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────
@@ -270,7 +272,7 @@ export class ReportCreateComponent {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       machines: (v.machines as any[]).map((m, mi) => ({
         id: '', machineId: m.machineId as string,
-        machineName: this.machineLabels[mi] ?? `Machine ${mi + 1}`,
+        machineName: this.machineLabels.get(this.machinesArray.at(mi)) ?? `Machine ${mi + 1}`,
         status: m.status as MachineStatus,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         products: (m.products as any[]).map((p, pi) => ({
@@ -281,7 +283,7 @@ export class ReportCreateComponent {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           stops: (p.stops as any[]).map((s, si) => ({
             id: '', stopTypeId: s.stopTypeId as string,
-            stopTypeName: this.stopTypeLabels[`${mi}-${pi}-${si}`] ?? '—',
+            stopTypeName: this.stopTypeLabels.get(this.getStopsArray(mi, pi).at(si)) ?? '—',
             duration: Number(s.duration),
           })),
           quality: {

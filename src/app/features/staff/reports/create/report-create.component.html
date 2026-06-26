@@ -55,41 +55,45 @@
 
   <!-- ── Machines ──────────────────────────────────────────────────────────── -->
   <div formArrayName="machines">
-    @for (mc of machinesArray.controls; let mi = $index; track mi) {
+    @for (mc of machinesArray.controls; let mi = $index; track mc) {
       <div class="card border-0 shadow-sm mb-4 overflow-hidden pv-machine-card" [formGroupName]="mi">
 
         <!-- Machine header -->
-        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4 d-flex align-items-center gap-2 gap-md-3 flex-wrap">
-          <button
-            type="button"
-            class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
-            data-bs-toggle="collapse"
-            [attr.data-bs-target]="'#mc-body-' + mi"
-            aria-expanded="true"
-          >
-            <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
-            </svg>
-          </button>
-          <span class="pv-machine-num">{{ mi + 1 }}</span>
-          <div class="flex-grow-1" style="min-width: 0">
-            <app-searchable-dropdown
-              formControlName="machineId"
-              [searchUrl]="base + '/api/staff/reference/machines'"
-              searchParam="name"
-              [labelFn]="machineLabelFn"
-              [valueFn]="machineValueFn"
-              placeholder="Search machine..."
-              [invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
-              [small]="false"
-              (labelChange)="onMachineLabelChange(mi, $event)"
-            />
-            @if (isInvalid(getMachineGroup(mi).get('machineId'))) {
-              <div class="text-danger small mt-1">Machine is required.</div>
+        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+          <!-- Row: keep Remove button in its own flex row so it never shifts when the error appears -->
+          <div class="d-flex align-items-center gap-2 gap-md-3">
+            <button
+              type="button"
+              class="btn p-0 border-0 pv-collapse-btn text-muted flex-shrink-0"
+              data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#mc-body-' + mi"
+              aria-expanded="true"
+            >
+              <svg class="pv-chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+              </svg>
+            </button>
+            <span class="pv-machine-num">{{ mi + 1 }}</span>
+            <div class="flex-grow-1" style="min-width: 0">
+              <app-searchable-dropdown
+                formControlName="machineId"
+                [searchUrl]="base + '/api/staff/reference/machines'"
+                searchParam="name"
+                [labelFn]="machineLabelFn"
+                [valueFn]="machineValueFn"
+                placeholder="Search machine..."
+                [invalid]="isInvalid(getMachineGroup(mi).get('machineId'))"
+                [small]="false"
+                (labelChange)="onMachineLabelChange(mi, $event)"
+              />
+            </div>
+            @if (machinesArray.length > 1) {
+              <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" (click)="removeMachine(mi)">Remove</button>
             }
           </div>
-          @if (machinesArray.length > 1) {
-            <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" (click)="removeMachine(mi)">Remove</button>
+          <!-- Error lives outside the flex row so it never affects button alignment -->
+          @if (isInvalid(getMachineGroup(mi).get('machineId'))) {
+            <div class="text-danger small mt-1 ms-1">Machine is required.</div>
           }
         </div>
 
@@ -145,7 +149,7 @@
 
             <!-- Products -->
             <div formArrayName="products">
-              @for (pc of getProductsArray(mi).controls; let pi = $index; track pi) {
+              @for (pc of getProductsArray(mi).controls; let pi = $index; track pc) {
                 <div class="pv-product-card mb-3" [formGroupName]="pi">
 
                   <!-- Product header with collapse toggle -->
@@ -299,9 +303,9 @@
                         </div>
 
                         <div class="collapse show" [id]="'stops-sec-' + mi + '-' + pi">
-                          @for (sc of getStopsArray(mi, pi).controls; let si = $index; track si) {
+                          @for (sc of getStopsArray(mi, pi).controls; let si = $index; track sc) {
                             <div class="pv-stop-row mb-2" [formGroupName]="si">
-                              <div class="row g-2 align-items-end">
+                              <div class="row g-2">
                                 <!-- Stop Type: full width on mobile, grows to fill on sm+ -->
                                 <div class="col-12 col-sm">
                                   <label class="form-label small mb-1">Stop Type</label>
@@ -320,17 +324,26 @@
                                     <div class="text-danger small mt-1">Stop type is required.</div>
                                   }
                                 </div>
-                                <!-- Duration: takes remaining width next to delete btn on mobile, auto on sm+ -->
-                                <div class="col col-sm-auto" style="min-width: 110px">
+                                <!-- Duration + delete button share a column so the button
+                                     is always anchored to the input regardless of error state -->
+                                <div class="col-12 col-sm-auto">
                                   <label class="form-label small mb-1">Duration (min)</label>
-                                  <input
-                                    type="number"
-                                    formControlName="duration"
-                                    class="form-control form-control-sm"
-                                    placeholder="e.g. 30"
-                                    min="1"
-                                    [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('duration'))"
-                                  />
+                                  <div class="d-flex align-items-center gap-2">
+                                    <input
+                                      type="number"
+                                      formControlName="duration"
+                                      class="form-control form-control-sm flex-grow-1"
+                                      style="min-width: 90px"
+                                      placeholder="e.g. 30"
+                                      min="1"
+                                      [class.is-invalid]="isInvalid(getStopsArray(mi, pi).at(si).get('duration'))"
+                                    />
+                                    <button type="button" class="pv-remove-btn flex-shrink-0" (click)="removeStop(mi, pi, si)" title="Remove stop">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                      </svg>
+                                    </button>
+                                  </div>
                                   @if (isInvalid(getStopsArray(mi, pi).at(si).get('duration'))) {
                                     <div class="text-danger small mt-1">
                                       @if (getStopsArray(mi, pi).at(si).get('duration')?.errors?.['max']) {
@@ -340,14 +353,6 @@
                                       }
                                     </div>
                                   }
-                                </div>
-                                <!-- Delete button: auto width, aligned to bottom -->
-                                <div class="col-auto d-flex align-items-end">
-                                  <button type="button" class="pv-remove-btn flex-shrink-0" (click)="removeStop(mi, pi, si)" title="Remove stop">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-                                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                                    </svg>
-                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -394,7 +399,7 @@
                 <div class="pv-incidents-empty">No incidents logged for this machine.</div>
               }
 
-              @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ii) {
+              @for (ic of getIncidentsArray(mi).controls; let ii = $index; track ic) {
                 <div class="pv-incident-card mb-2" [formGroupName]="ii">
                   <div class="pv-incident-card-header">
                     <div class="pv-incident-num">
